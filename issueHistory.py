@@ -20,6 +20,9 @@ import argparse
 import requests
 import getpass
 
+import json
+import dateutil.parser
+
 # globals
 global_DEBUG = 0
 
@@ -93,37 +96,27 @@ class Jira:
 
             yield json
 
-
-def process (jira, issues):  
-    outfile.write('\n'.join(map(process_story, jira.get_issues(issues))))
-
-
 def process_story (story):
     '''Extract tuple containing issuekey, story points, and cycle time from Story'''
     
     issuekey = story['key']
     points = story['fields'].get('customfield_10109')
                   
-    Log.info(issuekey, 'Story points:', points)
-
-    # TODO perform a reduce on the elapsed time
-
-    # changelog.histories [ filter: items.field='status' ]:
-    # to 3, toString 'In Progress' = (created = start time), to 10001, toString 'Done' = (created = end time)
-
-    cycle_times = filter(lambda entry: entry['items'][0].get('field') == 'status', story['changelog'].get('histories'))
-
-    #Log.info(' '.join(map(str,cycle_times)))
-    times = {}
-    for st in cycle_times:
-        k = st['items'][0].get('toString')
-        v = st['created']
-        if times.setdefault(k, v) != v:
-            raise Exception('transition "{}" already exists'.format(k))
-
-    Log.info('Collected times:', times)
+    cycle_times = [dateutil.parser.parse(entry['created']) for entry in story['changelog'].get('histories')
+                   if entry['items'][0].get('field') == 'status'
+                   and (
+                       entry['items'][0].get('to') == '3'
+                       or  entry['items'][0].get('to') == '10001'
+                   )]
+    # sort by created date so we can use find first In Progress and last Done status
+    sorted_times = sorted(cycle_times)
+    #print(sorted_times)
     
-    return ','.join(map(str, (issuekey, points)))
+    start_time = sorted_times[0]
+    end_time = sorted_times[-1]
+    delta = end_time - start_time
+            
+    return (issuekey, points, delta.days)
 
             
 if __name__ == '__main__':
@@ -168,7 +161,9 @@ if __name__ == '__main__':
         outfile = open(args.outfile, 'w')
 
     try:
-        process(jira, args.issues)
+        for story in jira.get_issues(args.issues):
+            outfile.write(','.join(map(str, process_story(story))))
+            outfile.write('\n')
     except Exception:
         Log.error('Unexpected error:', sys.exc_info()[0])
         raise
