@@ -15,6 +15,7 @@ Workflow
 
 '''
 
+from __future__ import print_function
 import sys
 import argparse
 import requests
@@ -32,21 +33,22 @@ global_DEBUG = 0
 # those items to produce historical data necessary
 
 class Log:
+    '''Simple logger'''
 
-    def safe_print (*msg):
-        print(' '.join(map(str,msg)))
-    
-    safe_printer = safe_print
+    def eprint (*args, **kwargs):
+        print(*args, file=sys.stderr, **kwargs)
+        
+    eprint = eprint
 
     def error (*msg):
         '''Log as an error'''
-        Log.safe_printer('[ERROR]', *msg)
+        Log.eprint('[ERROR]', *msg)
         
     def info (*msg):
         '''Log message when debug >= 0'''
         if global_DEBUG < 0:
             return
-        Log.safe_printer('[INFO]', *msg)
+        Log.eprint('[INFO]', *msg)
 
     info = staticmethod(info)
 
@@ -54,7 +56,7 @@ class Log:
         '''Log message when debug >= 1'''
         if global_DEBUG < 1:
             return
-        Log.safe_printer('[DEBUG]', *msg)
+        Log.eprint('[DEBUG]', *msg)
 
     debug = staticmethod(debug)
         
@@ -62,7 +64,7 @@ class Log:
         '''Log message when debug >= 2'''
         if global_DEBUG < 2:
             return
-        Log.safe_printer('[VERBOSE]', *msg)
+        Log.eprint('[VERBOSE]', *msg)
 
     verbose = staticmethod(verbose)
 
@@ -102,7 +104,8 @@ def process_story (story):
     issuekey = story['key']
     points = story['fields'].get('customfield_10109')
                   
-    cycle_times = [dateutil.parser.parse(entry['created']) for entry in story['changelog'].get('histories')
+    cycle_times = [dateutil.parser.parse(entry['created'])
+                   for entry in story['changelog'].get('histories')
                    if entry['items'][0].get('field') == 'status'
                    and (
                        entry['items'][0].get('to') == '3'
@@ -114,9 +117,9 @@ def process_story (story):
     
     start_time = sorted_times[0]
     end_time = sorted_times[-1]
-    delta = end_time - start_time
+#    delta = end_time - start_time
             
-    return (issuekey, points, delta.days)
+    return (issuekey, points, start_time.date(), end_time.date())
 
             
 if __name__ == '__main__':
@@ -149,6 +152,7 @@ if __name__ == '__main__':
     Log.debug('Output: ',outfile)
     Log.verbose('Debug flag: ', global_DEBUG)
     ##
+
     Log.info("Retrieving issues...")
     
     # grab password from stdin
@@ -160,6 +164,9 @@ if __name__ == '__main__':
     if outfile.closed:
         outfile = open(args.outfile, 'w')
 
+    Log.info('Retrieving issues...')
+
+    outfile.write('issue,storypoints,start,end\n')
     try:
         for story in jira.get_issues(args.issues):
             outfile.write(','.join(map(str, process_story(story))))
@@ -170,5 +177,7 @@ if __name__ == '__main__':
 
     if not outfile.closed:
         outfile.close()
+
+    Log.info('Done')
         
     exit(0)
