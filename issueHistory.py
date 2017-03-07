@@ -10,8 +10,9 @@ goal is to correlate the estimated time with cycle time of the sub-tasks of an i
 
 Workflow
  + Filter a project/sprint for stories
- + story.subtasks.foreach( retrieve subtask issue with ?expand=changelog parameter )
- + dump status changes in CSV format
+ + Retrieve story points field (customfield_10109)
+ + Retrieve start date (1st In Progress) and end date (last Done)
+ + dump fields in CSV format
 
 '''
 
@@ -30,15 +31,11 @@ import dateutil.parser
 # globals
 global_DEBUG = 0
 
-# Note: expanding the changelog for the story does not give us the sub-task history
-# which is what I was interested in researching. Need to loop through issues returned
-# from a filter (query), find all sub-tasks, then retrieve expanded changelog of all
-# those items to produce historical data necessary
-
 class Log:
     '''Simple logger'''
 
     def eprint (*args, **kwargs):
+        '''print args to stderr'''
         print(*args, file=sys.stderr, **kwargs)
         
     eprint = eprint
@@ -80,6 +77,13 @@ class Jira:
     ISSUE_SEARCH_ENDPOINT='https://{}/rest/api/2/search?{}'
     
     HEADERS = {'content-type': 'application/json'}
+
+    # expands the changelog of each issue and hides all but essential fields
+    # customfield 10109 is the 'story points' field
+    QUERY_STRING_DICT = {
+        'expand': 'changelog',
+        'fields': '-*navigable,customfield_10109'
+    }
             
     def __init__ (self, baseUrl, **kwargs):
         ''' Construct new Jira client '''
@@ -90,10 +94,8 @@ class Jira:
     def get_issues (self, issues):
         '''Generator returning json of all issues'''
 
-        query_string = urlencode({
-            'expand': 'changelog',
-            'fields': '-*navigable,customfield_10109'
-        })
+        search_args = Jira.QUERY_STRING_DICT.copy()
+        query_string = urlencode(search_args)
         
         for n in issues:
             url = Jira.ISSUE_ENDPOINT.format(self.baseUrl, n, query_string)
@@ -111,17 +113,18 @@ class Jira:
             yield json
 
     def get_project_issues (self, projectname):
-
-        query_string = urlencode({
-            'jql': 'project = {} AND issuetype = Story AND status in (Done, Accepted)'.format(projectname),
-            'expand': 'changelog',
-            'fields': '-*navigable,customfield_10109'
+        '''Perform a JQL search and return issues'''
+        jql_query = 'project = {} AND issuetype = Story AND status in (Done, Accepted)'.format(projectname)
+        
+        search_args = Jira.QUERY_STRING_DICT.copy()
+        search_args.update({
+            'jql': jql_query
         })
-
+        query_string = urlencode(search_args)
+        
         url = Jira.ISSUE_SEARCH_ENDPOINT.format(self.baseUrl, query_string)
         Log.debug(url)
 
-        
         r = requests.get(url, auth=(self.username, self.password), headers=Jira.HEADERS)
 
         Log.debug(r.status_code)
