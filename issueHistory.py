@@ -16,125 +16,17 @@ Workflow
 
 '''
 
-from __future__ import print_function
+
 from functools import partial
 import sys
 import argparse
-import requests
 import getpass
-
-import json
-
-from urllib.parse import urlencode
 import dateutil.parser
+import datetime
 
-# globals
-global_DEBUG = 0
-
-class Log:
-    '''Simple logger'''
-
-    def eprint (*args, **kwargs):
-        '''print args to stderr'''
-        print(*args, file=sys.stderr, **kwargs)
-        
-    eprint = eprint
-
-    def error (*msg):
-        '''Log as an error'''
-        Log.eprint('[ERROR]', *msg)
-        
-    def info (*msg):
-        '''Log message when debug >= 0'''
-        if global_DEBUG < 0:
-            return
-        Log.eprint('[INFO]', *msg)
-
-    info = staticmethod(info)
-
-    def debug (*msg):
-        '''Log message when debug >= 1'''
-        if global_DEBUG < 1:
-            return
-        Log.eprint('[DEBUG]', *msg)
-
-    debug = staticmethod(debug)
-        
-    def verbose (*msg):
-        '''Log message when debug >= 2'''
-        if global_DEBUG < 2:
-            return
-        Log.eprint('[VERBOSE]', *msg)
-
-    verbose = staticmethod(verbose)
-
-            
-class Jira:
-
-    # constants
-    ISSUE_ENDPOINT='https://{}/rest/api/2/issue/{}?{}'
-
-    ISSUE_SEARCH_ENDPOINT='https://{}/rest/api/2/search?{}'
-    
-    HEADERS = {'content-type': 'application/json'}
-
-    # expands the changelog of each issue and hides all but essential fields
-    # customfield 10109 is the 'story points' field
-    QUERY_STRING_DICT = {
-        'expand': 'changelog',
-        'fields': '-*navigable,customfield_10109'
-    }
-            
-    def __init__ (self, baseUrl, **kwargs):
-        ''' Construct new Jira client '''
-        self.baseUrl = baseUrl
-        for k in ('username', 'password'):
-            setattr(self, k, kwargs.get(k))
-
-    def get_issues (self, issues):
-        '''Generator returning json of all issues'''
-
-        search_args = Jira.QUERY_STRING_DICT.copy()
-        query_string = urlencode(search_args)
-        
-        for n in issues:
-            url = Jira.ISSUE_ENDPOINT.format(self.baseUrl, n, query_string)
-            Log.debug(url)
-
-            # retrieve parent
-            r = requests.get(url, auth=(self.username, self.password), headers=Jira.HEADERS)
-            Log.debug(r.status_code)
-            
-            # TODO assert issuetype is story
-            r.raise_for_status()
-
-            json = r.json()
-
-            yield json
-
-    def get_project_issues (self, projectname):
-        '''Perform a JQL search and return issues'''
-        jql_query = 'project = {} AND issuetype = Story AND status in (Done, Accepted)'.format(projectname)
-        
-        search_args = Jira.QUERY_STRING_DICT.copy()
-        search_args.update({
-            'jql': jql_query
-        })
-        query_string = urlencode(search_args)
-        
-        url = Jira.ISSUE_SEARCH_ENDPOINT.format(self.baseUrl, query_string)
-        Log.debug(url)
-
-        r = requests.get(url, auth=(self.username, self.password), headers=Jira.HEADERS)
-
-        Log.debug(r.status_code)
-        r.raise_for_status()
-
-        json = r.json()
-
-        # return and process each issue
-        return json['issues']
-
+# project imports
+from log import Log
+from jira import Jira
     
 class CryptoKeys:
     '''Steps to encrypt/decrypt using cryptography package
@@ -156,9 +48,8 @@ class CryptoKeys:
     pass
 
             
-def process_story (story):
+def process_story_cycle_times (story):
     '''Extract tuple containing issuekey, story points, and cycle time from Story'''
-    
     issuekey = story['key']
     points = story['fields'].get('customfield_10109')
                   
@@ -169,13 +60,17 @@ def process_story (story):
                        entry['items'][0].get('to') == '3'
                        or  entry['items'][0].get('to') == '10001'
                    )]
-    # sort by created date so we can use find first In Progress and last Done status
-    sorted_times = sorted(cycle_times)
-    #print(sorted_times)
+
+    start_time = datetime.datetime(datetime.MINYEAR, 1, 1)
+    end_time = datetime.datetime(datetime.MINYEAR, 1, 1)
+    if cycle_times:
+        # sort by created date so we can use find first In Progress and last Done status
+        sorted_times = sorted(cycle_times)
+        #print(sorted_times)
     
-    start_time = sorted_times[0]
-    end_time = sorted_times[-1]
-#    delta = end_time - start_time
+        start_time = sorted_times[0]
+        end_time = sorted_times[-1]
+        #    delta = end_time - start_time
             
     return (issuekey, points, start_time.date(), end_time.date())
 
@@ -185,7 +80,7 @@ if __name__ == '__main__':
 
     # query for specific items or by an entire project
     parser.add_argument('issues', metavar='Issue', nargs='*', help='List of issues to retrieve')
-    parser.add_argument('-p', '--project', metavar='Project', help='Project name')
+    parser.add_argument('-p', '--project', metavar='Project', action='append', help='Project name')
     
     parser.add_argument('-o', '--outfile', metavar='Output', nargs='?', type=argparse.FileType('w'), help='Output filename, default stdout', default=sys.stdout)
     parser.add_argument('-b', '--base_url', metavar='Base URL', help='Jira Cloud Base URL', default='sailpoint.atlassian.net')
@@ -195,39 +90,37 @@ if __name__ == '__main__':
     
     args = parser.parse_args()
 
-    # Setup variables
-    base_url = args.base_url
-    project = args.project
-    username=args.user
-    password=args.password
-
-    outfile=args.outfile
-
     if args.d:
-        global_DEBUG = args.d
-    
+        Log.global_DEBUG = args.d
+
+    # we will be updating these later
+    password = args.password
+    outfile  = args.outfile
+        
     ## Debugging
-    Log.debug('Base URL: ', base_url)
-    Log.debug('Project: ', project)
-    Log.debug('User: ', username)
-    Log.debug('Output: ',outfile)
-    Log.verbose('Debug flag: ', global_DEBUG)
+    Log.debug('Base URL: ', args.base_url)
+    Log.debug('Project: ',  args.project)
+    Log.debug('Issues: ',  args.issues)
+    Log.debug('User: ',     args.user)
+    Log.debug('Output: ',   args.outfile)
+    Log.verbose('Debug flag: ', Log.global_DEBUG)
     ##
 
-    if project is None and args.issues is None:
+    if args.project is None and len(args.issues) == 0:
         raise Exception('specify a project or list of issues')
-
-    if project is None and args.issues is None:
-        raise Exception('missing issues')
     
     # grab password from stdin
-    if not password:
+    if not args.password:
         password = getpass.getpass()
         
-    jira = Jira(base_url, username=username, password=password)
+    jira = Jira(args.base_url, username=args.user, password=password)
 
-    if project is not None:
-        get_issues = partial(jira.get_project_issues, project)
+    if args.project is not None:
+        projects = ', '.join(args.project)
+        statuses = ', '.join(['Done', 'Accepted'])
+        jql_query = 'project in ({}) AND issuetype = Story AND status in ({})'.format(projects, statuses)
+
+        get_issues = partial(jira.get_project_issues, jql_query)
     else:
         get_issues = partial(jira.get_issues, args.issues)
 
@@ -236,11 +129,14 @@ if __name__ == '__main__':
 
     Log.info('Retrieving issues...')
 
+    # REFACTOR - either: provide operations, such as -cycletime, or create multiple __main__ scripts for each operation
+
     outfile.write('issue,storypoints,start,end\n')
     try:
 
         for story in get_issues():
-            outfile.write(','.join(map(str, process_story(story))))
+            #print(story.get('fields'))
+            outfile.write(','.join(map(str, process_story_cycle_times(story))))
             outfile.write('\n')
     except Exception:
         Log.error('Unexpected error:', sys.exc_info()[0])
