@@ -1,18 +1,12 @@
 #!bin/python
 
 '''
-issueHistory.py
+cycle_times.py
 
 Author: Andrew Hamlin
 
 Description: A command line tool to export changelog history using Jira Cloud REST API. The
-goal is to correlate the estimated time with cycle time of the sub-tasks of an issue.
-
-Workflow
- + Filter a project/sprint for stories
- + Retrieve story points field (customfield_10109)
- + Retrieve start date (1st In Progress) and end date (last Done)
- + dump fields in CSV format
+goal is to correlate the estimated cycle time with the estimated story points assigned.
 
 '''
 
@@ -28,25 +22,6 @@ import datetime
 from log import Log
 from jira import Jira
     
-class CryptoKeys:
-    '''Steps to encrypt/decrypt using cryptography package
-
-    from cryptography.hazmat.primitives import serialization
-    from cryptography.hazmat.backends import default_backend
-    from cryptography.hazmat.primitives.asymmetric import padding
-    from cryptography.hazmat.primitives import hashes
-
-
-    with open("/Users/andrew.hamlin/.ssh/id_rsa.pub", "rb") as key_file:
-        pub_key = serialization.load_ssh_public_key(key_file.read(), default_backend())
-    with open("/Users/andrew.hamlin/.ssh/id_rsa", "rb") as key_file:   
-        pri_key = serialization.load_pem_private_key(key_file.read(), password=b"PASSWORDHERE", backend=default_backend())
-
-    cipher = pub_key.encrypt(b"hello", padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA1()), algorithm=hashes.SHA1(), label=None))
-    pri_key.decrypt(cipher, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA1()), algorithm=hashes.SHA1(), label=None))
-    '''
-    pass
-
             
 def process_story_cycle_times (story):
     '''Extract tuple containing issuekey, story points, and cycle time from Story'''
@@ -135,7 +110,7 @@ if __name__ == '__main__':
     try:
 
         for story in get_issues():
-            #print(story.get('fields'))
+            print(story.get('fields'))
             outfile.write(','.join(map(str, process_story_cycle_times(story))))
             outfile.write('\n')
     except Exception:

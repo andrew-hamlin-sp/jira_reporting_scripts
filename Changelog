@@ -1,3 +1,8 @@
+2017-03-24  Andrew Hamlin  <andrew.hamlin@sailpoint.com>
+	Renamed as cycle_times.py
+	Refactored supporting library for simple logging
+	Refactored supporting library for Jira REST API
+
 2017-03-06  Andrew Hamlin  <andrew.hamlin@sailpoint.com>
 
 	Added search by project key

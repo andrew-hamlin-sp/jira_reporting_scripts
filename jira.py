@@ -16,9 +16,10 @@ class Jira:
 
     # expands the changelog of each issue and hides all but essential fields
     # customfield 10109 is the 'story points' field
+    # customfield 10016 is the 'iteration' or 'sprint' field, an array
     QUERY_STRING_DICT = {
         'expand': 'changelog',
-        'fields': '-*navigable,customfield_10109'
+        'fields': '-*navigable,customfield_10109,customfield_10016'
     }
             
     def __init__ (self, baseUrl, **kwargs):
