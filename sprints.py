@@ -1,55 +1,48 @@
 #!bin/python
-
 '''
-cycle_times.py
+sprints.py
 
 Author: Andrew Hamlin
 
-Description: A command line tool to export changelog history using Jira Cloud REST API. The
-goal is to correlate the estimated cycle time with the estimated story points assigned.
-
+Description: A command line tool to export data using Jira Cloud REST API. The goal
+is to flatten exported data by iterations (sprint).
 '''
-
 
 from functools import partial
 import sys
 import argparse
+import re
 import getpass
-import dateutil.parser
-import datetime
 
 # project imports
 from log import Log
 from jira import Jira
-    
-            
-def process_story_cycle_times (story):
-    '''Extract tuple containing issuekey, story points, and cycle time from Story'''
+
+def sprint_info (sprint):
+    '''Return object from string representation: 'com.atlassian.greenhopper.service.sprint.Sprint@be7f5f[id=82,rapidViewId=52,state=CLOSED,name=Chambers Sprint 9,goal=<null>,startDate=2016-04-25T10:44:22.273-05:00,endDate=2016-05-09T10:44:00.000-05:00,completeDate=2016-05-09T10:48:04.212-05:00,sequence=82]'
+    '''
+    m = re.search('\[(.+)\]', sprint)
+    if m:
+        return dict(e.split('=') for e in m.group(1).split(','))
+    return None
+
+def process_story_sprints (story):
+    '''Extract tuple containing sprint, issuekey, and story points from Story'''
     issuekey = story['key']
     points = story['fields'].get('customfield_10109')
-                  
-    cycle_times = [dateutil.parser.parse(entry['created'])
-                   for entry in story['changelog'].get('histories')
-                   if entry['items'][0].get('field') == 'status'
-                   and (
-                       entry['items'][0].get('to') == '3'
-                       or  entry['items'][0].get('to') == '10001'
-                   )]
 
-    start_time = datetime.datetime(datetime.MINYEAR, 1, 1)
-    end_time = datetime.datetime(datetime.MINYEAR, 1, 1)
-    if cycle_times:
-        # sort by created date so we can use find first In Progress and last Done status
-        sorted_times = sorted(cycle_times)
-        #print(sorted_times)
-    
-        start_time = sorted_times[0]
-        end_time = sorted_times[-1]
-        #    delta = end_time - start_time
-            
-    return (issuekey, points, start_time.date(), end_time.date())
+    sprints = story['fields'].get('customfield_10016')
 
-            
+    if sprints is None:
+       yield ('', issuekey, points)
+       return
+       
+    # Jira returns list of Sprints as an array of strings that are Java object
+    infos = [sprint_info(sprint) for sprint in sprints]
+
+    for info in infos:
+        yield (info['name'], issuekey, points)
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Export detailed history of a project to CSV file')
 
@@ -92,8 +85,7 @@ if __name__ == '__main__':
 
     if args.project is not None:
         projects = ', '.join(args.project)
-        statuses = ', '.join(['Done', 'Accepted'])
-        jql_query = 'project in ({}) AND issuetype = Story AND status in ({})'.format(projects, statuses)
+        jql_query = 'project in ({}) AND issuetype = Story'.format(projects)
 
         get_issues = partial(jira.get_project_issues, jql_query)
     else:
@@ -104,15 +96,15 @@ if __name__ == '__main__':
 
     Log.info('Retrieving issues...')
 
-    # REFACTOR - either: provide operations, such as -cycletime, or create multiple __main__ scripts for each operation
-
-    outfile.write('issue,storypoints,start,end\n')
+    outfile.write('sprint,issue,storypoints\n')
     try:
 
         for story in get_issues():
             #print(story.get('fields'))
-            outfile.write(','.join(map(str, process_story_cycle_times(story))))
-            outfile.write('\n')
+            for info in process_story_sprints(story):
+            #outfile.write(','.join(map(str, process_story_sprints(story))))
+                outfile.write(','.join(map(str, info)))
+                outfile.write('\n')
     except Exception:
         Log.error('Unexpected error:', sys.exc_info()[0])
         raise
