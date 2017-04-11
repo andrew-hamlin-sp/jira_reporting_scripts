@@ -2,6 +2,7 @@
 import requests
 import json
 from urllib.parse import urlencode
+from requests.auth import HTTPBasicAuth
 
 from log import Log
 
@@ -25,8 +26,10 @@ class Jira:
     def __init__ (self, baseUrl, **kwargs):
         ''' Construct new Jira client '''
         self.baseUrl = baseUrl
-        for k in ('username', 'password'):
+        for k in ('username', 'password', 'auth'):
             setattr(self, k, kwargs.get(k))
+
+        #self.auth=HTTPBasicAuth(self.username, self.password)
 
     def get_issues (self, issues):
         '''Generator returning json of all issues'''

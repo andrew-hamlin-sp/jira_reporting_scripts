@@ -6,7 +6,8 @@ class Log:
     '''Simple logger'''
 
     # globals
-    global_DEBUG = 0
+    debugLevel = 0
+    
     
     def eprint (*args, **kwargs):
         '''print args to stderr'''
@@ -17,10 +18,12 @@ class Log:
     def error (*msg):
         '''Log as an error'''
         Log.eprint('[ERROR]', *msg)
+
+    error = staticmethod(error)
         
     def info (*msg):
         '''Log message when debug >= 0'''
-        if Log.global_DEBUG < 0:
+        if Log.debugLevel < 0:
             return
         Log.eprint('[INFO]', *msg)
 
@@ -28,7 +31,7 @@ class Log:
 
     def debug (*msg):
         '''Log message when debug >= 1'''
-        if Log.global_DEBUG < 1:
+        if Log.debugLevel < 1:
             return
         Log.eprint('[DEBUG]', *msg)
 
@@ -36,7 +39,7 @@ class Log:
         
     def verbose (*msg):
         '''Log message when debug >= 2'''
-        if Log.global_DEBUG < 2:
+        if Log.debugLevel < 2:
             return
         Log.eprint('[VERBOSE]', *msg)
 

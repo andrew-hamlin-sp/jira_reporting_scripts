@@ -1,5 +1,11 @@
 Developer notes for future stuff
 
+Goals
+ - retrieve data from jira and export to csv format for use within Excel (pivot tables, etc)
+ - convert datetime values to formats usable by Excel
+ - expand jira multi-valued fields to span rows (value,sprint1,sprint2 => value,sprint1\nvalue,sprint2)
+ - batch various conversions into useful commands
+
 
     '''Steps to encrypt/decrypt using cryptography package
 
