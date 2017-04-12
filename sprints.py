@@ -46,6 +46,8 @@ def process_story_sprints (story):
     '''Extract tuple containing sprint, issuekey, and story points from Story'''
     issuekey = story['key']
     points = story['fields'].get('customfield_10109')
+    if not points:
+        points = 0.0
 
     sprints = story['fields'].get('customfield_10016')
 

@@ -86,7 +86,7 @@ if __name__ == "__main__":
         Log.info('Opening outfile')
         outfile = open(args.outfile, 'w')
 
-    outfile.write(processor.header)
+    outfile.write(processor.header + '\n')
 
     ## TODO Use the CSV module
     for entry in processor.process():

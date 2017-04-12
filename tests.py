@@ -48,6 +48,15 @@ STORY_NO_SPRINT={
     }
 }
 
+STORY_NO_POINTS={
+    'key':123,
+    'fields':{
+        'customfield_10109': None,
+        'customfield_10016': [
+            SPRINT2
+        ]
+    }
+}
 
 class TestSprints(unittest.TestCase):
 
@@ -61,6 +70,10 @@ class TestSprints(unittest.TestCase):
     def test_process_story_sprints_NONE(self):
         r = next(process_story_sprints(STORY_NO_SPRINT))
         self.assertTupleEqual((123, 3.0, ''), r)
+
+    def test_process_story_sprints_NOPTS(self):
+        r = next(process_story_sprints(STORY_NO_POINTS))
+        self.assertTupleEqual((123, None, 'Chambers Sprint 10'), r)
 
     def test_process_story_cycle_times(self):
         r = next(process_story_cycle_times(STORY))
