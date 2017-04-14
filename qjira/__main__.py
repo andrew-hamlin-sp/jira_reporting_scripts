@@ -9,14 +9,9 @@ import sys
 import argparse
 import getpass
 
-from log import Log
-from jira import Jira
-from cycle_times import CycleTime
-from sprints import Velocity
-    
+import qjira
 
-if __name__ == "__main__":
-
+def main():
     # process command line arguments
 
     parser_common = argparse.ArgumentParser(add_help=False)
@@ -56,17 +51,17 @@ if __name__ == "__main__":
     parser_cycletime = subparsers.add_parser('cycletime', aliases=['c'],
                                              parents=[parser_common],
                                              help='Produce cycletime data')
-    parser_cycletime.set_defaults(func=CycleTime)
+    parser_cycletime.set_defaults(func=qjira.CycleTime)
 
     parser_velocity = subparsers.add_parser('velocity', aliases=['v'],
                                             parents=[parser_common],
                                             help='Produce velocity data')
-    parser_velocity.set_defaults(func=Velocity)
+    parser_velocity.set_defaults(func=qjira.Velocity)
 
     args = parser.parse_args()
     
     if args.d:
-        Log.debugLevel = args.d
+        qjira.Log.debugLevel = args.d
 
     if not args.user:
         args.user = getpass.getuser()
@@ -75,7 +70,7 @@ if __name__ == "__main__":
         args.password = getpass.getpass()
         
     # TODO: store credentials in a user protected file and pass in as 'auth=XXX' 
-    jira = Jira(args.base, username=args.user, password=args.password)
+    jira = qjira.Jira(args.base, username=args.user, password=args.password)
 
     processor = args.func(args, jira)
 
@@ -93,4 +88,8 @@ if __name__ == "__main__":
         outfile.write(','.join(map(str, entry)) + '\n')
 
     outfile.close()
-                  
+
+
+if __name__ == "__main__":
+    main()
+

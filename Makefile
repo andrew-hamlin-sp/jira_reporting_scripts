@@ -13,6 +13,9 @@ init: requirements.txt
 	pip install -r requirements.txt
 
 test:
-	python tests.py
+	cd tests && python tests.py
 
-.PHONY:
+install:
+	@echo run setuptools
+
+.PHONY: all init test install

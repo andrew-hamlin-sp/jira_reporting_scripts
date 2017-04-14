@@ -1,0 +1,1108 @@
+{
+  "expand": "renderedFields,names,schema,operations,editmeta,changelog,versionedRepresentations",
+  "id": "59458",
+  "self": "https://sailpoint.atlassian.net/rest/api/2/issue/59458",
+  "key": "IIQCB-717",
+  "fields": {
+    "customfield_15000": null,
+    "customfield_13100": null,
+    "fixVersions": [
+      {
+        "self": "https://sailpoint.atlassian.net/rest/api/2/version/15600",
+        "id": "15600",
+        "description": "",
+        "name": "7.2",
+        "archived": false,
+        "released": false
+      }
+    ],
+    "customfield_13500": null,
+    "customfield_10111": null,
+    "customfield_11201": null,
+    "customfield_13502": null,
+    "customfield_11202": null,
+    "customfield_13501": null,
+    "customfield_12800": null,
+    "customfield_10104": [],
+    "customfield_14704": null,
+    "customfield_10105": null,
+    "customfield_14705": null,
+    "customfield_12802": null,
+    "customfield_10106": null,
+    "customfield_14702": null,
+    "customfield_12801": null,
+    "customfield_10107": null,
+    "customfield_14703": null,
+    "customfield_10108": null,
+    "customfield_12803": null,
+    "customfield_10109": 13.0,
+    "customfield_14706": null,
+    "customfield_14707": null,
+    "lastViewed": "2017-02-23T10:35:39.393-0600",
+    "customfield_12000": null,
+    "customfield_14300": "https://harbor.sailpoint.com/docs/DOC-18340",
+    "customfield_12400": "{}",
+    "customfield_14700": null,
+    "customfield_14701": null,
+    "labels": [],
+    "customfield_10103": null,
+    "customfield_11700": null,
+    "customfield_13603": null,
+    "customfield_13602": null,
+    "customfield_11702": null,
+    "customfield_13605": null,
+    "customfield_11701": null,
+    "customfield_13604": null,
+    "customfield_11704": null,
+    "customfield_13607": null,
+    "aggregatetimeoriginalestimate": 198000,
+    "timeestimate": null,
+    "customfield_11703": null,
+    "customfield_13606": null,
+    "customfield_11706": null,
+    "customfield_11705": null,
+    "customfield_13608": null,
+    "issuelinks": [],
+    "assignee": {
+      "self": "https://sailpoint.atlassian.net/rest/api/2/user?username=andrew.hamlin",
+      "name": "andrew.hamlin",
+      "key": "andrew.hamlin",
+      "emailAddress": "andrew.hamlin@sailpoint.com",
+      "avatarUrls": {
+        "48x48": "https://sailpoint.atlassian.net/secure/useravatar?avatarId=10336",
+        "24x24": "https://sailpoint.atlassian.net/secure/useravatar?size=small&avatarId=10336",
+        "16x16": "https://sailpoint.atlassian.net/secure/useravatar?size=xsmall&avatarId=10336",
+        "32x32": "https://sailpoint.atlassian.net/secure/useravatar?size=medium&avatarId=10336"
+      },
+      "displayName": "Andrew Hamlin",
+      "active": true,
+      "timeZone": "America/Chicago"
+    },
+    "status": {
+      "self": "https://sailpoint.atlassian.net/rest/api/2/status/10001",
+      "description": "",
+      "iconUrl": "https://sailpoint.atlassian.net/images/icons/status_generic.gif",
+      "name": "Done",
+      "id": "10001",
+      "statusCategory": {
+        "self": "https://sailpoint.atlassian.net/rest/api/2/statuscategory/3",
+        "id": 3,
+        "key": "done",
+        "colorName": "green",
+        "name": "Done"
+      }
+    },
+    "customfield_15100": null,
+    "customfield_15103": null,
+    "customfield_15104": null,
+    "customfield_13201": null,
+    "customfield_15101": null,
+    "customfield_13200": null,
+    "customfield_15102": null,
+    "customfield_11300": null,
+    "customfield_13601": null,
+    "customfield_13600": null,
+    "customfield_12503": null,
+    "customfield_14407": null,
+    "customfield_12502": null,
+    "customfield_12901": null,
+    "customfield_14405": null,
+    "customfield_12900": null,
+    "customfield_14406": null,
+    "aggregatetimeestimate": 0,
+    "creator": {
+      "self": "https://sailpoint.atlassian.net/rest/api/2/user?username=andrew.hamlin",
+      "name": "andrew.hamlin",
+      "key": "andrew.hamlin",
+      "emailAddress": "andrew.hamlin@sailpoint.com",
+      "avatarUrls": {
+        "48x48": "https://sailpoint.atlassian.net/secure/useravatar?avatarId=10336",
+        "24x24": "https://sailpoint.atlassian.net/secure/useravatar?size=small&avatarId=10336",
+        "16x16": "https://sailpoint.atlassian.net/secure/useravatar?size=xsmall&avatarId=10336",
+        "32x32": "https://sailpoint.atlassian.net/secure/useravatar?size=medium&avatarId=10336"
+      },
+      "displayName": "Andrew Hamlin",
+      "active": true,
+      "timeZone": "America/Chicago"
+    },
+    "customfield_14000": null,
+    "subtasks": [
+      {
+        "id": "59464",
+        "key": "IIQCB-718",
+        "self": "https://sailpoint.atlassian.net/rest/api/2/issue/59464",
+        "fields": {
+          "summary": "Dev: Backend PolicyViolationDTO/PolicyDTO model objects",
+          "status": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/status/10001",
+            "description": "",
+            "iconUrl": "https://sailpoint.atlassian.net/images/icons/status_generic.gif",
+            "name": "Done",
+            "id": "10001",
+            "statusCategory": {
+              "self": "https://sailpoint.atlassian.net/rest/api/2/statuscategory/3",
+              "id": 3,
+              "key": "done",
+              "colorName": "green",
+              "name": "Done"
+            }
+          },
+          "issuetype": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/issuetype/10001",
+            "id": "10001",
+            "description": "The sub-task of the issue",
+            "iconUrl": "https://sailpoint.atlassian.net/secure/viewavatar?size=xsmall&avatarId=10316&avatarType=issuetype",
+            "name": "Sub-task",
+            "subtask": true,
+            "avatarId": 10316
+          }
+        }
+      },
+      {
+        "id": "59465",
+        "key": "IIQCB-719",
+        "self": "https://sailpoint.atlassian.net/rest/api/2/issue/59465",
+        "fields": {
+          "summary": "Dev: Backend REST/SErvice layer ",
+          "status": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/status/10001",
+            "description": "",
+            "iconUrl": "https://sailpoint.atlassian.net/images/icons/status_generic.gif",
+            "name": "Done",
+            "id": "10001",
+            "statusCategory": {
+              "self": "https://sailpoint.atlassian.net/rest/api/2/statuscategory/3",
+              "id": 3,
+              "key": "done",
+              "colorName": "green",
+              "name": "Done"
+            }
+          },
+          "issuetype": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/issuetype/10001",
+            "id": "10001",
+            "description": "The sub-task of the issue",
+            "iconUrl": "https://sailpoint.atlassian.net/secure/viewavatar?size=xsmall&avatarId=10316&avatarType=issuetype",
+            "name": "Sub-task",
+            "subtask": true,
+            "avatarId": 10316
+          }
+        }
+      },
+      {
+        "id": "59466",
+        "key": "IIQCB-720",
+        "self": "https://sailpoint.atlassian.net/rest/api/2/issue/59466",
+        "fields": {
+          "summary": "Dev: Frontend model objects",
+          "status": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/status/10001",
+            "description": "",
+            "iconUrl": "https://sailpoint.atlassian.net/images/icons/status_generic.gif",
+            "name": "Done",
+            "id": "10001",
+            "statusCategory": {
+              "self": "https://sailpoint.atlassian.net/rest/api/2/statuscategory/3",
+              "id": 3,
+              "key": "done",
+              "colorName": "green",
+              "name": "Done"
+            }
+          },
+          "issuetype": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/issuetype/10001",
+            "id": "10001",
+            "description": "The sub-task of the issue",
+            "iconUrl": "https://sailpoint.atlassian.net/secure/viewavatar?size=xsmall&avatarId=10316&avatarType=issuetype",
+            "name": "Sub-task",
+            "subtask": true,
+            "avatarId": 10316
+          }
+        }
+      },
+      {
+        "id": "59467",
+        "key": "IIQCB-721",
+        "self": "https://sailpoint.atlassian.net/rest/api/2/issue/59467",
+        "fields": {
+          "summary": "Dev: Frontend Service",
+          "status": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/status/10001",
+            "description": "",
+            "iconUrl": "https://sailpoint.atlassian.net/images/icons/status_generic.gif",
+            "name": "Done",
+            "id": "10001",
+            "statusCategory": {
+              "self": "https://sailpoint.atlassian.net/rest/api/2/statuscategory/3",
+              "id": 3,
+              "key": "done",
+              "colorName": "green",
+              "name": "Done"
+            }
+          },
+          "issuetype": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/issuetype/10001",
+            "id": "10001",
+            "description": "The sub-task of the issue",
+            "iconUrl": "https://sailpoint.atlassian.net/secure/viewavatar?size=xsmall&avatarId=10316&avatarType=issuetype",
+            "name": "Sub-task",
+            "subtask": true,
+            "avatarId": 10316
+          }
+        }
+      },
+      {
+        "id": "59468",
+        "key": "IIQCB-722",
+        "self": "https://sailpoint.atlassian.net/rest/api/2/issue/59468",
+        "fields": {
+          "summary": "Dev: Frontend HTML/Controller ",
+          "status": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/status/10001",
+            "description": "",
+            "iconUrl": "https://sailpoint.atlassian.net/images/icons/status_generic.gif",
+            "name": "Done",
+            "id": "10001",
+            "statusCategory": {
+              "self": "https://sailpoint.atlassian.net/rest/api/2/statuscategory/3",
+              "id": 3,
+              "key": "done",
+              "colorName": "green",
+              "name": "Done"
+            }
+          },
+          "issuetype": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/issuetype/10001",
+            "id": "10001",
+            "description": "The sub-task of the issue",
+            "iconUrl": "https://sailpoint.atlassian.net/secure/viewavatar?size=xsmall&avatarId=10316&avatarType=issuetype",
+            "name": "Sub-task",
+            "subtask": true,
+            "avatarId": 10316
+          }
+        }
+      },
+      {
+        "id": "59469",
+        "key": "IIQCB-723",
+        "self": "https://sailpoint.atlassian.net/rest/api/2/issue/59469",
+        "fields": {
+          "summary": "Dev: Backend REST/Service for fetching filters",
+          "status": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/status/10001",
+            "description": "",
+            "iconUrl": "https://sailpoint.atlassian.net/images/icons/status_generic.gif",
+            "name": "Done",
+            "id": "10001",
+            "statusCategory": {
+              "self": "https://sailpoint.atlassian.net/rest/api/2/statuscategory/3",
+              "id": 3,
+              "key": "done",
+              "colorName": "green",
+              "name": "Done"
+            }
+          },
+          "issuetype": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/issuetype/10001",
+            "id": "10001",
+            "description": "The sub-task of the issue",
+            "iconUrl": "https://sailpoint.atlassian.net/secure/viewavatar?size=xsmall&avatarId=10316&avatarType=issuetype",
+            "name": "Sub-task",
+            "subtask": true,
+            "avatarId": 10316
+          }
+        }
+      },
+      {
+        "id": "59470",
+        "key": "IIQCB-724",
+        "self": "https://sailpoint.atlassian.net/rest/api/2/issue/59470",
+        "fields": {
+          "summary": "Dev: Backed REST/Service for filtering results",
+          "status": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/status/10001",
+            "description": "",
+            "iconUrl": "https://sailpoint.atlassian.net/images/icons/status_generic.gif",
+            "name": "Done",
+            "id": "10001",
+            "statusCategory": {
+              "self": "https://sailpoint.atlassian.net/rest/api/2/statuscategory/3",
+              "id": 3,
+              "key": "done",
+              "colorName": "green",
+              "name": "Done"
+            }
+          },
+          "issuetype": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/issuetype/10001",
+            "id": "10001",
+            "description": "The sub-task of the issue",
+            "iconUrl": "https://sailpoint.atlassian.net/secure/viewavatar?size=xsmall&avatarId=10316&avatarType=issuetype",
+            "name": "Sub-task",
+            "subtask": true,
+            "avatarId": 10316
+          }
+        }
+      },
+      {
+        "id": "59471",
+        "key": "IIQCB-725",
+        "self": "https://sailpoint.atlassian.net/rest/api/2/issue/59471",
+        "fields": {
+          "summary": "Dev: Frontend Service/Ctrl for adding/sending filters",
+          "status": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/status/10001",
+            "description": "",
+            "iconUrl": "https://sailpoint.atlassian.net/images/icons/status_generic.gif",
+            "name": "Done",
+            "id": "10001",
+            "statusCategory": {
+              "self": "https://sailpoint.atlassian.net/rest/api/2/statuscategory/3",
+              "id": 3,
+              "key": "done",
+              "colorName": "green",
+              "name": "Done"
+            }
+          },
+          "issuetype": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/issuetype/10001",
+            "id": "10001",
+            "description": "The sub-task of the issue",
+            "iconUrl": "https://sailpoint.atlassian.net/secure/viewavatar?size=xsmall&avatarId=10316&avatarType=issuetype",
+            "name": "Sub-task",
+            "subtask": true,
+            "avatarId": 10316
+          }
+        }
+      },
+      {
+        "id": "59472",
+        "key": "IIQCB-726",
+        "self": "https://sailpoint.atlassian.net/rest/api/2/issue/59472",
+        "fields": {
+          "summary": "Write Test Plan",
+          "status": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/status/10001",
+            "description": "",
+            "iconUrl": "https://sailpoint.atlassian.net/images/icons/status_generic.gif",
+            "name": "Done",
+            "id": "10001",
+            "statusCategory": {
+              "self": "https://sailpoint.atlassian.net/rest/api/2/statuscategory/3",
+              "id": 3,
+              "key": "done",
+              "colorName": "green",
+              "name": "Done"
+            }
+          },
+          "issuetype": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/issuetype/10001",
+            "id": "10001",
+            "description": "The sub-task of the issue",
+            "iconUrl": "https://sailpoint.atlassian.net/secure/viewavatar?size=xsmall&avatarId=10316&avatarType=issuetype",
+            "name": "Sub-task",
+            "subtask": true,
+            "avatarId": 10316
+          }
+        }
+      },
+      {
+        "id": "59473",
+        "key": "IIQCB-727",
+        "self": "https://sailpoint.atlassian.net/rest/api/2/issue/59473",
+        "fields": {
+          "summary": "Test: Verify Firefox",
+          "status": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/status/10001",
+            "description": "",
+            "iconUrl": "https://sailpoint.atlassian.net/images/icons/status_generic.gif",
+            "name": "Done",
+            "id": "10001",
+            "statusCategory": {
+              "self": "https://sailpoint.atlassian.net/rest/api/2/statuscategory/3",
+              "id": 3,
+              "key": "done",
+              "colorName": "green",
+              "name": "Done"
+            }
+          },
+          "issuetype": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/issuetype/10001",
+            "id": "10001",
+            "description": "The sub-task of the issue",
+            "iconUrl": "https://sailpoint.atlassian.net/secure/viewavatar?size=xsmall&avatarId=10316&avatarType=issuetype",
+            "name": "Sub-task",
+            "subtask": true,
+            "avatarId": 10316
+          }
+        }
+      },
+      {
+        "id": "59474",
+        "key": "IIQCB-728",
+        "self": "https://sailpoint.atlassian.net/rest/api/2/issue/59474",
+        "fields": {
+          "summary": "Test: Verify IE + JAWS",
+          "status": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/status/10001",
+            "description": "",
+            "iconUrl": "https://sailpoint.atlassian.net/images/icons/status_generic.gif",
+            "name": "Done",
+            "id": "10001",
+            "statusCategory": {
+              "self": "https://sailpoint.atlassian.net/rest/api/2/statuscategory/3",
+              "id": 3,
+              "key": "done",
+              "colorName": "green",
+              "name": "Done"
+            }
+          },
+          "issuetype": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/issuetype/10001",
+            "id": "10001",
+            "description": "The sub-task of the issue",
+            "iconUrl": "https://sailpoint.atlassian.net/secure/viewavatar?size=xsmall&avatarId=10316&avatarType=issuetype",
+            "name": "Sub-task",
+            "subtask": true,
+            "avatarId": 10316
+          }
+        }
+      },
+      {
+        "id": "59475",
+        "key": "IIQCB-729",
+        "self": "https://sailpoint.atlassian.net/rest/api/2/issue/59475",
+        "fields": {
+          "summary": "Test: Verify Chrome",
+          "status": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/status/10001",
+            "description": "",
+            "iconUrl": "https://sailpoint.atlassian.net/images/icons/status_generic.gif",
+            "name": "Done",
+            "id": "10001",
+            "statusCategory": {
+              "self": "https://sailpoint.atlassian.net/rest/api/2/statuscategory/3",
+              "id": 3,
+              "key": "done",
+              "colorName": "green",
+              "name": "Done"
+            }
+          },
+          "issuetype": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/issuetype/10001",
+            "id": "10001",
+            "description": "The sub-task of the issue",
+            "iconUrl": "https://sailpoint.atlassian.net/secure/viewavatar?size=xsmall&avatarId=10316&avatarType=issuetype",
+            "name": "Sub-task",
+            "subtask": true,
+            "avatarId": 10316
+          }
+        }
+      },
+      {
+        "id": "59476",
+        "key": "IIQCB-730",
+        "self": "https://sailpoint.atlassian.net/rest/api/2/issue/59476",
+        "fields": {
+          "summary": "Test: Mobile (Win)",
+          "status": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/status/10001",
+            "description": "",
+            "iconUrl": "https://sailpoint.atlassian.net/images/icons/status_generic.gif",
+            "name": "Done",
+            "id": "10001",
+            "statusCategory": {
+              "self": "https://sailpoint.atlassian.net/rest/api/2/statuscategory/3",
+              "id": 3,
+              "key": "done",
+              "colorName": "green",
+              "name": "Done"
+            }
+          },
+          "issuetype": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/issuetype/10001",
+            "id": "10001",
+            "description": "The sub-task of the issue",
+            "iconUrl": "https://sailpoint.atlassian.net/secure/viewavatar?size=xsmall&avatarId=10316&avatarType=issuetype",
+            "name": "Sub-task",
+            "subtask": true,
+            "avatarId": 10316
+          }
+        }
+      },
+      {
+        "id": "59477",
+        "key": "IIQCB-731",
+        "self": "https://sailpoint.atlassian.net/rest/api/2/issue/59477",
+        "fields": {
+          "summary": "Test: Mobile (iPad)",
+          "status": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/status/10001",
+            "description": "",
+            "iconUrl": "https://sailpoint.atlassian.net/images/icons/status_generic.gif",
+            "name": "Done",
+            "id": "10001",
+            "statusCategory": {
+              "self": "https://sailpoint.atlassian.net/rest/api/2/statuscategory/3",
+              "id": 3,
+              "key": "done",
+              "colorName": "green",
+              "name": "Done"
+            }
+          },
+          "issuetype": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/issuetype/10001",
+            "id": "10001",
+            "description": "The sub-task of the issue",
+            "iconUrl": "https://sailpoint.atlassian.net/secure/viewavatar?size=xsmall&avatarId=10316&avatarType=issuetype",
+            "name": "Sub-task",
+            "subtask": true,
+            "avatarId": 10316
+          }
+        }
+      },
+      {
+        "id": "59478",
+        "key": "IIQCB-732",
+        "self": "https://sailpoint.atlassian.net/rest/api/2/issue/59478",
+        "fields": {
+          "summary": "Test: Write automated tests",
+          "status": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/status/10001",
+            "description": "",
+            "iconUrl": "https://sailpoint.atlassian.net/images/icons/status_generic.gif",
+            "name": "Done",
+            "id": "10001",
+            "statusCategory": {
+              "self": "https://sailpoint.atlassian.net/rest/api/2/statuscategory/3",
+              "id": 3,
+              "key": "done",
+              "colorName": "green",
+              "name": "Done"
+            }
+          },
+          "issuetype": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/issuetype/10001",
+            "id": "10001",
+            "description": "The sub-task of the issue",
+            "iconUrl": "https://sailpoint.atlassian.net/secure/viewavatar?size=xsmall&avatarId=10316&avatarType=issuetype",
+            "name": "Sub-task",
+            "subtask": true,
+            "avatarId": 10316
+          }
+        }
+      },
+      {
+        "id": "59479",
+        "key": "IIQCB-733",
+        "self": "https://sailpoint.atlassian.net/rest/api/2/issue/59479",
+        "fields": {
+          "summary": "Add test cases in qTest",
+          "status": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/status/10001",
+            "description": "",
+            "iconUrl": "https://sailpoint.atlassian.net/images/icons/status_generic.gif",
+            "name": "Done",
+            "id": "10001",
+            "statusCategory": {
+              "self": "https://sailpoint.atlassian.net/rest/api/2/statuscategory/3",
+              "id": 3,
+              "key": "done",
+              "colorName": "green",
+              "name": "Done"
+            }
+          },
+          "issuetype": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/issuetype/10001",
+            "id": "10001",
+            "description": "The sub-task of the issue",
+            "iconUrl": "https://sailpoint.atlassian.net/secure/viewavatar?size=xsmall&avatarId=10316&avatarType=issuetype",
+            "name": "Sub-task",
+            "subtask": true,
+            "avatarId": 10316
+          }
+        }
+      },
+      {
+        "id": "59480",
+        "key": "IIQCB-734",
+        "self": "https://sailpoint.atlassian.net/rest/api/2/issue/59480",
+        "fields": {
+          "summary": "Update design doc",
+          "status": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/status/10001",
+            "description": "",
+            "iconUrl": "https://sailpoint.atlassian.net/images/icons/status_generic.gif",
+            "name": "Done",
+            "id": "10001",
+            "statusCategory": {
+              "self": "https://sailpoint.atlassian.net/rest/api/2/statuscategory/3",
+              "id": 3,
+              "key": "done",
+              "colorName": "green",
+              "name": "Done"
+            }
+          },
+          "issuetype": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/issuetype/10001",
+            "id": "10001",
+            "description": "The sub-task of the issue",
+            "iconUrl": "https://sailpoint.atlassian.net/secure/viewavatar?size=xsmall&avatarId=10316&avatarType=issuetype",
+            "name": "Sub-task",
+            "subtask": true,
+            "avatarId": 10316
+          }
+        }
+      },
+      {
+        "id": "61156",
+        "key": "IIQCB-754",
+        "self": "https://sailpoint.atlassian.net/rest/api/2/issue/61156",
+        "fields": {
+          "summary": "Research and refactoring for Policy decision story support",
+          "status": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/status/10001",
+            "description": "",
+            "iconUrl": "https://sailpoint.atlassian.net/images/icons/status_generic.gif",
+            "name": "Done",
+            "id": "10001",
+            "statusCategory": {
+              "self": "https://sailpoint.atlassian.net/rest/api/2/statuscategory/3",
+              "id": 3,
+              "key": "done",
+              "colorName": "green",
+              "name": "Done"
+            }
+          },
+          "issuetype": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/issuetype/10001",
+            "id": "10001",
+            "description": "The sub-task of the issue",
+            "iconUrl": "https://sailpoint.atlassian.net/secure/viewavatar?size=xsmall&avatarId=10316&avatarType=issuetype",
+            "name": "Sub-task",
+            "subtask": true,
+            "avatarId": 10316
+          }
+        }
+      },
+      {
+        "id": "61467",
+        "key": "IIQCB-756",
+        "self": "https://sailpoint.atlassian.net/rest/api/2/issue/61467",
+        "fields": {
+          "summary": "Column width changes when I sort by the columns",
+          "status": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/status/10001",
+            "description": "",
+            "iconUrl": "https://sailpoint.atlassian.net/images/icons/status_generic.gif",
+            "name": "Done",
+            "id": "10001",
+            "statusCategory": {
+              "self": "https://sailpoint.atlassian.net/rest/api/2/statuscategory/3",
+              "id": 3,
+              "key": "done",
+              "colorName": "green",
+              "name": "Done"
+            }
+          },
+          "issuetype": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/issuetype/10112",
+            "id": "10112",
+            "description": "This type should be used for story bugs",
+            "iconUrl": "https://sailpoint.atlassian.net/secure/viewavatar?size=xsmall&avatarId=10512&avatarType=issuetype",
+            "name": "Sub-bug",
+            "subtask": true,
+            "avatarId": 10512
+          }
+        }
+      },
+      {
+        "id": "61473",
+        "key": "IIQCB-757",
+        "self": "https://sailpoint.atlassian.net/rest/api/2/issue/61473",
+        "fields": {
+          "summary": "\"Showing X-X of X\" message is not centered on the page",
+          "status": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/status/10001",
+            "description": "",
+            "iconUrl": "https://sailpoint.atlassian.net/images/icons/status_generic.gif",
+            "name": "Done",
+            "id": "10001",
+            "statusCategory": {
+              "self": "https://sailpoint.atlassian.net/rest/api/2/statuscategory/3",
+              "id": 3,
+              "key": "done",
+              "colorName": "green",
+              "name": "Done"
+            }
+          },
+          "issuetype": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/issuetype/10112",
+            "id": "10112",
+            "description": "This type should be used for story bugs",
+            "iconUrl": "https://sailpoint.atlassian.net/secure/viewavatar?size=xsmall&avatarId=10512&avatarType=issuetype",
+            "name": "Sub-bug",
+            "subtask": true,
+            "avatarId": 10512
+          }
+        }
+      },
+      {
+        "id": "61509",
+        "key": "IIQCB-820",
+        "self": "https://sailpoint.atlassian.net/rest/api/2/issue/61509",
+        "fields": {
+          "summary": "508: Issues on Policy Violation list page",
+          "status": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/status/10001",
+            "description": "",
+            "iconUrl": "https://sailpoint.atlassian.net/images/icons/status_generic.gif",
+            "name": "Done",
+            "id": "10001",
+            "statusCategory": {
+              "self": "https://sailpoint.atlassian.net/rest/api/2/statuscategory/3",
+              "id": 3,
+              "key": "done",
+              "colorName": "green",
+              "name": "Done"
+            }
+          },
+          "issuetype": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/issuetype/10112",
+            "id": "10112",
+            "description": "This type should be used for story bugs",
+            "iconUrl": "https://sailpoint.atlassian.net/secure/viewavatar?size=xsmall&avatarId=10512&avatarType=issuetype",
+            "name": "Sub-bug",
+            "subtask": true,
+            "avatarId": 10512
+          }
+        }
+      },
+      {
+        "id": "61622",
+        "key": "IIQCB-823",
+        "self": "https://sailpoint.atlassian.net/rest/api/2/issue/61622",
+        "fields": {
+          "summary": "Bug: No default sort specified on page",
+          "status": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/status/10001",
+            "description": "",
+            "iconUrl": "https://sailpoint.atlassian.net/images/icons/status_generic.gif",
+            "name": "Done",
+            "id": "10001",
+            "statusCategory": {
+              "self": "https://sailpoint.atlassian.net/rest/api/2/statuscategory/3",
+              "id": 3,
+              "key": "done",
+              "colorName": "green",
+              "name": "Done"
+            }
+          },
+          "issuetype": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/issuetype/10001",
+            "id": "10001",
+            "description": "The sub-task of the issue",
+            "iconUrl": "https://sailpoint.atlassian.net/secure/viewavatar?size=xsmall&avatarId=10316&avatarType=issuetype",
+            "name": "Sub-task",
+            "subtask": true,
+            "avatarId": 10316
+          }
+        }
+      },
+      {
+        "id": "61651",
+        "key": "IIQCB-850",
+        "self": "https://sailpoint.atlassian.net/rest/api/2/issue/61651",
+        "fields": {
+          "summary": "Bug: Change default column title of \"Name\" to \"Policy Name\"",
+          "status": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/status/10001",
+            "description": "",
+            "iconUrl": "https://sailpoint.atlassian.net/images/icons/status_generic.gif",
+            "name": "Done",
+            "id": "10001",
+            "statusCategory": {
+              "self": "https://sailpoint.atlassian.net/rest/api/2/statuscategory/3",
+              "id": 3,
+              "key": "done",
+              "colorName": "green",
+              "name": "Done"
+            }
+          },
+          "issuetype": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/issuetype/10001",
+            "id": "10001",
+            "description": "The sub-task of the issue",
+            "iconUrl": "https://sailpoint.atlassian.net/secure/viewavatar?size=xsmall&avatarId=10316&avatarType=issuetype",
+            "name": "Sub-task",
+            "subtask": true,
+            "avatarId": 10316
+          }
+        }
+      },
+      {
+        "id": "62101",
+        "key": "IIQCB-863",
+        "self": "https://sailpoint.atlassian.net/rest/api/2/issue/62101",
+        "fields": {
+          "summary": "Policy violations: don't include logged in user in results",
+          "status": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/status/10001",
+            "description": "",
+            "iconUrl": "https://sailpoint.atlassian.net/images/icons/status_generic.gif",
+            "name": "Done",
+            "id": "10001",
+            "statusCategory": {
+              "self": "https://sailpoint.atlassian.net/rest/api/2/statuscategory/3",
+              "id": 3,
+              "key": "done",
+              "colorName": "green",
+              "name": "Done"
+            }
+          },
+          "issuetype": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/issuetype/10112",
+            "id": "10112",
+            "description": "This type should be used for story bugs",
+            "iconUrl": "https://sailpoint.atlassian.net/secure/viewavatar?size=xsmall&avatarId=10512&avatarType=issuetype",
+            "name": "Sub-bug",
+            "subtask": true,
+            "avatarId": 10512
+          }
+        }
+      },
+      {
+        "id": "62108",
+        "key": "IIQCB-864",
+        "self": "https://sailpoint.atlassian.net/rest/api/2/issue/62108",
+        "fields": {
+          "summary": "policy violations: select everything is not triggering bulk selection dropdown to be enabled",
+          "status": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/status/10001",
+            "description": "",
+            "iconUrl": "https://sailpoint.atlassian.net/images/icons/status_generic.gif",
+            "name": "Done",
+            "id": "10001",
+            "statusCategory": {
+              "self": "https://sailpoint.atlassian.net/rest/api/2/statuscategory/3",
+              "id": 3,
+              "key": "done",
+              "colorName": "green",
+              "name": "Done"
+            }
+          },
+          "issuetype": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/issuetype/10112",
+            "id": "10112",
+            "description": "This type should be used for story bugs",
+            "iconUrl": "https://sailpoint.atlassian.net/secure/viewavatar?size=xsmall&avatarId=10512&avatarType=issuetype",
+            "name": "Sub-bug",
+            "subtask": true,
+            "avatarId": 10512
+          }
+        }
+      },
+      {
+        "id": "63317",
+        "key": "IIQCB-887",
+        "self": "https://sailpoint.atlassian.net/rest/api/2/issue/63317",
+        "fields": {
+          "summary": "Bug: 'Policy Type' filter incorrect list displayed",
+          "status": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/status/11000",
+            "description": "Use this status to indicate that a bug is ready to be verified.",
+            "iconUrl": "https://sailpoint.atlassian.net/images/icons/statuses/generic.png",
+            "name": "Bugs To Verify",
+            "id": "11000",
+            "statusCategory": {
+              "self": "https://sailpoint.atlassian.net/rest/api/2/statuscategory/4",
+              "id": 4,
+              "key": "indeterminate",
+              "colorName": "yellow",
+              "name": "In Progress"
+            }
+          },
+          "issuetype": {
+            "self": "https://sailpoint.atlassian.net/rest/api/2/issuetype/10001",
+            "id": "10001",
+            "description": "The sub-task of the issue",
+            "iconUrl": "https://sailpoint.atlassian.net/secure/viewavatar?size=xsmall&avatarId=10316&avatarType=issuetype",
+            "name": "Sub-task",
+            "subtask": true,
+            "avatarId": 10316
+          }
+        }
+      }
+    ],
+    "customfield_14400": null,
+    "reporter": {
+      "self": "https://sailpoint.atlassian.net/rest/api/2/user?username=andrew.hamlin",
+      "name": "andrew.hamlin",
+      "key": "andrew.hamlin",
+      "emailAddress": "andrew.hamlin@sailpoint.com",
+      "avatarUrls": {
+        "48x48": "https://sailpoint.atlassian.net/secure/useravatar?avatarId=10336",
+        "24x24": "https://sailpoint.atlassian.net/secure/useravatar?size=small&avatarId=10336",
+        "16x16": "https://sailpoint.atlassian.net/secure/useravatar?size=xsmall&avatarId=10336",
+        "32x32": "https://sailpoint.atlassian.net/secure/useravatar?size=medium&avatarId=10336"
+      },
+      "displayName": "Andrew Hamlin",
+      "active": true,
+      "timeZone": "America/Chicago"
+    },
+    "customfield_12100": null,
+    "aggregateprogress": {
+      "progress": 154800,
+      "total": 154800,
+      "percent": 100
+    },
+    "customfield_14403": null,
+    "customfield_14800": null,
+    "customfield_14404": null,
+    "customfield_12501": null,
+    "customfield_14401": null,
+    "customfield_12500": null,
+    "customfield_14402": null,
+    "customfield_13702": null,
+    "customfield_13701": null,
+    "customfield_11801": null,
+    "customfield_11800": null,
+    "progress": {
+      "progress": 0,
+      "total": 0
+    },
+    "votes": {
+      "self": "https://sailpoint.atlassian.net/rest/api/2/issue/IIQCB-717/votes",
+      "votes": 0,
+      "hasVoted": false
+    },
+    "worklog": {
+      "startAt": 0,
+      "maxResults": 20,
+      "total": 0,
+      "worklogs": []
+    },
+    "issuetype": {
+      "self": "https://sailpoint.atlassian.net/rest/api/2/issuetype/10110",
+      "id": "10110",
+      "description": "A user story. Created by JIRA Software - do not edit or delete.",
+      "iconUrl": "https://sailpoint.atlassian.net/images/icons/issuetypes/story.svg",
+      "name": "Story",
+      "subtask": false
+    },
+    "timespent": null,
+    "project": {
+      "self": "https://sailpoint.atlassian.net/rest/api/2/project/11100",
+      "id": "11100",
+      "key": "IIQCB",
+      "name": "IIQ - Chambers Bay",
+      "avatarUrls": {
+        "48x48": "https://sailpoint.atlassian.net/secure/projectavatar?avatarId=10324",
+        "24x24": "https://sailpoint.atlassian.net/secure/projectavatar?size=small&avatarId=10324",
+        "16x16": "https://sailpoint.atlassian.net/secure/projectavatar?size=xsmall&avatarId=10324",
+        "32x32": "https://sailpoint.atlassian.net/secure/projectavatar?size=medium&avatarId=10324"
+      }
+    },
+    "customfield_11000": null,
+    "customfield_13300": null,
+    "customfield_13302": null,
+    "aggregatetimespent": 154800,
+    "customfield_13301": null,
+    "customfield_13700": null,
+    "customfield_11400": null,
+    "customfield_14506": null,
+    "customfield_14504": null,
+    "customfield_14900": null,
+    "customfield_14505": null,
+    "resolutiondate": null,
+    "workratio": -1,
+    "watches": {
+      "self": "https://sailpoint.atlassian.net/rest/api/2/issue/IIQCB-717/watchers",
+      "watchCount": 1,
+      "isWatching": true
+    },
+    "created": "2017-01-26T16:31:25.051-0600",
+    "customfield_12200": null,
+    "customfield_14502": null,
+    "customfield_14503": null,
+    "customfield_12600": null,
+    "customfield_14500": null,
+    "customfield_14501": null,
+    "customfield_10016": [
+      "com.atlassian.greenhopper.service.sprint.Sprint@18aff8e[id=251,rapidViewId=52,state=CLOSED,name=7.2 Cycle 1 - 3,goal=,startDate=2017-01-30T10:08:57.410-06:00,endDate=2017-02-11T10:07:00.000-06:00,completeDate=2017-02-12T11:37:45.620-06:00,sequence=251]",
+      "com.atlassian.greenhopper.service.sprint.Sprint@1d7dcea[id=276,rapidViewId=52,state=ACTIVE,name=IIQCB 7.2 Cycle 1 - 4,goal=,startDate=2017-02-13T09:00:04.512-06:00,endDate=2017-02-24T11:59:00.000-06:00,completeDate=<null>,sequence=276]"
+    ],
+    "customfield_13405": null,
+    "customfield_10017": "IIQCB-710",
+    "customfield_11501": null,
+    "customfield_13404": null,
+    "customfield_13800": null,
+    "customfield_13407": null,
+    "customfield_13406": null,
+    "customfield_11901": null,
+    "customfield_13408": null,
+    "updated": "2017-02-23T10:35:17.023-0600",
+    "timeoriginalestimate": null,
+    "customfield_13001": null,
+    "description": "Parts 1 & 2 of design doc: Listing and filtering (and sorting)\r\n== Acceptance Criteria ==\r\n# The policy violation page will be similar to the Policy Violations table that was part of the Important tab in identity access review\r\n# The mockup for the page is [here|http://ux.sailpoint.com/identityiq/Prototypes_7.1/policy-violations/policy-violations-future.html#]\r\n# The table will have the following columns:\r\n## First Name\r\n## Last Name\r\n## Type\r\n## Owner\r\n## Rule \r\n## Description\r\n## Status\r\n## Decision (column will be fixed)\r\n# The bulk decision button will allow the user to make Allow and Certify decisions\r\n# The user will have the ability to filter on the columns that are part of the page\r\n# When the user clicks on the filter button it will drop down and show the filter available\r\n# Once the filter option has been selected the filter panel will collapse and the filter button will be shown in green to let the user know that filter is on",
+    "customfield_13000": null,
+    "customfield_10010": null,
+    "customfield_13003": null,
+    "customfield_10011": null,
+    "customfield_11100": null,
+    "customfield_13002": null,
+    "customfield_10012": null,
+    "customfield_11101": "https://harbor.sailpoint.com/docs/DOC-18186",
+    "customfield_13401": null,
+    "customfield_11102": null,
+    "customfield_13004": null,
+    "customfield_13400": null,
+    "customfield_10014": null,
+    "customfield_11103": null,
+    "customfield_11500": null,
+    "customfield_13403": null,
+    "timetracking": null,
+    "customfield_10015": "1|hzx2a6:x",
+    "customfield_13402": null,
+    "customfield_10401": null,
+    "customfield_10402": null,
+    "customfield_10006": null,
+    "customfield_12700": null,
+    "customfield_10403": null,
+    "customfield_10007": null,
+    "customfield_14603": null,
+    "customfield_10800": null,
+    "customfield_10008": null,
+    "customfield_10405": {
+      "self": "https://sailpoint.atlassian.net/rest/api/2/customFieldOption/10209",
+      "value": "No",
+      "id": "10209"
+    },
+    "attachment": [],
+    "customfield_10009": null,
+    "customfield_10406": null,
+    "summary": "Policy violations view pane",
+    "customfield_12301": null,
+    "customfield_14601": null,
+    "customfield_12300": null,
+    "customfield_10002": null,
+    "customfield_14602": null,
+    "customfield_10003": null,
+    "customfield_10400": null,
+    "customfield_14600": null,
+    "customfield_13504": null,
+    "customfield_13900": null,
+    "customfield_13503": null,
+    "customfield_11600": null,
+    "customfield_13506": null,
+    "customfield_13505": null,
+    "customfield_13508": null,
+    "customfield_13507": null,
+    "comment": {
+      "comments": [],
+      "maxResults": 0,
+      "total": 0,
+      "startAt": 0
+    }
+  }
+}

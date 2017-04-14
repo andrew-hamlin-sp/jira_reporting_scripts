@@ -1,8 +1,11 @@
+import os
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join('..', 'qjira')))
+
 import unittest
 import datetime
 
-from sprints import process_story_sprints, sprint_info
-from cycle_times import process_story_cycle_times
+from qjira import process_story_sprints, sprint_info, process_story_cycle_times
 
 SPRINT1='com.atlassian.greenhopper.service.sprint.Sprint@be7f5f[id=82,rapidViewId=52,state=CLOSED,name=Chambers Sprint 9,goal=<null>,startDate=2016-04-25T10:44:22.273-05:00,endDate=2016-05-09T10:44:00.000-05:00,completeDate=2016-05-09T10:48:04.212-05:00,sequence=82]'
 
@@ -73,7 +76,7 @@ class TestSprints(unittest.TestCase):
 
     def test_process_story_sprints_NOPTS(self):
         r = next(process_story_sprints(STORY_NO_POINTS))
-        self.assertTupleEqual((123, None, 'Chambers Sprint 10'), r)
+        self.assertTupleEqual((123, 0.0, 'Chambers Sprint 10'), r)
 
     def test_process_story_cycle_times(self):
         r = next(process_story_cycle_times(STORY))
