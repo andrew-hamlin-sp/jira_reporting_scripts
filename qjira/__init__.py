@@ -171,7 +171,7 @@ def process_story_cycle_times (story):
 
 class Velocity:
     def __init__(self, args, jira):
-        self._header = 'issue,points,sprint'
+        self._header = 'issue,points,sprint,startDate,endDate'
         self._jira = jira
         projects = ', '.join(args.project)
         self._jql = 'project in ({}) AND issuetype = Story'.format(projects)
@@ -191,7 +191,8 @@ def sprint_info (sprint):
     '''
     m = re.search('\[(.+)\]', sprint)
     if m:
-        return dict(e.split('=') for e in m.group(1).split(','))
+        d = dict(e.split('=') for e in m.group(1).split(','))
+        return d
     return None
 
 def process_story_sprints (story):
@@ -202,14 +203,14 @@ def process_story_sprints (story):
         points = 0.0
 
     sprints = story['fields'].get('customfield_10016')
-
     if sprints is None:
        yield (issuekey, points,'')
        return
        
     # Jira returns list of Sprints as an array of strings that are Java object
     infos = [sprint_info(sprint) for sprint in sprints]
-
     for info in infos:
-        yield (issuekey, points, info['name'])
+        start = dateutil.parser.parse(info['startDate'])
+        end = dateutil.parser.parse(info['endDate'])
+        yield (issuekey, points, info['name'], start.date(), end.date())
 

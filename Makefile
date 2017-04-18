@@ -11,6 +11,10 @@ all:
 
 init: requirements.txt
 	pip install -r requirements.txt
+#	python setup.py develop
+
+clean:
+	cd qjira && rm -fr __pycache__ && rm -f *.pyc
 
 test:
 	cd tests && python tests.py

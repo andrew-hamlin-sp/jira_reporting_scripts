@@ -1,6 +1,7 @@
 import os
 import sys
-sys.path.insert(0, os.path.abspath(os.path.join('..', 'qjira')))
+
+sys.path.insert(0, '..')
 
 import unittest
 import datetime
@@ -68,7 +69,7 @@ class TestSprints(unittest.TestCase):
 
     def test_process_story_sprints(self):
         r = next(process_story_sprints(STORY))
-        self.assertTupleEqual((123, 3.0, 'Chambers Sprint 9'), r)
+        self.assertTupleEqual((123, 3.0, 'Chambers Sprint 9', datetime.date(2016,4,25), datetime.date(2016,5,9)), r)
 
     def test_process_story_sprints_NONE(self):
         r = next(process_story_sprints(STORY_NO_SPRINT))
@@ -76,7 +77,7 @@ class TestSprints(unittest.TestCase):
 
     def test_process_story_sprints_NOPTS(self):
         r = next(process_story_sprints(STORY_NO_POINTS))
-        self.assertTupleEqual((123, 0.0, 'Chambers Sprint 10'), r)
+        self.assertTupleEqual((123, 0.0, 'Chambers Sprint 10',datetime.date(2016,4,25), datetime.date(2016,5,9)), r)
 
     def test_process_story_cycle_times(self):
         r = next(process_story_cycle_times(STORY))
