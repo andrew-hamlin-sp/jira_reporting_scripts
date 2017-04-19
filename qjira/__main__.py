@@ -9,7 +9,10 @@ import sys
 import argparse
 import getpass
 
-import qjira
+from .velocity import Velocity
+from .cycletime import CycleTime
+from .jira import Jira
+from .log import Log
 
 def main():
     # process command line arguments
@@ -51,28 +54,28 @@ def main():
     parser_cycletime = subparsers.add_parser('cycletime', aliases=['c'],
                                              parents=[parser_common],
                                              help='Produce cycletime data')
-    parser_cycletime.set_defaults(func=qjira.CycleTime)
+    parser_cycletime.set_defaults(func=CycleTime)
 
     parser_velocity = subparsers.add_parser('velocity', aliases=['v'],
                                             parents=[parser_common],
                                             help='Produce velocity data')
-    parser_velocity.set_defaults(func=qjira.Velocity)
+    parser_velocity.set_defaults(func=Velocity)
 
     args = parser.parse_args()
     
     if args.d:
-        qjira.Log.debugLevel = args.d
+        Log.debugLevel = args.d
 
     if not args.user:
         args.user = getpass.getuser()
         
     if not args.password:
         args.password = getpass.getpass()
-        
+    
     # TODO: store credentials in a user protected file and pass in as 'auth=XXX' 
-    jira = qjira.Jira(args.base, username=args.user, password=args.password)
+    jira = Jira(args.base, username=args.user, password=args.password)
 
-    processor = args.func(args, jira)
+    processor = args.func(project=args.project)
 
     outfile = args.outfile
     
@@ -84,7 +87,9 @@ def main():
     outfile.write(processor.header + '\n')
 
     ## TODO Use the CSV module
-    for entry in processor.process():
+    issues = jira.get_project_issues(processor.query)
+    
+    for entry in processor.process(issues):
         outfile.write(','.join(map(str, entry)) + '\n')
 
     outfile.close()

@@ -15,11 +15,14 @@ init: requirements.txt
 
 clean:
 	cd qjira && rm -fr __pycache__ && rm -f *.pyc
-
+	cd tests && rm -fr __pycache__ && rm -f *.pyc
 test:
 	cd tests && python tests.py
 
 install:
 	@echo run setuptools
+
+run:
+	@python -mqjira qjira.__main__.py
 
 .PHONY: all init test install
