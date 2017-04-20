@@ -3,9 +3,11 @@
 import requests
 import json
 
-from urllib.parse import urlencode
+try:
+    from urllib import urlencode
+except ImportError:
+    from urllib.parse import urlencode
 #from requests.auth import HTTPBasicAuth
-
 
 from .log import Log
 
@@ -31,29 +33,6 @@ class Jira:
         self.baseUrl = baseUrl
         for k in ('username', 'password', 'auth'):
             setattr(self, k, kwargs.get(k))
-
-        #self.auth=HTTPBasicAuth(self.username, self.password)
-
-    # def get_issues (self, issues):
-    #     '''Generator returning json of all issues'''
-
-    #     search_args = Jira.QUERY_STRING_DICT.copy()
-    #     query_string = urlencode(search_args)
-        
-    #     for n in issues:
-    #         url = Jira.ISSUE_ENDPOINT.format(self.baseUrl, n, query_string)
-    #         Log.debug(url)
-
-    #         # retrieve parent
-    #         r = requests.get(url, auth=(self.username, self.password), headers=Jira.HEADERS)
-    #         Log.debug(r.status_code)
-            
-    #         # TODO assert issuetype is story
-    #         r.raise_for_status()
-
-    #         json = r.json()
-
-    #         yield json
 
     def get_project_issues (self, query_callback):
         '''Perform a JQL search across `projects` and return issues'''
