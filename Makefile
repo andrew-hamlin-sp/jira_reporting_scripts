@@ -22,7 +22,5 @@ test:
 install:
 	@echo run setuptools
 
-run:
-	@python -mqjira qjira.__main__.py
 
 .PHONY: all init test install

@@ -51,14 +51,14 @@ def main():
 
     subparsers = parser.add_subparsers(help='Available commands to process data')
 
-    parser_cycletime = subparsers.add_parser('cycletime', aliases=['c'],
+    parser_cycletime = subparsers.add_parser('c',
                                              parents=[parser_common],
-                                             help='Produce cycletime data')
+                                             help='Produce [c]ycletime data')
     parser_cycletime.set_defaults(func=CycleTime)
 
-    parser_velocity = subparsers.add_parser('velocity', aliases=['v'],
+    parser_velocity = subparsers.add_parser('v',
                                             parents=[parser_common],
-                                            help='Produce velocity data')
+                                            help='Produce [v]elocity data')
     parser_velocity.set_defaults(func=Velocity)
 
     args = parser.parse_args()

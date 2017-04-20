@@ -6,7 +6,6 @@ including story points and iterations and export into CSV format. This enables b
 
 ## Dependencies
 
-  * python3 (though could be easily downgraded to python2.7)
   * requests
   * python-dateutil
 
@@ -14,7 +13,7 @@ including story points and iterations and export into CSV format. This enables b
 
   * Uses setuptools for installation
 
-`$ pip install .`
+`$ pip install git+https://github.com/andrew-hamlin-sp/jira_reporting_scripts.git`
 
   * On MacOS, which has Python2.7 installed as system requirement, you must install using python3
   
