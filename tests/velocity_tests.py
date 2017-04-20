@@ -2,6 +2,7 @@ import test_context
 
 import unittest
 import datetime
+from dateutil.tz import tzoffset
 
 from qjira.util import sprint_info
 from qjira.velocity import Velocity
@@ -11,7 +12,16 @@ import test_data
 class TestVelocity(unittest.TestCase):
 
     def test_sprint_info(self):
-        self.assertEqual({'name':'Chambers Sprint 9','id':'82','rapidViewId':'52','state':'CLOSED','goal':'<null>','startDate':'2016-04-25T10:44:22.273-05:00','endDate':'2016-05-09T10:44:00.000-05:00','completeDate':'2016-05-09T10:48:04.212-05:00','sequence':'82'}, sprint_info(test_data.SPRINT1))
+        self.assertEqual({'name':'Chambers Sprint 9',
+                          'id':'82',
+                          'rapidViewId':'52',
+                          'state':'CLOSED',
+                          'goal':'<null>',
+                          'startDate':datetime.datetime(2016,4,25,10,44,22,273000, tzinfo=tzoffset(None,-18000)),
+                          'endDate':datetime.datetime(2016,5,9,10,44,tzinfo=tzoffset(None,-18000)),
+                          'completeDate':datetime.datetime(2016,5,9,10,48,4,212000, tzinfo=tzoffset(None,-18000)),
+                          'sequence':'82'},
+                         sprint_info(test_data.SPRINT1))
 
     def setUp(self):
         self.vel = Velocity(project=['Test'])

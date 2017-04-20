@@ -1,5 +1,4 @@
 '''Class encapsulating Velocity processing'''
-import dateutil.parser
 import datetime
 
 from .log import Log
@@ -37,9 +36,7 @@ class Velocity:
             return
        
         # Jira returns list of Sprints as an array of strings that are Java object
-        infos = [sprint_info(sprint) for sprint in sprints]
+        infos = sorted([sprint_info(sprint) for sprint in sprints], key=lambda k: k['startDate'])
         for info in infos:
-            start = dateutil.parser.parse(info['startDate'])
-            end = dateutil.parser.parse(info['endDate'])
-            yield (issuekey, points, info['name'], start.date(), end.date())
+            yield (issuekey, points, info['name'], info['startDate'].date(), info['endDate'].date())
 

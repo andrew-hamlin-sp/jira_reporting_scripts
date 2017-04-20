@@ -1,5 +1,5 @@
 '''Utility functions'''
-
+import dateutil.parser
 import re
 
 def sprint_info (sprint):
@@ -8,5 +8,7 @@ def sprint_info (sprint):
     m = re.search('\[(.+)\]', sprint)
     if m:
         d = dict(e.split('=') for e in m.group(1).split(','))
+        for n in ('startDate','endDate','completeDate'):
+            d[n] = dateutil.parser.parse(d[n])
         return d
     return None
