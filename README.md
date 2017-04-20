@@ -15,24 +15,20 @@ including story points and iterations and export into CSV format. This enables b
 
 `$ pip install git+https://github.com/andrew-hamlin-sp/jira_reporting_scripts.git`
 
-  * On MacOS, which has Python2.7 installed as system requirement, you must install using python3
-  
-`$ python3 -m pip install .`
-
 ## Command line usage
 
   * View help message
   
 `$ qjira -h`
-`$ qjira velocity -h`
+`$ qjira v -h`
 
   * Produce velocity data
   
-`$ qjira velocity -p IIQHH`
+`$ qjira v -p IIQHH`
   
   * Produce cycletime data
   
-`$ qjira cycletime -p IIQCB`
+`$ qjira c -p IIQCB`
 
 ## Development
 
