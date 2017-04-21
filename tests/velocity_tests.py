@@ -31,7 +31,7 @@ class TestVelocity(unittest.TestCase):
         self.jql = jql
         
     def test_header(self):
-        self.assertEquals('issue,points,carried,sprint,startDate,endDate', self.vel.header)
+        self.assertEquals('project,issue,points,carried,sprint,startDate,endDate', self.vel.header)
 
     def test_query(self):
         self.vel.query(lambda a: self.update(a))
@@ -39,18 +39,18 @@ class TestVelocity(unittest.TestCase):
     
     def test_process_story_sprints(self):
         r = next(self.vel.process([test_data.STORY]))
-        self.assertTupleEqual((123, 3.0, 0, 'Chambers Sprint 9', datetime.date(2016,4,25), datetime.date(2016,5,9)), r)
+        self.assertTupleEqual(('Test',123, 3.0, 0, 'Chambers Sprint 9', datetime.date(2016,4,25), datetime.date(2016,5,9)), r)
 
     def test_process_story_sprints_NONE(self):
         r = next(self.vel.process([test_data.STORY_NO_SPRINT]))
-        self.assertTupleEqual((123, 3.0, 0, '','',''), r)
+        self.assertTupleEqual(('Test',123, 3.0, 0, '','',''), r)
 
     def test_process_story_sprints_NOPTS(self):
         r = next(self.vel.process([test_data.STORY_NO_POINTS]))
-        self.assertTupleEqual((123, 0.0, 0, 'Chambers Sprint 10', datetime.date(2016,4,25), datetime.date(2016,5,9)), r)
+        self.assertTupleEqual(('Test',123, 0.0, 0, 'Chambers Sprint 10', datetime.date(2016,4,25), datetime.date(2016,5,9)), r)
 
     def test_process_story_sprints_NODATES(self):
         r = next(self.vel.process([test_data.STORY_NO_DATES]))
-        self.assertTupleEqual((123, 5.0, 0, 'Sprint No Dates','',''), r)
+        self.assertTupleEqual(('Test',123, 5.0, 0, 'Sprint No Dates','',''), r)
     
 

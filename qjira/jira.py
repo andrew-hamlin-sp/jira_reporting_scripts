@@ -7,7 +7,6 @@ try:
     from urllib import urlencode
 except ImportError:
     from urllib.parse import urlencode
-#from requests.auth import HTTPBasicAuth
 
 from .log import Log
 
@@ -25,7 +24,7 @@ class Jira:
     # customfield 10016 is the 'iteration' or 'sprint' field, an array
     QUERY_STRING_DICT = {
         'expand': 'changelog',
-        'fields': '-*navigable,customfield_10109,customfield_10016'
+        'fields': '-*navigable,project,customfield_10109,customfield_10016'
     }
             
     def __init__ (self, baseUrl, **kwargs):
@@ -42,17 +41,41 @@ class Jira:
         
         query_callback(lambda jql: search_args.update({'jql':jql}))
 
-        query_string = urlencode(search_args)        
-        url = Jira.ISSUE_SEARCH_ENDPOINT.format(self.baseUrl, query_string)
-        Log.debug('url = ' + url)
+        startAt = 0
+        maxResults = 50
+        total = maxResults
 
-        r = requests.get(url, auth=(self.username, self.password), headers=Jira.HEADERS)
+        all_issues = []
+        
+        while startAt < total:
 
-        Log.debug(r.status_code)
-        r.raise_for_status()
+            search_args.update({
+                'startAt':startAt,
+                'maxResults':maxResults
+            })
+        
+            query_string = urlencode(search_args)
 
-        json = r.json()
+            url = Jira.ISSUE_SEARCH_ENDPOINT.format(self.baseUrl, query_string)
+            Log.debug('url = ' + url)
 
-        # return and process each issue
-        return json['issues']
+            r = requests.get(url, auth=(self.username, self.password), headers=Jira.HEADERS)
+
+            Log.debug(r.status_code)
+            r.raise_for_status()
+
+            json = r.json()
+
+            total = json['total']
+
+            issues = json['issues']
+
+            count = len(issues)
+
+            startAt += count
+
+            all_issues.extend(issues)
+
+        # would prefer to use a generator for memory management  but, for now, simplicity rules
+        return all_issues
 

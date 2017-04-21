@@ -70,7 +70,7 @@ def main():
         args.user = getpass.getuser()
         
     if not args.password:
-        args.password = getpass.getpass()
+        args.password = getpass.getpass('Enter password for {}'.format(args.user))
     
     # TODO: store credentials in a user protected file and pass in as 'auth=XXX' 
     jira = Jira(args.base, username=args.user, password=args.password)
@@ -78,7 +78,11 @@ def main():
     processor = args.func(project=args.project)
 
     outfile = args.outfile
-    
+
+    ## TODO Use the CSV module
+    issues = jira.get_project_issues(processor.query)
+    Log.debug('Process {} issues'.format(len(issues)))
+
     # write output
     if outfile.closed:
         Log.info('Opening outfile')
@@ -86,9 +90,6 @@ def main():
 
     outfile.write(processor.header + '\n')
 
-    ## TODO Use the CSV module
-    issues = jira.get_project_issues(processor.query)
-    
     for entry in processor.process(issues):
         outfile.write(','.join(map(str, entry)) + '\n')
 

@@ -12,7 +12,10 @@ STORY={
         'customfield_10109': 3.0,
         'customfield_10016':[
             SPRINT1
-        ]
+        ],
+        'project':{
+            'key': 'Test'
+        }
     },
     'changelog':{
         'histories':[
@@ -42,7 +45,10 @@ STORY_NO_SPRINT={
     'key':123,
     'fields':{
         'customfield_10109': 3.0,
-        'customfield_10016': None
+        'customfield_10016': None,
+        'project':{
+            'key': 'Test'
+        }
     }
 }
 
@@ -52,7 +58,10 @@ STORY_NO_POINTS={
         'customfield_10109': None,
         'customfield_10016': [
             SPRINT2
-        ]
+        ],
+        'project':{
+            'key': 'Test'
+        }
     }
 }
 
@@ -62,7 +71,10 @@ STORY_NO_DATES={
         'customfield_10109': 5.0,
         'customfield_10016': [
             SPRINT3
-        ]
+        ],
+        'project':{
+            'key': 'Test'
+        }
     }
 }
 

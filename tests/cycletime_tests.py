@@ -17,7 +17,7 @@ class TestCycleTime(unittest.TestCase):
         self.jql = jql
 
     def test_header(self):
-        self.assertEquals('issue,points,start,end', self.ct.header)
+        self.assertEquals('project,issue,points,start,end', self.ct.header)
 
     def test_query(self):
         self.ct.query(lambda a: self.update(a))
@@ -25,5 +25,5 @@ class TestCycleTime(unittest.TestCase):
         
     def test_process_story_cycle_times(self):
         r = next(self.ct.process([test_data.STORY]))
-        self.assertTupleEqual((123,3.0,datetime.date(2017,1,30),datetime.date(2017,1,31)), r)
+        self.assertTupleEqual(('Test',123,3.0,datetime.date(2017,1,30),datetime.date(2017,1,31)), r)
 

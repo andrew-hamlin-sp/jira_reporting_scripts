@@ -7,7 +7,7 @@ from .log import Log
 class CycleTime:
 
     def __init__(self, project=[]):
-        self._header = 'issue,points,start,end'
+        self._header = 'project,issue,points,start,end'
         self._projects = project
 
     @property
@@ -19,14 +19,16 @@ class CycleTime:
         callback('project in ({}) AND issuetype = Story AND status in (Done, Accepted)'.format(','.join(self._projects)))
 
     def process(self, issues):
-        Log.debug('process ', len(issues))
+        #Log.debug('process ', len(issues))
         for issue in issues:
             yield self._process_story_cycle_times(issue)
             
     def _process_story_cycle_times (self, story):
         '''Extract tuple containing issuekey, story points, and cycle time from Story'''
         issuekey = story['key']
-        points = story['fields'].get('customfield_10109')
+        fields = story['fields']
+        points = fields['customfield_10109']
+        project = fields['project']['key']
                   
         cycle_times = [dateutil.parser.parse(entry['created'])
                        for entry in story['changelog'].get('histories')
@@ -45,4 +47,4 @@ class CycleTime:
             start_time = sorted_times[0]
             end_time = sorted_times[-1]
             
-            return (issuekey, points, start_time.date(), end_time.date())
+            return (project,issuekey, points, start_time.date(), end_time.date())
