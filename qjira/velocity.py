@@ -6,7 +6,7 @@ from .util import sprint_info
 
 class Velocity:
     def __init__(self, project=[]):
-        self._header = 'issue,points,sprint,startDate,endDate'
+        self._header = 'issue,points,carried,sprint,startDate,endDate'
         self._projects = project
 
     @property
@@ -34,9 +34,13 @@ class Velocity:
         if sprints is None:
             yield (issuekey, points,'','','')
             return
-       
-        # Jira returns list of Sprints as an array of strings that are Java object
         infos = sorted([sprint_info(sprint) for sprint in sprints], key=lambda k: k['startDate'])
-        for info in infos:
-            yield (issuekey, points, info['name'], info['startDate'].date(), info['endDate'].date())
+        # find carry-over points from previous sprint
+        for idx,info in enumerate(infos):
+            if idx > 0:
+                carried = points
+            else:
+                carried = 0
+            yield (issuekey, points, carried, info['name'], info['startDate'].date(), info['endDate'].date())
+            
 

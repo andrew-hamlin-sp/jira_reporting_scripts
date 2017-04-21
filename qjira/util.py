@@ -9,6 +9,9 @@ def sprint_info (sprint):
     if m:
         d = dict(e.split('=') for e in m.group(1).split(','))
         for n in ('startDate','endDate','completeDate'):
-            d[n] = dateutil.parser.parse(d[n])
+            try:
+                d[n] = dateutil.parser.parse(d[n])
+            except ValueError:
+                d[n] = None
         return d
     return None

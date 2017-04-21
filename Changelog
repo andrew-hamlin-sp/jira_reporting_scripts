@@ -1,3 +1,6 @@
+2017-04-21  Andrew Hamlin  <andrew.hamlin@sailpoint.com>
+	Version 0.4 - add carry-over points to velocity
+
 2017-04-20  Andrew Hamlin  <andrew.hamlin@sailpoint.com>
 	Version 0.3 - support for Python 2.7
 
