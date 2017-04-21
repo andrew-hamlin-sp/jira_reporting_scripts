@@ -32,15 +32,15 @@ class Velocity:
 
         sprints = story['fields'].get('customfield_10016')
         if sprints is None:
-            yield (issuekey, points,'','','')
+            yield (issuekey, points, 0, '', '', '')
             return
         infos = sorted([sprint_info(sprint) for sprint in sprints], key=lambda k: k['startDate'])
         # find carry-over points from previous sprint
         for idx,info in enumerate(infos):
-            if idx > 0:
-                carried = points
-            else:
-                carried = 0
-            yield (issuekey, points, carried, info['name'], info['startDate'].date(), info['endDate'].date())
+            carried = points if idx > 0 else 0
+            name = info['name'] if info['name'] else ''
+            startDate = info['startDate'].date() if info['startDate'] else ''
+            endDate = info['endDate'].date() if info['endDate'] else ''
+            yield (issuekey, points, carried, name, startDate, endDate)
             
 
