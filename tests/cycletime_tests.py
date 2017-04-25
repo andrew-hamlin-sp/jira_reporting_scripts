@@ -17,11 +17,11 @@ class TestCycleTime(unittest.TestCase):
         self.jql = jql
 
     def test_header(self):
-        self.assertEquals('project,issue,points,start,end', self.ct.header)
+        self.assertEquals(['project','issue','points','start','end'], self.ct.header)
 
     def test_query(self):
         self.ct.query(lambda a: self.update(a))
-        self.assertEquals('project in (Test) AND issuetype = Story AND status in (Done, Accepted)', self.jql)
+        self.assertEquals('project in (Test) AND issuetype in (Story, Bug) AND status in (Done, Accepted)', self.jql)
         
     def test_process_story_cycle_times(self):
         r = next(self.ct.process([test_data.STORY]))

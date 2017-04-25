@@ -15,6 +15,9 @@ STORY={
         ],
         'project':{
             'key': 'Test'
+        },
+        'status':{
+            'name':'Done'
         }
     },
     'changelog':{
@@ -48,6 +51,9 @@ STORY_NO_SPRINT={
         'customfield_10016': None,
         'project':{
             'key': 'Test'
+        },
+        'status':{
+            'name':'Done'
         }
     }
 }
@@ -61,6 +67,9 @@ STORY_NO_POINTS={
         ],
         'project':{
             'key': 'Test'
+        },
+        'status':{
+            'name':'Accepted'
         }
     }
 }
@@ -74,7 +83,29 @@ STORY_NO_DATES={
         ],
         'project':{
             'key': 'Test'
+        },
+        'status':{
+            'name':'Open'
         }
     }
 }
+
+def story(key=None):
+    story = STORY.copy()
+    if key:
+        story['key'] = key
+    return story
+
+def points(story, points=None):
+    story['fields']['customfield_10109'] = points
+    return story
+
+def sprints(story, sprints=[]):
+    story['fields']['customfield_10016'] = sprints
+    return story
+
+def status(story, status='Open'):
+    story['fields']['status']['name'] = status
+    return story
+
 

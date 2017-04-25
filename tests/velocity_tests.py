@@ -31,26 +31,66 @@ class TestVelocity(unittest.TestCase):
         self.jql = jql
         
     def test_header(self):
-        self.assertEquals('project,issue,points,carried,sprint,startDate,endDate', self.vel.header)
+        self.assertEquals(['project','issue','sprint','startDate','endDate','planned','completed','carried',], self.vel.header)
 
     def test_query(self):
         self.vel.query(lambda a: self.update(a))
-        self.assertEquals('project in (Test) AND issuetype = Story', self.jql)
+        self.assertEquals('project in (Test) AND issuetype in (Story, Bug)', self.jql)
     
     def test_process_story_sprints(self):
         r = next(self.vel.process([test_data.STORY]))
-        self.assertTupleEqual(('Test',123, 3.0, 0, 'Chambers Sprint 9', datetime.date(2016,4,25), datetime.date(2016,5,9)), r)
+        self.assertDictEqual({
+            'project':'Test',
+            'issue':123,
+            'planned':3.0,
+            'completed':3.0,
+            'carried':0,
+            'name':'Chambers Sprint 9',
+            'startDate':datetime.date(2016,4,25),
+            'endDate':datetime.date(2016,5,9)}, r)
 
     def test_process_story_sprints_NONE(self):
         r = next(self.vel.process([test_data.STORY_NO_SPRINT]))
-        self.assertTupleEqual(('Test',123, 3.0, 0, '','',''), r)
+        self.assertDictEqual({
+            'project':'Test',
+            'issue':123,
+            'planned':3.0,
+            'completed':3.0,
+            'carried':0,
+            'name':'',
+            'startDate':'',
+            'endDate':''}, r)
 
     def test_process_story_sprints_NOPTS(self):
         r = next(self.vel.process([test_data.STORY_NO_POINTS]))
-        self.assertTupleEqual(('Test',123, 0.0, 0, 'Chambers Sprint 10', datetime.date(2016,4,25), datetime.date(2016,5,9)), r)
+        print(r)
+        self.assertDictEqual({
+            'project':'Test',
+            'issue':123,
+            'planned':0,
+            'completed':0,
+            'carried':0,
+            'name':'Chambers Sprint 10',
+            'startDate':datetime.date(2016,4,25),
+            'endDate':datetime.date(2016,5,9)},r)
 
     def test_process_story_sprints_NODATES(self):
         r = next(self.vel.process([test_data.STORY_NO_DATES]))
-        self.assertTupleEqual(('Test',123, 5.0, 0, 'Sprint No Dates','',''), r)
+        self.assertDictEqual({
+            'project':'Test',
+            'issue':123,
+            'planned': 5.0,
+            'completed': 0,
+            'carried': 0,
+            'name': 'Sprint No Dates',
+            'startDate':'',
+            'endDate':''}, r)
+
+    def test_process_story_sprints_isComplete_true(self):
+        self.assertTrue(False)
+
+    def test_process_story_sprints_isComplete_false(self):
+        self.assertFalse(True)
+
     
 

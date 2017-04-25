@@ -5,17 +5,21 @@ from .log import Log
 from .util import sprint_info
 
 class Velocity:
-    def __init__(self, project=[]):
-        self._header = 'project,issue,points,carried,sprint,startDate,endDate'
+    '''Analyze data for velocity metrics'''
+    
+    def __init__(self, project=[], exclude_carryover=False):
+        # create dictionary of values
+        self._fieldnames = ['project','issue','sprint','startDate','endDate','planned','completed','carried']
         self._projects = project
+        self._exclude_carryover = exclude_carryover
 
     @property
     def header(self):
-        return self._header
+        return self._fieldnames
 
     def query(self, callback):
         Log.debug('query')
-        callback('project in ({}) AND issuetype = Story'.format(','.join(self._projects)))
+        callback('project in ({}) AND issuetype in (Story, Bug)'.format(','.join(self._projects)))
     
     def process(self, issues):
         #Log.debug('process ', len(issues))
@@ -29,21 +33,33 @@ class Velocity:
         fields = story['fields']
         points = fields['customfield_10109']
         project = fields['project']['key']
-        
-        if not points:
-            points = 0.0
-
+        status = fields['status']['name']
+        completed = points if (status == 'Done' or status == 'Accepted') else 0
         sprints = story['fields'].get('customfield_10016')
-        if sprints is None:
-            yield (project,issuekey, points, 0, '', '', '')
-            return
-        infos = sorted([sprint_info(sprint) for sprint in sprints], key=lambda k: k['startDate'])
-        # find carry-over points from previous sprint
+
+        if sprints:
+            infos = sorted([sprint_info(sprint) for sprint in sprints], key=lambda k: k['startDate'])
+        else:
+            infos = [dict()]
+
         for idx,info in enumerate(infos):
-            carried = points if idx > 0 else 0
-            name = info['name'] if info['name'] else ''
-            startDate = info['startDate'].date() if info['startDate'] else ''
-            endDate = info['endDate'].date() if info['endDate'] else ''
-            yield (project,issuekey, points, carried, name, startDate, endDate)
+            isLast = idx == len(infos)-1
+            name = info.get('name', None)
+            startDate = info.get('startDate', None)
+            endDate = info.get('endDate', None)
+            yield {
+                'project':   project,
+                'issue':     issuekey,
+                # planned points count all the way through
+                'planned':   points if points else 0,
+                # completed points only count at the last iteration worked
+                'completed': completed if isLast else 0,
+                # carried points count after first iteration until completed
+                'carried': points if idx > 0 else 0,
+                'name' : name if name else '',
+                'startDate': startDate.date() if startDate else '',
+                'endDate':endDate.date() if endDate else ''
+            }
+        
             
 

@@ -16,7 +16,7 @@ class CycleTime:
 
     def query(self, callback):
         Log.debug('query')
-        callback('project in ({}) AND issuetype = Story AND status in (Done, Accepted)'.format(','.join(self._projects)))
+        callback('project in ({}) AND issuetype in (Story, Bug) AND status in (Done, Accepted)'.format(','.join(self._projects)))
 
     def process(self, issues):
         #Log.debug('process ', len(issues))

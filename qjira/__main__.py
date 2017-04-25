@@ -8,6 +8,7 @@ Description: script to execute commands against jira
 import sys
 import argparse
 import getpass
+import csv
 
 from .velocity import Velocity
 from .cycletime import CycleTime
@@ -59,6 +60,9 @@ def main():
     parser_velocity = subparsers.add_parser('v',
                                             parents=[parser_common],
                                             help='Produce [v]elocity data')
+    parser_velocity.add_argument('--exclude-carryover',
+                                 action='store_true',
+                                 help='Exclude points carried-over to future sprints')
     parser_velocity.set_defaults(func=Velocity)
 
     args = parser.parse_args()
@@ -84,14 +88,19 @@ def main():
     Log.debug('Process {} issues'.format(len(issues)))
 
     # write output
-    if outfile.closed:
-        Log.info('Opening outfile')
-        outfile = open(args.outfile, 'w')
+#    if outfile.closed:
+#        Log.info('Opening outfile')
+#        outfile = open(args.outfile, 'w')
 
-    outfile.write(processor.header + '\n')
+#    outfile.write(processor.header + '\n')
+
+    fieldnames = processor.header # TODO convert to array
+    writer = csv.DictWriter(outfile, fieldnames=fieldnames, extrasaction='ignore')
+    writer.writeheader()
 
     for entry in processor.process(issues):
-        outfile.write(','.join(map(str, entry)) + '\n')
+        #outfile.write(','.join(map(str, entry)) + '\n')
+        writer.writerow(entry)
 
     outfile.close()
 
