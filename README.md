@@ -4,6 +4,13 @@ To address some of the deficiencies in Jira reporting, here is a small command l
 exercise the [Jira REST API](https://docs.atlassian.com/jira/REST/cloud/) to retrieve information about Stories,
 including story points and iterations and export into CSV format. This enables building better reports in Excel.
 
+*Future enhancements*
+
+  * Add option to exclude carry-over points from story points (default includes them)
+  * Add option to include Bugs along with Stories (to include tech debt items)
+  * Add summary command to show backlog summaries (Open stories plus details)
+  * Use CSV module rather than brute force write()
+
 ## Dependencies
 
   * requests

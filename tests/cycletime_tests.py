@@ -21,9 +21,12 @@ class TestCycleTime(unittest.TestCase):
 
     def test_query(self):
         self.ct.query(lambda a: self.update(a))
-        self.assertEquals('project in (Test) AND issuetype = Story AND status in (Done, Accepted)', self.jql)
+        self.assertEquals('project in (Test) AND ((issuetype = Story AND status in (Done, Accepted)) OR (issuetype = Bug AND status = Closed))', self.jql)
         
     def test_process_story_cycle_times(self):
         r = next(self.ct.process([test_data.STORY]))
         self.assertTupleEqual(('Test',123,3.0,datetime.date(2017,1,30),datetime.date(2017,1,31)), r)
 
+    def test_process_story_cycle_times_BUG(self):
+        r = next(self.ct.process([test_data.BUG]))
+        self.assertTupleEqual(('IIQCB', 'IIQCB-668', 1.0, datetime.date(2016, 12, 13), datetime.date(2016, 12, 13)), r)

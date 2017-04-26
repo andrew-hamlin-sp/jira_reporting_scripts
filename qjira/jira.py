@@ -40,7 +40,8 @@ class Jira:
         search_args = Jira.QUERY_STRING_DICT.copy()
         
         query_callback(lambda jql: search_args.update({'jql':jql}))
-
+        Log.debug(search_args['jql'])
+        
         startAt = 0
         maxResults = 50
         total = maxResults
@@ -60,7 +61,7 @@ class Jira:
             Log.debug('url = ' + url)
 
             r = requests.get(url, auth=(self.username, self.password), headers=Jira.HEADERS)
-
+            Log.verbose(r.text)
             Log.debug(r.status_code)
             r.raise_for_status()
 
@@ -74,6 +75,7 @@ class Jira:
 
             startAt += count
 
+            Log.debug('{} of {} items'.format(count, total))
             all_issues.extend(issues)
 
         # would prefer to use a generator for memory management  but, for now, simplicity rules
