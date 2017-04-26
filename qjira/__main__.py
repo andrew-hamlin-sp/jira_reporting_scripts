@@ -15,6 +15,15 @@ from .cycletime import CycleTime
 from .jira import Jira
 from .log import Log
 
+OLDSTRING = ''
+
+def _report ( msg ):
+    global OLDSTRING
+    sys.stderr.write('\r' + (' ' * len(OLDSTRING)))
+    sys.stderr.write('\r' + msg)
+    OLDSTRING = msg
+
+
 def main():
     # process command line arguments
 
@@ -30,6 +39,9 @@ def main():
                         type=argparse.FileType('w'),
                         help='Output file (.csv) [default: stdout]',
                         default=sys.stdout)
+    parser_common.add_argument('--show-progress',
+                        action='store_true',
+                        help='Display JIRA data download progress')       
     parser_common.add_argument('-b', '--base',
                         metavar='url',
                         help='Jira Cloud base URL [default: sailpoint.atlassian.net]',
@@ -48,9 +60,10 @@ def main():
 
     parser = argparse.ArgumentParser(description='Export data from Jira to CSV format')
 
-    # sub-commands: cycletimes, backlog/loading by sprint
+    # sub-commands: velocity, cycletimes
+    # TODO: add backlog/loading by sprint
 
-    subparsers = parser.add_subparsers(help='Available commands to process data')
+    subparsers = parser.add_subparsers(dest='subparser_name', help='Available commands to process data')
 
     parser_cycletime = subparsers.add_parser('c',
                                              parents=[parser_common],
@@ -76,30 +89,25 @@ def main():
     if not args.password:
         args.password = getpass.getpass('Enter password for {}'.format(args.user))
     
-    # TODO: store credentials in a user protected file and pass in as 'auth=XXX' 
-    jira = Jira(args.base, username=args.user, password=args.password)
+    # TODO: store credentials in a user protected file and pass in as 'auth=XXX'
+
+    progress = _report if args.show_progress else None
+    
+    jira = Jira(args.base, username=args.user, password=args.password, progress=progress)
 
     processor = args.func(project=args.project)
 
     outfile = args.outfile
 
-    ## TODO Use the CSV module
     issues = jira.get_project_issues(processor.query)
+    
     Log.debug('Process {} issues'.format(len(issues)))
-
-    # write output
-#    if outfile.closed:
-#        Log.info('Opening outfile')
-#        outfile = open(args.outfile, 'w')
-
-#    outfile.write(processor.header + '\n')
 
     fieldnames = processor.header # TODO convert to array
     writer = csv.DictWriter(outfile, fieldnames=fieldnames, extrasaction='ignore')
     writer.writeheader()
 
     for entry in processor.process(issues):
-        #outfile.write(','.join(map(str, entry)) + '\n')
         writer.writerow(entry)
 
     outfile.close()

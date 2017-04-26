@@ -1,13 +1,25 @@
-'''Class encapsulating cycle times'''
+'''Class encapsulating cycle time of an issue. This class will
+   calculate the days from being moved to In Progress by devs
+   to being Closed by testers.
+
+   Limitations: 
+
+   This does not subtract time for an issue
+   moved from In Progress back to Open. 
+
+   This does not record separate values for bugs being dev
+   complete Resolved and being test complete Closed.
+'''
 import dateutil.parser
 import datetime
 
 from .log import Log
+from .util import find_status_history, issuetype
 
 class CycleTime:
 
     def __init__(self, project=[]):
-        self._header = 'project,issue,points,start,end'
+        self._header = ['project','issue','points','startDate','endDate']
         self._projects = project
 
     @property
@@ -16,12 +28,13 @@ class CycleTime:
 
     def query(self, callback):
         Log.debug('query')
-        callback('project in ({}) AND issuetype in (Story, Bug) AND status in (Done, Accepted)'.format(','.join(self._projects)))
+        callback('project in ({}) AND ((issuetype = Story AND status in (Done, Accepted)) OR (issuetype = Bug AND status = Closed))'.format(','.join(self._projects)))
 
     def process(self, issues):
         #Log.debug('process ', len(issues))
         for issue in issues:
-            yield self._process_story_cycle_times(issue)
+            for cycletime in self._process_story_cycle_times(issue):
+                yield cycletime
             
     def _process_story_cycle_times (self, story):
         '''Extract tuple containing issuekey, story points, and cycle time from Story'''
@@ -29,22 +42,26 @@ class CycleTime:
         fields = story['fields']
         points = fields['customfield_10109']
         project = fields['project']['key']
-                  
-        cycle_times = [dateutil.parser.parse(entry['created'])
-                       for entry in story['changelog'].get('histories')
-                       if entry['items'][0].get('field') == 'status'
-                       and (
-                           entry['items'][0].get('to') == '3'
-                           or  entry['items'][0].get('to') == '10001'
-                       )]
 
-        start_time = datetime.datetime(datetime.MINYEAR, 1, 1)
-        end_time = datetime.datetime(datetime.MINYEAR, 1, 1)
-        if cycle_times:
-            # sort by created date so we can use find first In Progress
-            # and last Done status
-            sorted_times = sorted(cycle_times)    
-            start_time = sorted_times[0]
-            end_time = sorted_times[-1]
-            
-            return (project,issuekey, points, start_time.date(), end_time.date())
+        start_history = find_status_history(story, 'In Progress')
+        if issuetype(story) == 'Story':
+            end_history = find_status_history(story, 'Done')
+        else:
+            end_history = find_status_history(story, 'Closed')
+
+        start_time = dateutil.parser.parse(start_history['created']).date() if start_history else None
+
+        end_time = dateutil.parser.parse(end_history['created']).date() if end_history else None
+
+        # only items with complete date ranges can be calculated
+        if not start_time or not end_time:
+            return
+        
+        yield {
+            'project': project,
+            'issue': issuekey,
+            'points': points,
+            'startDate': start_time,
+            'endDate': end_time
+        }
+

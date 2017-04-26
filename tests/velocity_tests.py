@@ -45,52 +45,41 @@ class TestVelocity(unittest.TestCase):
             'planned':3.0,
             'completed':3.0,
             'carried':0,
-            'name':'Chambers Sprint 9',
+            'sprint':'Chambers Sprint 9',
             'startDate':datetime.date(2016,4,25),
-            'endDate':datetime.date(2016,5,9)}, r)
+            'endDate':datetime.date(2016,5,9)
+        }, r)
 
     def test_process_story_sprints_NONE(self):
-        r = next(self.vel.process([test_data.STORY_NO_SPRINT]))
-        self.assertDictEqual({
-            'project':'Test',
-            'issue':123,
-            'planned':3.0,
-            'completed':3.0,
-            'carried':0,
-            'name':'',
-            'startDate':'',
-            'endDate':''}, r)
+        with self.assertRaises(StopIteration):
+            next(self.vel.process([test_data.STORY_NO_SPRINT]))
 
     def test_process_story_sprints_NOPTS(self):
         r = next(self.vel.process([test_data.STORY_NO_POINTS]))
-        print(r)
         self.assertDictEqual({
             'project':'Test',
             'issue':123,
             'planned':0,
             'completed':0,
             'carried':0,
-            'name':'Chambers Sprint 10',
+            'sprint':'Chambers Sprint 10',
             'startDate':datetime.date(2016,4,25),
-            'endDate':datetime.date(2016,5,9)},r)
+            'endDate':datetime.date(2016,5,9)
+        },r)
 
     def test_process_story_sprints_NODATES(self):
-        r = next(self.vel.process([test_data.STORY_NO_DATES]))
-        self.assertDictEqual({
-            'project':'Test',
-            'issue':123,
-            'planned': 5.0,
-            'completed': 0,
-            'carried': 0,
-            'name': 'Sprint No Dates',
-            'startDate':'',
-            'endDate':''}, r)
-
-    def test_process_story_sprints_isComplete_true(self):
-        self.assertTrue(False)
-
-    def test_process_story_sprints_isComplete_false(self):
-        self.assertFalse(True)
-
+        with self.assertRaises(StopIteration):
+            r = next(self.vel.process([test_data.STORY_NO_DATES]))
     
-
+    def test_process_story_sprints_BUG(self):
+        r = next(self.vel.process([test_data.BUG]))
+        self.assertDictEqual({
+            'project':'IIQCB',
+            'issue': 'IIQCB-668',
+            'planned': 1.0,
+            'carried': 0,
+            'completed': 1,
+            'sprint': '7.2 Cycle 1 - 1',
+            'startDate': datetime.date(2017, 1, 3),
+            'endDate': datetime.date(2017, 1, 13)
+        }, r)

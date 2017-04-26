@@ -17,3 +17,22 @@ def sprint_info (sprint):
                 d[n] = None
         return d
     raise ValueError
+
+def issuetype (issue):
+    if issue.get('fields') and issue['fields'].get('issuetype'):
+        return issue['fields']['issuetype']['name']
+    else:
+        return None
+
+def current_status (issue):
+    if issue.get('fields') and issue['fields'].get('status'):
+        return issue['fields']['status']['name']
+    else:
+        # Bugs record their state in the changelog history
+        # JSON is already sorted with newest last, so just grab the last status
+        status_field = [i['toString'] for h in issue['changelog']['histories'] for i in h['items'] if i['field'] == 'status']
+        return status_field[-1] if status_field else None
+
+def find_status_history (issue, status):
+    history = [h for h in issue['changelog']['histories'] for i in h['items'] if i['field'] == 'status' and i['toString'] == status]
+    return history[0] if history else None

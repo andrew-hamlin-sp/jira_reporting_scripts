@@ -24,14 +24,15 @@ class Jira:
     # customfield 10016 is the 'iteration' or 'sprint' field, an array
     QUERY_STRING_DICT = {
         'expand': 'changelog',
-        'fields': '-*navigable,project,customfield_10109,customfield_10016'
+        'fields': '-*navigable,project,issuetype,customfield_10109,customfield_10016'
     }
             
-    def __init__ (self, baseUrl, **kwargs):
+    def __init__ (self, baseUrl, username=None, password=None, auth=None, progress=None):
         ''' Construct new Jira client '''
         self.baseUrl = baseUrl
-        for k in ('username', 'password', 'auth'):
-            setattr(self, k, kwargs.get(k))
+        self.username = username
+        self.password = password
+        self._progress = progress
 
     def get_project_issues (self, query_callback):
         '''Perform a JQL search across `projects` and return issues'''
@@ -40,7 +41,8 @@ class Jira:
         search_args = Jira.QUERY_STRING_DICT.copy()
         
         query_callback(lambda jql: search_args.update({'jql':jql}))
-
+        Log.debug(search_args['jql'])
+        
         startAt = 0
         maxResults = 50
         total = maxResults
@@ -59,8 +61,11 @@ class Jira:
             url = Jira.ISSUE_SEARCH_ENDPOINT.format(self.baseUrl, query_string)
             Log.debug('url = ' + url)
 
-            r = requests.get(url, auth=(self.username, self.password), headers=Jira.HEADERS)
+            if self._progress:
+                self._progress('Retrieving {} of {}...'.format(startAt, total))
 
+            r = requests.get(url, auth=(self.username, self.password), headers=Jira.HEADERS)
+            Log.verbose(r.text)
             Log.debug(r.status_code)
             r.raise_for_status()
 
@@ -74,6 +79,9 @@ class Jira:
 
             startAt += count
 
+            if self._progress:
+                self._progress('Retrieved {} of {}'.format(startAt, total))
+            
             all_issues.extend(issues)
 
         # would prefer to use a generator for memory management  but, for now, simplicity rules
