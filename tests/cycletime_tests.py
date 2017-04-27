@@ -44,3 +44,11 @@ class TestCycleTime(unittest.TestCase):
             'startDate': datetime.date(2016, 12, 13),
             'endDate': datetime.date(2017, 1, 11)
         }, r)
+
+    def test_process_story_cycle_times_negativedays_fix(self):
+        r = next(self.ct.process([test_data.STORY_NEGATIVE_HISTORY]))
+        self.assertDictContainsSubset({
+            'startDate': datetime.date(2017,1,30),
+            'endDate': datetime.date(2017,1,31)
+        }, r)
+        

@@ -35,4 +35,4 @@ def current_status (issue):
 
 def find_status_history (issue, status):
     history = [h for h in issue['changelog']['histories'] for i in h['items'] if i['field'] == 'status' and i['toString'] == status]
-    return history[0] if history else None
+    return sorted(history, key=lambda x: x['created']) if history else None

@@ -50,9 +50,9 @@ class CycleTime:
         else:
             end_history = find_status_history(story, 'Closed')
 
-        start_time = dateutil.parser.parse(start_history['created']).date() if start_history else None
+        start_time = dateutil.parser.parse(start_history[0]['created']).date() if start_history else None
 
-        end_time = dateutil.parser.parse(end_history['created']).date() if end_history else None
+        end_time = dateutil.parser.parse(end_history[-1]['created']).date() if end_history else None
 
         # only items with complete date ranges can be calculated
         if not start_time or not end_time:

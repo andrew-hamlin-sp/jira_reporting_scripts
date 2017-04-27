@@ -494,3 +494,57 @@ BUG={
         "customfield_10109": 1.0
     }
 }
+
+
+STORY_NEGATIVE_HISTORY={
+    'key':123,
+    'fields':{
+        'customfield_10109': 3.0,
+        'customfield_10016':[
+            SPRINT1
+        ],
+        'issuetype':{
+            'name':'Story',
+        },
+        'project':{
+            'key': 'Test'
+        },
+        'status':{
+            'name':'Done'
+        }
+    },
+    'changelog':{
+        'histories':[
+            {
+                'created':'2017-01-20T11:56:10.061-0600',
+                'items':[
+                    {
+                        'field':'status',
+                        'to':'10001',
+                        'toString': 'Done'
+                    }
+                ]
+            },
+            {
+                'created':'2017-01-30T11:56:10.061-0600',
+                'items':[
+                    {
+                        'field':'status',
+                        'to':'3',
+                        'toString': 'In Progress'
+                    }
+                ]
+            },
+            {
+                'created':'2017-01-31T11:56:10.061-0600',
+                'items':[
+                    {
+                        'field':'status',
+                        'to':'10001',
+                        'toString': 'Done'
+                    }
+                ]
+            }
+        ]
+    }
+}
