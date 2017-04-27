@@ -25,7 +25,6 @@ Limitations:
 
 *Future enhancements*
 
-  * Add option to exclude carry-over points from story points (default includes them)
   * Add summary command to show backlog summaries (Open stories plus details)
 
 ## Dependencies
