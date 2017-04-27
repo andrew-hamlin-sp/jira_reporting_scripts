@@ -17,7 +17,7 @@ class TestCycleTime(unittest.TestCase):
         self.jql = jql
 
     def test_header(self):
-        self.assertEquals(['project','issue','points','startDate','endDate'], self.ct.header)
+        self.assertEquals(['project','issuetype','issue','points','startDate','endDate'], self.ct.header)
 
     def test_query(self):
         self.ct.query(lambda a: self.update(a))
@@ -27,6 +27,7 @@ class TestCycleTime(unittest.TestCase):
         r = next(self.ct.process([test_data.STORY]))
         self.assertDictEqual({
             'project': 'Test',
+            'issuetype': 'Story',
             'issue': 123,
             'points': 3.0,
             'startDate': datetime.date(2017,1,30),
@@ -37,6 +38,7 @@ class TestCycleTime(unittest.TestCase):
         r = next(self.ct.process([test_data.BUG]))
         self.assertDictEqual({
             'project': 'IIQCB',
+            'issuetype': 'Bug',
             'issue': 'IIQCB-668',
             'points': 1.0,
             'startDate': datetime.date(2016, 12, 13),

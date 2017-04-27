@@ -14,12 +14,12 @@ import dateutil.parser
 import datetime
 
 from .log import Log
-from .util import find_status_history, issuetype
+from .util import find_status_history, get_issuetype
 
 class CycleTime:
 
     def __init__(self, project=[]):
-        self._header = ['project','issue','points','startDate','endDate']
+        self._header = ['project','issuetype','issue','points','startDate','endDate']
         self._projects = project
 
     @property
@@ -39,12 +39,13 @@ class CycleTime:
     def _process_story_cycle_times (self, story):
         '''Extract tuple containing issuekey, story points, and cycle time from Story'''
         issuekey = story['key']
+        issuetype = get_issuetype(story)
         fields = story['fields']
         points = fields['customfield_10109']
         project = fields['project']['key']
 
         start_history = find_status_history(story, 'In Progress')
-        if issuetype(story) == 'Story':
+        if issuetype == 'Story':
             end_history = find_status_history(story, 'Done')
         else:
             end_history = find_status_history(story, 'Closed')
@@ -59,6 +60,7 @@ class CycleTime:
         
         yield {
             'project': project,
+            'issuetype': issuetype,
             'issue': issuekey,
             'points': points,
             'startDate': start_time,

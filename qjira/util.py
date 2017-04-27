@@ -18,7 +18,7 @@ def sprint_info (sprint):
         return d
     raise ValueError
 
-def issuetype (issue):
+def get_issuetype (issue):
     if issue.get('fields') and issue['fields'].get('issuetype'):
         return issue['fields']['issuetype']['name']
     else:

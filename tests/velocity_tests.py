@@ -31,7 +31,7 @@ class TestVelocity(unittest.TestCase):
         self.jql = jql
         
     def test_header(self):
-        self.assertEquals(['project','issue','sprint','startDate','endDate','planned','completed','carried',], self.vel.header)
+        self.assertEquals(['project','issuetype','issue','sprint','startDate','endDate','planned','completed','carried',], self.vel.header)
 
     def test_query(self):
         self.vel.query(lambda a: self.update(a))
@@ -41,6 +41,7 @@ class TestVelocity(unittest.TestCase):
         r = next(self.vel.process([test_data.STORY]))
         self.assertDictEqual({
             'project':'Test',
+            'issuetype': 'Story',
             'issue':123,
             'planned':3.0,
             'completed':3.0,
@@ -58,6 +59,7 @@ class TestVelocity(unittest.TestCase):
         r = next(self.vel.process([test_data.STORY_NO_POINTS]))
         self.assertDictEqual({
             'project':'Test',
+            'issuetype': None,
             'issue':123,
             'planned':0,
             'completed':0,
@@ -75,6 +77,7 @@ class TestVelocity(unittest.TestCase):
         r = next(self.vel.process([test_data.BUG]))
         self.assertDictEqual({
             'project':'IIQCB',
+            'issuetype': 'Bug',
             'issue': 'IIQCB-668',
             'planned': 1.0,
             'carried': 0,

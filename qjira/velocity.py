@@ -12,14 +12,14 @@
 import datetime
 
 from .log import Log
-from .util import sprint_info, current_status
+from .util import sprint_info, current_status, get_issuetype
 
 class Velocity:
     '''Analyze data for velocity metrics'''
     
     def __init__(self, project=[]):
         # create dictionary of values
-        self._fieldnames = ['project','issue','sprint','startDate','endDate','planned','completed','carried']
+        self._fieldnames = ['project','issuetype','issue','sprint','startDate','endDate','planned','completed','carried']
         self._projects = project
 
     @property
@@ -39,6 +39,7 @@ class Velocity:
     def _process_story_sprints (self, issue):
         '''Extract tuple containing sprint, issuekey, and story points from Story'''
         issuekey = issue['key']
+        issuetype = get_issuetype(issue)
         fields = issue['fields']
         points = fields['customfield_10109']
         project = fields['project']['key']
@@ -73,6 +74,7 @@ class Velocity:
 
             results.append({
                 'project': project,
+                'issuetype': issuetype,
                 'issue': issuekey,
                 'sprint': name,
                 'startDate': startDate,
