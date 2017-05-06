@@ -12,14 +12,14 @@
 import datetime
 
 from .log import Log
-from .util import sprint_info, current_status, get_issuetype
+from .data import DataProcessor
 
 class Velocity:
     '''Analyze data for velocity metrics'''
     
     def __init__(self, project=[]):
-        # create dictionary of values
-        self._fieldnames = ['project','issuetype','issue','sprint','startDate','endDate','planned','completed','carried']
+        # NOTE velocity metrics may want to calculate points as planned vs. carried-over vs completed
+        self._fieldnames = ['project_key','issuetype_name','issue_key','sprint_name','sprint_startDate','sprint_endDate','story_points']
         self._projects = project
 
     @property
@@ -32,62 +32,5 @@ class Velocity:
     
     def process(self, issues):
         #Log.debug('process ', len(issues))
-        for issue in issues:
-            for sprint in self._process_story_sprints(issue):
-                yield sprint
-        
-    def _process_story_sprints (self, issue):
-        '''Extract tuple containing sprint, issuekey, and story points from Story'''
-        issuekey = issue['key']
-        issuetype = get_issuetype(issue)
-        fields = issue['fields']
-        points = fields['customfield_10109']
-        project = fields['project']['key']
-        
-        status = current_status(issue)
-        
-        # Bugs do not have a status field
-        isCompleted = (status == 'Done' or status == 'Accepted' or status == 'Closed')
-
-        if not points:
-            points = 0
-        
-        #print ('story is complete? {}'.format(isCompleted))
-        
-        sprints = issue['fields'].get('customfield_10016')
-        if sprints is None:
-            return
-
-        sprint_infos = sorted([sprint_info(sprint) for sprint in sprints], key=lambda k: k['startDate'])
-        # find carry-over points from previous sprint
-        # add completed points to last sprint worked
-
-
-        results = []
-        for idx, info in enumerate(sprint_infos):
-            if not info['startDate'] or not info['endDate']:
-                continue
-
-            name = info['name']           
-            startDate = info['startDate'].date()
-            endDate = info['endDate'].date()
-
-            results.append({
-                'project': project,
-                'issuetype': issuetype,
-                'issue': issuekey,
-                'sprint': name,
-                'startDate': startDate,
-                'endDate': endDate,
-                'planned': points if idx < 1 else 0,
-                'carried': points if idx > 0 else 0,
-                'completed': 0
-            })
-            
-        if results:
-            results[-1]['completed'] = points if isCompleted else 0
-
-        for result in results:
-            yield result
-            
-
+        results = [row for iss in issues for row in DataProcessor(iss, pivot='sprint').rows()]
+        return results
