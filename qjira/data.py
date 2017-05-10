@@ -3,7 +3,11 @@
 import re
 import dateutil.parser
 
+from .log import Log
 
+def calculate_rows(issue, pivot=None):
+    '''factory method processing an issue into 1..N rows'''
+    return DataProcessor(issue, pivot=pivot).rows()
 
 def _generate_name(*args):
     return '_'.join([str(a) for a in args])
@@ -40,7 +44,7 @@ def _transform_list(name, value):
 def _mapper(name, value):
     value_type = type(value)
 
-    print('>> name {} value_type {}'.format(name, value_type))
+    #print('>> name {} value_type {}'.format(name, value_type))
 
     if value_type is dict:
         for subitem in _transform_dict(name, value):
@@ -91,24 +95,27 @@ class DataProcessor:
                 # raises KeyError is bad pivot
                 if data['fields'][pivot_field]:
                     for src_idx, src_item in enumerate(data['fields'][pivot_field]):
-                        print ('> src_idx {} is {}'.format(src_idx, src_item))
+                        #print ('> src_idx {} is {}'.format(src_idx, src_item))
                         pivot_item = {k:v for k,v in _mapper(pivot_field, src_item)}
                         pivots.append(pivot_item)
                     del data['fields'][pivot_field]
-                    print('> pivots {}'.format(pivots))
+                    #print('> pivots {}'.format(pivots))
             except KeyError:
                 pass
+
+        Log.debug('pivots {}'.format(pivots))
         self._pivots = pivots
 
     def _build_cols(self):
-        field_cols = self._build_fields()
-        history_cols = self._build_histories()
+        field_cols = self._extract_fields()
+        history_cols = self._extract_histories()
 
         cols = field_cols.copy()
         cols.update(history_cols)
+        Log.debug('cols {}'.format(cols))
         self._cols = cols
         
-    def _build_fields(self):
+    def _extract_fields(self):
         data = self._data
         cols = dict(issue_key=data['key'])
 
@@ -116,16 +123,16 @@ class DataProcessor:
             if not val: continue
             cols.update({k:v for k,v in _mapper(key,val)})
             
-        print('> cols {}'.format(cols))
+        #print('> cols {}'.format(cols))
         return cols
 
-    def _build_histories(self):
+    def _extract_histories(self):
         data = self._data
         ret_status = {}
 
         try:
             histories = sorted(data['changelog']['histories'], key=lambda x: x['created'])
-            print('>> sorted history {}'.format(histories))
+            #print('>> sorted history {}'.format(histories))
 
             for history in histories:
                 for history_item in history['items']:
@@ -136,7 +143,7 @@ class DataProcessor:
         except KeyError:
             pass
         
-        print('>> ret_status {}'.format(ret_status))
+        #print('>> ret_status {}'.format(ret_status))
         return ret_status
 
     def _build_rows(self):

@@ -34,6 +34,11 @@ def main():
                         action='append',
                         required=True,
                         help='Project name')
+    parser_common.add_argument('-F', '--fix-version',
+                        dest='fixversion',
+                        metavar='fixVersion',
+                        action='append',
+                        help='Restrict search to fixVersion(s)')
     parser_common.add_argument('-o', '--outfile',
                         metavar='file',
                         type=argparse.FileType('w'),
@@ -95,7 +100,7 @@ def main():
     
     jira = Jira(args.base, username=args.user, password=args.password, progress=progress)
 
-    processor = args.func(project=args.project)
+    processor = args.func(project=args.project, fixversion=args.fixversion)
 
     outfile = args.outfile
 

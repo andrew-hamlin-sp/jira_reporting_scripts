@@ -24,7 +24,7 @@ class Jira:
     # customfield 10016 is the 'iteration' or 'sprint' field, an array
     QUERY_STRING_DICT = {
         'expand': 'changelog',
-        'fields': '-*navigable,project,issuetype,customfield_10109,customfield_10016'
+        'fields': '-*navigable,project,issuetype,customfield_10109,customfield_10016,fixVersions'
     }
             
     def __init__ (self, baseUrl, username=None, password=None, auth=None, progress=None):

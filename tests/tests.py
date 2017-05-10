@@ -10,7 +10,7 @@ import data_tests
 
 def suite():
     suite = unittest.TestSuite()    
-#    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(log_tests.LogTest))
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(log_tests.LogTest))
 #    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(velocity_tests.TestVelocity))
 #    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(cycletime_tests.TestCycleTime))
     suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(data_tests.TestDataProcessor))
