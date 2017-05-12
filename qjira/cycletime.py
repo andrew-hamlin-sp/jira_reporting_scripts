@@ -18,29 +18,19 @@ from .data import calculate_rows
 
 class CycleTime:
 
-    def __init__(self, project=[], fixversion=[]):
+    def __init__(self):
         # stories and bugs have different status for the endDate: Donen ahd Closed, respectively
         self._header = ['project_key','fixVersions_0_name','issuetype_name','issue_key','story_points','status_InProgress','status_Done', 'status_Closed']
-        self._projects = project
-        self._fixversions = fixversion
-
+        self._query = '((issuetype = Story AND status in (Done, Accepted)) OR (issuetype = Bug AND status = Closed))'
+        
     @property
     def header(self):
         return self._header
 
-    def query(self, callback):
-        queries = ['((issuetype = Story AND status in (Done, Accepted)) OR (issuetype = Bug AND status = Closed))']
-
-        if self._fixversions:
-            fixversions = ','.join(self._fixversions)
-            queries.insert(0, 'fixVersion in ({})'.format(fixversions))
-
-        if self._projects:
-            projects = ','.join(self._projects)
-            queries.insert(0, 'project in ({})'.format(projects))
+    @property
+    def query(self):
+        return self._query
         
-        callback(' AND '.join(queries))
-
     def process(self, issues):
         #Log.debug('process ', len(issues))
         results = [row for iss in issues for row in calculate_rows(iss)]

@@ -4,6 +4,9 @@ To address some of the deficiencies in Jira reporting, here is a small command l
 exercise the [Jira REST API](https://docs.atlassian.com/jira/REST/cloud/) to retrieve information about Stories,
 including story points and iterations and export into CSV format. This enables building better reports in Excel.
 
+## Summary
+
+Prints summary and documentation links for stories in a project.
 
 ## Velocity
 

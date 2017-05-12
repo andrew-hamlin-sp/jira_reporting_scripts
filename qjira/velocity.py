@@ -14,35 +14,47 @@ import datetime
 from .log import Log
 from .data import calculate_rows
 
+DEFAULT_POINTS = 0.0
+
 class Velocity:
     '''Analyze data for velocity metrics'''
     
-    def __init__(self, project=[], fixversion=[]):
+    def __init__(self):
         # NOTE velocity metrics may want to calculate points as planned vs. carried-over vs completed
-        self._fieldnames = ['project_key','fixVersions_0_name','issuetype_name','issue_key','sprint_name','sprint_startDate','sprint_endDate','story_points']
-        self._projects = project
-        self._fixversions = fixversion
-
+        self._fieldnames = ['project_key','fixVersions_0_name','issuetype_name','issue_key','sprint_name','sprint_startDate','sprint_endDate','story_points','planned_points','carried_points','completed_points']
+        self._query = 'issuetype in (Story, Bug)'
+        
     @property
     def header(self):
         return self._fieldnames
 
-    def query(self, callback):
-        queries = ['issuetype in (Story, Bug)']
-
-        if self._fixversions:
-            fixversions = ','.join(self._fixversions)
-            Log.debug('fixversions = ' + fixversions)
-            queries.insert(0, 'fixVersion in ({})'.format(fixversions))
-
-        if self._projects:
-            projects = ','.join(self._projects)
-            Log.debug('projects = ' + projects)
-            queries.insert(0, 'project in ({})'.format(projects))
-        
-        callback(' AND '.join(queries))
+    @property
+    def query(self):
+        return self._query
     
     def process(self, issues):
         #Log.debug('process ', len(issues))
-        results = [row for iss in issues for row in calculate_rows(iss, pivot='sprint')]
+        results = [row for iss in issues for row in self._velocity_row_extras(iss)]
         return results
+
+    def _velocity_row_extras(self, issue):
+        '''data processor wrapper to calculate points carried, completed'''
+        rows = calculate_rows(issue, pivot='sprint')
+        count = len(rows)
+        
+        for idx,row in enumerate(rows):
+            #print ('> row {} of {}'.format(idx+1, count))
+            point_value = row.get('story_points', DEFAULT_POINTS)
+            planned_points = point_value if idx == 0 else DEFAULT_POINTS
+            carried_points = point_value if idx >= 1 else DEFAULT_POINTS
+            completed_points = point_value if idx == count-1 else DEFAULT_POINTS
+            update = {
+                'planned_points': planned_points,
+                'carried_points': carried_points,
+                'completed_points': completed_points
+            }
+            #print ('> updated {}'.format(update))
+            row.update(update)
+            yield row
+
+        

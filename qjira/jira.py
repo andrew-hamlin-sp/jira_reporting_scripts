@@ -20,11 +20,15 @@ class Jira:
     HEADERS = {'content-type': 'application/json'}
 
     # expands the changelog of each issue and hides all but essential fields
-    # customfield 10109 is the 'story points' field
+    # customfield 10109 is the 'story points' field (may be null)
     # customfield 10016 is the 'iteration' or 'sprint' field, an array
+    # "customfield_11101" - ENG Design
+    # "customfield_14300" - ENG Test Plan
+    # "customfield_10017" -- Epic (issuekey)
+
     QUERY_STRING_DICT = {
         'expand': 'changelog',
-        'fields': '-*navigable,project,issuetype,customfield_10109,customfield_10016,fixVersions'
+        'fields': '-*navigable,project,issuetype,summary,fixVersions,customfield_10109,customfield_10016,customfield_11101,customfield_14300,customfield_10017'
     }
             
     def __init__ (self, baseUrl, username=None, password=None, auth=None, progress=None):
@@ -34,13 +38,12 @@ class Jira:
         self.password = password
         self._progress = progress
 
-    def get_project_issues (self, query_callback):
+    def get_project_issues (self, jql_query):
         '''Perform a JQL search across `projects` and return issues'''
 
         Log.debug('get_project_issues')
         search_args = Jira.QUERY_STRING_DICT.copy()
-        
-        query_callback(lambda jql: search_args.update({'jql':jql}))
+        search_args.update({'jql':jql_query})
         Log.debug(search_args['jql'])
         
         startAt = 0

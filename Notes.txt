@@ -6,6 +6,11 @@ Goals
  - expand jira multi-valued fields to span rows (value,sprint1,sprint2 => value,sprint1\nvalue,sprint2)
  - batch various conversions into useful commands
 
+Todos:
+ - date ranges
+ - clean-up query methods, standard projects and fixversions arguments should be common 
+
+Appendix/Reference
 
     '''Steps to encrypt/decrypt using cryptography package
 

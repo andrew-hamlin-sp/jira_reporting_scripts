@@ -12,6 +12,7 @@ import csv
 
 from .velocity import Velocity
 from .cycletime import CycleTime
+from .summary import Summary
 from .jira import Jira
 from .log import Log
 
@@ -66,7 +67,7 @@ def main():
     parser = argparse.ArgumentParser(description='Export data from Jira to CSV format')
 
     # sub-commands: velocity, cycletimes
-    # TODO: add backlog/loading by sprint
+    # TODO: add backlog/loading by sprint, add summary including description, design & test docs
 
     subparsers = parser.add_subparsers(dest='subparser_name', help='Available commands to process data')
 
@@ -78,11 +79,13 @@ def main():
     parser_velocity = subparsers.add_parser('v',
                                             parents=[parser_common],
                                             help='Produce [v]elocity data')
-    parser_velocity.add_argument('--exclude-carryover',
-                                 action='store_true',
-                                 help='Exclude points carried-over to future sprints')
     parser_velocity.set_defaults(func=Velocity)
 
+    parser_summary = subparsers.add_parser('s',
+                                           parents=[parser_common],
+                                           help='Produce [s]ummary report')
+    parser_summary.set_defaults(func=Summary)
+    
     args = parser.parse_args()
     
     if args.d:
@@ -100,11 +103,20 @@ def main():
     
     jira = Jira(args.base, username=args.user, password=args.password, progress=progress)
 
-    processor = args.func(project=args.project, fixversion=args.fixversion)
+    processor = args.func()
 
     outfile = args.outfile
 
-    issues = jira.get_project_issues(processor.query)
+    query = []
+    if args.fixversion:
+        query.append('fixVersion in ({})'.format(','.join(args.fixversion)))
+    if args.project:
+        query.append('project in ({})'.format(','.join(args.project)))
+    if processor.query:
+        query.append(processor.query)
+    query_string = ' AND '.join(query)
+    
+    issues = jira.get_project_issues(query_string)
     
     Log.debug('Process {} issues'.format(len(issues)))
 

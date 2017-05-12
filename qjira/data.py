@@ -7,6 +7,10 @@ from .log import Log
 
 def calculate_rows(issue, pivot=None):
     '''factory method processing an issue into 1..N rows'''
+    if Log.debugLevel >= 2:
+        import json
+        with open('debug.json', 'w') as f:
+            json.dump(issue, f)
     return DataProcessor(issue, pivot=pivot).rows()
 
 def _generate_name(*args):
@@ -36,15 +40,18 @@ def _transform_dict(name, value):
     
 def _transform_list(name, value):
     for idx,item in enumerate(value):
-        for col in [(_generate_name(name, idx, k1),v1) for k1, v1 in item.items()]:
-            yield col
+        item_name = _generate_name(name, idx)
+        item_type = type(item)
+        if item_type is dict:
+            for col in _transform_dict(item_name, item):
+                yield col
+        else:
+            yield item_name, item
     return
 
 # flatten the dictionary object `json`
 def _mapper(name, value):
     value_type = type(value)
-
-    #print('>> name {} value_type {}'.format(name, value_type))
 
     if value_type is dict:
         for subitem in _transform_dict(name, value):
@@ -73,17 +80,23 @@ class DataProcessor:
 
     def _pre_process(self, data):
         ''' clean up some custom fields'''
-
-        # -- begin pre-process
         # update dictionary to reflect known names for custom fields
+
+        custom_field_map = [('customfield_10109','story_points'),
+                            ('customfield_11101','design_doc_link'),
+                            ('customfield_14300','testplan_doc_link'),
+                            ('customfield_10017','epic_issuekey')]
+
+        for s, d in custom_field_map:
+            if data['fields'].get(s):
+                data['fields'][d] = data['fields'][s]
+                del data['fields'][s]
+
+        # Sprint field must be converted from Java string representation to dict
         if data['fields'].get('customfield_10016'):
             data['fields']['sprint'] = [sprint for sprint in map(_extract_sprint, data['fields']['customfield_10016'])]
             del data['fields']['customfield_10016']
 
-        if data['fields'].get('customfield_10109'):
-            data['fields']['story_points'] = data['fields']['customfield_10109']
-            del data['fields']['customfield_10109']
-        # -- end pre-process
         return data
 
     def _build_pivots(self):
@@ -103,7 +116,7 @@ class DataProcessor:
             except KeyError:
                 pass
 
-        Log.debug('pivots {}'.format(pivots))
+        Log.verbose('pivots {}'.format(pivots))
         self._pivots = pivots
 
     def _build_cols(self):
@@ -112,7 +125,7 @@ class DataProcessor:
 
         cols = field_cols.copy()
         cols.update(history_cols)
-        Log.debug('cols {}'.format(cols))
+        Log.verbose('cols {}'.format(cols))
         self._cols = cols
         
     def _extract_fields(self):
@@ -122,8 +135,7 @@ class DataProcessor:
         for key,val in data['fields'].items():
             if not val: continue
             cols.update({k:v for k,v in _mapper(key,val)})
-            
-        #print('> cols {}'.format(cols))
+
         return cols
 
     def _extract_histories(self):
@@ -132,7 +144,6 @@ class DataProcessor:
 
         try:
             histories = sorted(data['changelog']['histories'], key=lambda x: x['created'])
-            #print('>> sorted history {}'.format(histories))
 
             for history in histories:
                 for history_item in history['items']:
@@ -143,7 +154,6 @@ class DataProcessor:
         except KeyError:
             pass
         
-        #print('>> ret_status {}'.format(ret_status))
         return ret_status
 
     def _build_rows(self):
