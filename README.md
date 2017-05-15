@@ -26,10 +26,9 @@ Limitations:
 
   * This does not record separate values for bugs being dev complete 'Resolved' and being test complete 'Closed'.
 
-## Dependencies
-
-  * requests
-  * python-dateutil
+## Future enhancements
+  
+  *  Unify sprint names & date ranges
 
 ## Installation
 
@@ -59,6 +58,11 @@ Limitations:
   * Multiple projects and specific fix versions
   
 `$ qjira v -p IIQCB -p IIQHH -F 7.2`
+
+## Dependencies
+
+  * requests
+  * python-dateutil
 
 ## Development
 

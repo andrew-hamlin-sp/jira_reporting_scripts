@@ -47,7 +47,7 @@ class Velocity:
             point_value = row.get('story_points', DEFAULT_POINTS)
             planned_points = point_value if idx == 0 else DEFAULT_POINTS
             carried_points = point_value if idx >= 1 else DEFAULT_POINTS
-            completed_points = point_value if idx == count-1 else DEFAULT_POINTS
+            completed_points = point_value if idx == count-1 and self._isComplete(row) else DEFAULT_POINTS
             update = {
                 'planned_points': planned_points,
                 'carried_points': carried_points,
@@ -57,4 +57,11 @@ class Velocity:
             row.update(update)
             yield row
 
-        
+    def _isComplete(self, row):
+
+        if row['issuetype_name'] == 'Story':
+            return row.get('status_Done', False)
+        elif row['issuetype_name'] == 'Bug':
+            return row.get('status_Closed', False)
+
+        return False

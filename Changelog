@@ -1,3 +1,7 @@
+2017-05-15  Andrew Hamlin  <andrew.hamlin@sailpoint.com>
+	Version 0.92 - fix completed points bug
+	Version 0.91 - unified endDate for cycletime issues
+
 2017-04-21  Andrew Hamlin  <andrew.hamlin@sailpoint.com>
 	Version 0.4 - add carry-over points to velocity
 	Version 0.5 - fixed unittests and null dates
