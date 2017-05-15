@@ -20,7 +20,7 @@ class CycleTime:
 
     def __init__(self):
         # stories and bugs have different status for the endDate: Donen ahd Closed, respectively
-        self._header = ['project_key','fixVersions_0_name','issuetype_name','issue_key','story_points','status_InProgress','status_Done', 'status_Closed']
+        self._header = ['project_key','fixVersions_0_name','issuetype_name','issue_key','story_points','status_InProgress','status_End']
         self._query = '((issuetype = Story AND status in (Done, Accepted)) OR (issuetype = Bug AND status = Closed))'
         
     @property
@@ -33,6 +33,9 @@ class CycleTime:
         
     def process(self, issues):
         #Log.debug('process ', len(issues))
-        results = [row for iss in issues for row in calculate_rows(iss)]
+        results = [row for iss in issues for row in map(self._cycletime_totals, calculate_rows(iss))]
         return results
 
+    def _cycletime_totals(self, row):
+        row['status_End'] = row['status_Done'] if row.get('status_Done') else row['status_Closed']
+        return row

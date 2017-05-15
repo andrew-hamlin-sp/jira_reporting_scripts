@@ -16,14 +16,9 @@ from .summary import Summary
 from .jira import Jira
 from .log import Log
 
-OLDSTRING = ''
-
-def _report ( msg ):
-    global OLDSTRING
-    sys.stderr.write('\r' + (' ' * len(OLDSTRING)))
+def _progress ( msg ):
     sys.stderr.write('\r' + msg)
-    OLDSTRING = msg
-
+    sys.stderr.flush()
 
 def main():
     # process command line arguments
@@ -45,9 +40,10 @@ def main():
                         type=argparse.FileType('w'),
                         help='Output file (.csv) [default: stdout]',
                         default=sys.stdout)
-    parser_common.add_argument('--show-progress',
+    parser_common.add_argument('--no-progress',
                         action='store_true',
-                        help='Display JIRA data download progress')       
+                        dest='suppress_progress',
+                        help='Hide data download progress')       
     parser_common.add_argument('-b', '--base',
                         metavar='url',
                         help='Jira Cloud base URL [default: sailpoint.atlassian.net]',
@@ -99,9 +95,12 @@ def main():
     
     # TODO: store credentials in a user protected file and pass in as 'auth=XXX'
 
-    progress = _report if args.show_progress else None
-    
-    jira = Jira(args.base, username=args.user, password=args.password, progress=progress)
+    if args.suppress_progress:
+        func_progress = None
+    else:
+        func_progress=_progress
+
+    jira = Jira(args.base, username=args.user, password=args.password, progress=func_progress)
 
     processor = args.func()
 

@@ -6,7 +6,7 @@ including story points and iterations and export into CSV format. This enables b
 
 ## Summary
 
-Prints summary and documentation links for stories in a project.
+Prints backlog summary and documentation links for stories in a project.
 
 ## Velocity
 
@@ -18,17 +18,13 @@ Sprints without defined start and end dates will not be reported.
 
 ## Cycle Time
 
-Calculate the days from being moved to In Progress by devs to being Closed by testers.
+Calculate the days from being moved to In Progress by devs to being closed by testers.
 
 Limitations: 
 
   * This does not subtract time for an issue moved from In Progress back to Open. 
 
   * This does not record separate values for bugs being dev complete 'Resolved' and being test complete 'Closed'.
-
-*Future enhancements*
-
-  * Add summary command to show backlog summaries (Open stories plus details)
 
 ## Dependencies
 
@@ -55,6 +51,14 @@ Limitations:
   * Produce cycletime data
   
 `$ qjira c -p IIQCB`
+
+  * Produce summary report
+
+`$ qjira s -p IIQCB`
+
+  * Multiple projects and specific fix versions
+  
+`$ qjira v -p IIQCB -p IIQHH -F 7.2`
 
 ## Development
 
