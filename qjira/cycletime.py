@@ -33,9 +33,22 @@ class CycleTime:
         
     def process(self, issues):
         #Log.debug('process ', len(issues))
-        results = [row for iss in issues for row in map(self._cycletime_totals, calculate_rows(iss))]
+        results = [row for iss in issues for row in self._cycletime_processing(iss)]
         return results
 
-    def _cycletime_totals(self, row):
-        row['status_End'] = row['status_Done'] if row.get('status_Done') else row['status_Closed']
-        return row
+    def _cycletime_processing(self, issue):
+
+#          map(self._cycletime_totals, calculate_rows(iss)) if row['story_points']
+        rows = calculate_rows(issue)
+
+        for row in rows:
+            if not row.get('story_points'):
+                continue
+            
+            row['status_End'] = row['status_Done'] if row.get('status_Done') else row['status_Closed']
+            # if finished without progress, then cycletime = 0
+            if not row.get('status_InProgress'):
+                row['status_InProgress'] = row['status_End']
+
+            yield row
+            

@@ -1,4 +1,5 @@
 2017-05-15  Andrew Hamlin  <andrew.hamlin@sailpoint.com>
+	Version 0.93 - fix no progress cycletime bug
 	Version 0.92 - fix completed points bug
 	Version 0.91 - unified endDate for cycletime issues
 
