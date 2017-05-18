@@ -14,7 +14,7 @@ import dateutil.parser
 import datetime
 
 from .log import Log
-from .data import calculate_rows
+from .dataprocessor import calculate_rows
 
 class CycleTime:
 

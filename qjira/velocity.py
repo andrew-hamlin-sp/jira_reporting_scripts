@@ -12,7 +12,7 @@
 import datetime
 
 from .log import Log
-from .data import calculate_rows
+from .dataprocessor import calculate_rows
 
 DEFAULT_POINTS = 0.0
 

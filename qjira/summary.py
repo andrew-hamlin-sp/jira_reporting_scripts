@@ -1,6 +1,6 @@
 '''Summarize the backlog'''
 
-from .data import calculate_rows
+from .dataprocessor import calculate_rows
 
 class Summary:
 

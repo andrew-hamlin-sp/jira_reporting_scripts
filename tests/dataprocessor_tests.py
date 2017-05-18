@@ -3,7 +3,7 @@ import test_context
 import unittest
 import datetime
 
-from qjira.data import DataProcessor
+from qjira.dataprocessor import DataProcessor
 
 import test_data
 
