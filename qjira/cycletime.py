@@ -18,10 +18,11 @@ from .dataprocessor import calculate_rows
 
 class CycleTime:
 
-    def __init__(self):
+    def __init__(self, jira):
         # stories and bugs have different status for the endDate: Donen ahd Closed, respectively
         self._header = ['project_key','fixVersions_0_name','issuetype_name','issue_key','story_points','status_InProgress','status_End']
         self._query = '((issuetype = Story AND status in (Done, Accepted)) OR (issuetype = Bug AND status = Closed))'
+        self._jira = jira
         
     @property
     def header(self):
@@ -31,8 +32,10 @@ class CycleTime:
     def query(self):
         return self._query
         
-    def process(self, issues):
-        #Log.debug('process ', len(issues))
+    def process(self, query_string):
+
+        issues = self._jira.get_project_issues(query_string)
+        Log.debug('Process {} issues'.format(len(issues)))
         results = [row for iss in issues for row in self._cycletime_processing(iss)]
         return results
 

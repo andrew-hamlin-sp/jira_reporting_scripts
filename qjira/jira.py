@@ -13,9 +13,11 @@ from .log import Log
 class Jira:
 
     # constants
-    ISSUE_ENDPOINT='https://{}/rest/api/2/issue/{}?{}'
+    ISSUE_ENDPOINT='https://{}/rest/api/2/issue/{}'
 
     ISSUE_SEARCH_ENDPOINT='https://{}/rest/api/2/search?{}'
+
+    ISSUE_BROWSE='https://{}/browse/{}'
     
     HEADERS = {'content-type': 'application/json'}
 
@@ -90,3 +92,20 @@ class Jira:
         # would prefer to use a generator for memory management  but, for now, simplicity rules
         return all_issues
 
+    def get_browse_url(self, issuekey):
+        if not issuekey:
+            raise ValueError
+        return Jira.ISSUE_BROWSE.format(self.baseUrl, issuekey)
+
+    def get_issue(self, issuekey):
+        url = Jira.ISSUE_ENDPOINT.format(self.baseUrl, issuekey)
+        Log.debug('url = ' + url)
+
+        r = requests.get(url, auth=(self.username, self.password), headers=Jira.HEADERS)
+        Log.verbose(r.text)
+        Log.debug(r.status_code)
+        r.raise_for_status()
+
+        payload = r.json()
+
+        return payload

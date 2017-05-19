@@ -19,10 +19,11 @@ DEFAULT_POINTS = 0.0
 class Velocity:
     '''Analyze data for velocity metrics'''
     
-    def __init__(self):
+    def __init__(self, jira):
         # NOTE velocity metrics may want to calculate points as planned vs. carried-over vs completed
         self._fieldnames = ['project_key','fixVersions_0_name','issuetype_name','issue_key','sprint_name','sprint_startDate','sprint_endDate','story_points','planned_points','carried_points','completed_points']
         self._query = 'issuetype in (Story, Bug)'
+        self._jira = jira
         
     @property
     def header(self):
@@ -32,8 +33,9 @@ class Velocity:
     def query(self):
         return self._query
     
-    def process(self, issues):
-        #Log.debug('process ', len(issues))
+    def process(self, query_string):
+        issues = self._jira.get_project_issues(query_string)
+        Log.debug('Process {} issues'.format(len(issues)))
         results = [row for iss in issues for row in self._velocity_row_extras(iss)]
         return results
 

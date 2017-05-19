@@ -101,8 +101,8 @@ def main():
         func_progress=_progress
 
     jira = Jira(args.base, username=args.user, password=args.password, progress=func_progress)
-
-    processor = args.func()
+    
+    processor = args.func(jira)
 
     outfile = args.outfile
 
@@ -113,17 +113,14 @@ def main():
         query.append('project in ({})'.format(','.join(args.project)))
     if processor.query:
         query.append(processor.query)
-    query_string = ' AND '.join(query)
-    
-    issues = jira.get_project_issues(query_string)
-    
-    Log.debug('Process {} issues'.format(len(issues)))
 
+    query_string = ' AND '.join(query)
+        
     fieldnames = processor.header # TODO convert to array
     writer = csv.DictWriter(outfile, fieldnames=fieldnames, extrasaction='ignore')
     writer.writeheader()
 
-    for entry in processor.process(issues):
+    for entry in processor.process(query_string):
         writer.writerow(entry)
 
     outfile.close()
