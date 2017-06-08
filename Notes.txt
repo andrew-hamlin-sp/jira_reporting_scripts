@@ -7,6 +7,7 @@ Goals
  - batch various conversions into useful commands
 
 Todos:
+ - insert NETWORKDAYS formulas into CSV output where appropriate
  - date ranges
  - clean-up query methods, standard projects and fixversions arguments should be common 
 

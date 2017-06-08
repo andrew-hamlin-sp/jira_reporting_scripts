@@ -6,7 +6,9 @@ including story points and iterations and export into CSV format. This enables b
 
 ## Summary
 
-Prints backlog summary and documentation links for stories in a project.
+Prints backlog summary and documentation links for stories in a project using Excel formulas. Note: In order to
+format correctly in a Harbor document import the CSV file into Excel using comma delimiters, then copy-paste the
+table into your Harbor document.
 
 ## Velocity
 
@@ -32,7 +34,7 @@ Limitations:
 
 ## Installation
 
-  * Uses setuptools for installation
+  * Uses setuptools for installation. On MacOS, install requires root permission via `sudo`. 
 
 `$ pip install git+https://github.com/andrew-hamlin-sp/jira_reporting_scripts.git`
 

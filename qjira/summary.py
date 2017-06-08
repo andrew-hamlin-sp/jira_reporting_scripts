@@ -61,33 +61,41 @@ class Summary:
 
         def sprint_header(sprint_name, sprint_startDate):
             if sprint_placeholder:
-                return '{} (started: {})'.format(sprint_name, sprint_startDate or 'Not started')
+                return '{}  (started on {})'.format(sprint_name.upper(), sprint_startDate or 'Not started')
             return 'GROOMING'
         
         # build table of epic links
         def resolve_epic(epic_key):
             epic = self._jira.get_issue(epic_key)
             return self._jira.get_browse_url(epic_key), epic['fields']['customfield_10019']
-        
+
+        def new_row():
+            return {k:'=T(" ")' for k in self._fieldnames}
+
         epics = set(row['epic_issuekey'] for row in rows if row.get('epic_issuekey'))
         epic_link_table = { epic:resolve_epic(epic) for epic in epics }
         
         results = []
         sprint_placeholder = 'na'
-
+        
         for idx,row in enumerate(rows):
             if sprint_placeholder != row.get('sprint_0_name'):
                 sprint_placeholder = row.get('sprint_0_name')
-                results.append({
+                res = new_row()
+                res.update({
                     'summary': sprint_header(sprint_placeholder, row.get('sprint_0_startDate')),
                 })
-            res = {k:'n/a' for k in self._fieldnames}
+                results.append(res)
+            res = new_row()
             epic_key = row.get('epic_issuekey')
+            issue_key = row.get('issue_key')
             if epic_key:
                 epic_link = epic_link_table[epic_key]
                 row['epic_link'] = hyperlink(*epic_link)
-            
-            row['issue_link'] = hyperlink(self._jira.get_browse_url(row['issue_key']), row['issue_key'])
+
+            if issue_key:
+                row['issue_link'] = hyperlink(self._jira.get_browse_url(issue_key), issue_key)
+
             for L in ['design_doc_link','testplan_doc_link']:
                 if row.get(L):
                     row[L] = hyperlink(row[L], row[L].rpartition('/')[2])
