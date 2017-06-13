@@ -30,15 +30,20 @@ class Jira:
 
     QUERY_STRING_DICT = {
         'expand': 'changelog',
-        'fields': '-*navigable,project,issuetype,summary,fixVersions,customfield_10109,customfield_10016,customfield_11101,customfield_14300,customfield_10017'
+        'fields': '-*navigable,project,issuetype,summary,assignee,fixVersions,customfield_10109,customfield_10016,customfield_11101,customfield_14300,customfield_10017'
+
     }
             
-    def __init__ (self, baseUrl, username=None, password=None, auth=None, progress=None):
+    def __init__ (self, baseUrl, username=None, password=None, auth=None, one_shot=False, all_fields=False, progress=None):
         ''' Construct new Jira client '''
         self.baseUrl = baseUrl
         self.username = username
         self.password = password
+        self._one_shot = one_shot
         self._progress = progress
+
+        if all_fields:
+            Jira.QUERY_STRING_DICT['fields'] = '*all'
 
     def get_project_issues (self, jql_query):
         '''Perform a JQL search across `projects` and return issues'''
@@ -69,16 +74,11 @@ class Jira:
             if self._progress:
                 self._progress('Retrieving {} of {}...'.format(startAt, total))
 
-            r = requests.get(url, auth=(self.username, self.password), headers=Jira.HEADERS)
-            Log.verbose(r.text)
-            Log.debug(r.status_code)
-            r.raise_for_status()
+            payload = self._get_json(url)
 
-            json = r.json()
+            total = payload['total']
 
-            total = json['total']
-
-            issues = json['issues']
+            issues = payload['issues']
 
             count = len(issues)
 
@@ -98,14 +98,20 @@ class Jira:
         return Jira.ISSUE_BROWSE.format(self.baseUrl, issuekey)
 
     def get_issue(self, issuekey):
+        # this does not pass in the query string
         url = Jira.ISSUE_ENDPOINT.format(self.baseUrl, issuekey)
         Log.debug('url = ' + url)
+        return self._get_json(url)
 
+    def _get_json(self, url):
         r = requests.get(url, auth=(self.username, self.password), headers=Jira.HEADERS)
-        Log.verbose(r.text)
         Log.debug(r.status_code)
         r.raise_for_status()
 
-        payload = r.json()
-
-        return payload
+        if self._one_shot:
+            import sys
+            with open('debug.json', 'w') as f:
+                f.write(r.text)
+            sys.exit(0)
+            
+        return r.json()

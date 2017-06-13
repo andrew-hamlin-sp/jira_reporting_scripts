@@ -1,6 +1,9 @@
+2017-06-13  Andrew Hamlin  <andrew.hamlin@sailpoint.com>
+	Version 0.96 - sorted sprints by date
+
 2017-06-08  Andrew Hamlin  <andrew.hamlin@sailpoint.com>
 	Version 0.95 - improved summary format for Harbor documents
-	
+
 2017-05-19  Andrew Hamlin  <andrew.hamlin@sailpoint.com>
 	Version 0.94 - add Harbor compatibility to summary command
 
@@ -26,10 +29,8 @@
 	Refactored supporting library for Jira REST API
 
 2017-03-06  Andrew Hamlin  <andrew.hamlin@sailpoint.com>
-
 	Added search by project key
 
 2017-03-03  Andrew Hamlin  <andrew.hamlin@sailpoint.com>
-
 	Initial retrieval of issues
 

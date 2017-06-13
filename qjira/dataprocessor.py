@@ -7,10 +7,6 @@ from .log import Log
 
 def calculate_rows(issue, pivot=None):
     '''factory method processing an issue into 1..N rows'''
-    if Log.debugLevel >= 2:
-        import json
-        with open('debug.json', 'w') as f:
-            json.dump(issue, f)
     return DataProcessor(issue, pivot=pivot).rows()
 
 def _generate_name(*args):
@@ -92,9 +88,9 @@ class DataProcessor:
                 data['fields'][d] = data['fields'][s]
                 del data['fields'][s]
 
-        # Sprint field must be converted from Java string representation to dict
+        # Sprint field must be converted from Java string representation to dict and sorted by start date
         if data['fields'].get('customfield_10016'):
-            data['fields']['sprint'] = [sprint for sprint in map(_extract_sprint, data['fields']['customfield_10016'])]
+            data['fields']['sprint'] = [sprint for sprint in sorted(map(_extract_sprint, data['fields']['customfield_10016']), key=lambda x: x['startDate'])]
             del data['fields']['customfield_10016']
 
         return data

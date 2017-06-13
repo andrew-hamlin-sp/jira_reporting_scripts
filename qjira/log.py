@@ -21,21 +21,35 @@ class Log:
     @staticmethod
     def info (*msg):
         '''Log message when debug >= 0'''
-        if Log.debugLevel < 0:
-            return
-        Log.eprint('[INFO]', *msg)
+        if Log.isInfoEnabled():
+            Log.eprint('[INFO]', *msg)
 
+    @staticmethod
+    def isInfoEnabled ():
+        if Log.debugLevel < 0:
+            return False
+        return True
+        
     @staticmethod
     def debug (*msg):
         '''Log message when debug >= 1'''
-        if Log.debugLevel < 1:
-            return
-        Log.eprint('[DEBUG]', *msg)
+        if Log.isDebugEnabled():
+            Log.eprint('[DEBUG]', *msg)
 
+    @staticmethod
+    def isDebugEnabled ():
+        if Log.debugLevel < 1:
+            return False
+        return True
+        
     @staticmethod
     def verbose (*msg):
         '''Log message when debug >= 2'''
-        if Log.debugLevel < 2:
-            return
-        Log.eprint('[VERBOSE]', *msg)
+        if Log.isVerboseEnabled():
+            Log.eprint('[VERBOSE]', *msg)
 
+    @staticmethod
+    def isVerboseEnabled ():
+        if Log.debugLevel < 2:
+            return False
+        return True

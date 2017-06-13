@@ -31,7 +31,7 @@ def hyperlink(url, name):
 class Summary:
 
     def __init__(self, jira, reverse=False):
-        self._fieldnames = ['issue_link','summary','design_doc_link','testplan_doc_link','story_points','epic_link']
+        self._fieldnames = ['issue_link','summary','assignee_displayName','design_doc_link','testplan_doc_link','story_points','epic_link']
         self._query = 'issuetype = Story'
         self._reverseSort = reverse
         self._jira = jira

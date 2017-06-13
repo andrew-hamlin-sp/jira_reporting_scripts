@@ -19,7 +19,6 @@ from .dataprocessor import calculate_rows
 class CycleTime:
 
     def __init__(self, jira):
-        # stories and bugs have different status for the endDate: Donen ahd Closed, respectively
         self._header = ['project_key','fixVersions_0_name','issuetype_name','issue_key','story_points','status_InProgress','status_End']
         self._query = '((issuetype = Story AND status in (Done, Accepted)) OR (issuetype = Bug AND status = Closed))'
         self._jira = jira
@@ -40,8 +39,6 @@ class CycleTime:
         return results
 
     def _cycletime_processing(self, issue):
-
-#          map(self._cycletime_totals, calculate_rows(iss)) if row['story_points']
         rows = calculate_rows(issue)
 
         for row in rows:

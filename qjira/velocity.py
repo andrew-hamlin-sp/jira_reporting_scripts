@@ -20,7 +20,6 @@ class Velocity:
     '''Analyze data for velocity metrics'''
     
     def __init__(self, jira):
-        # NOTE velocity metrics may want to calculate points as planned vs. carried-over vs completed
         self._fieldnames = ['project_key','fixVersions_0_name','issuetype_name','issue_key','sprint_name','sprint_startDate','sprint_endDate','story_points','planned_points','carried_points','completed_points']
         self._query = 'issuetype in (Story, Bug)'
         self._jira = jira
@@ -55,7 +54,6 @@ class Velocity:
                 'carried_points': carried_points,
                 'completed_points': completed_points
             }
-            #print ('> updated {}'.format(update))
             row.update(update)
             yield row
 

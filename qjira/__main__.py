@@ -59,6 +59,12 @@ def main():
     parser_common.add_argument('-d',
                         action='count',
                         help='Debug level')
+    parser_common.add_argument('-1', '--one-shot',
+                        action='store_true',
+                        help='Exit after 1 HTTP request (for debug purpose only)')
+    parser_common.add_argument('-A', '--all-fields',
+                        action='store_true',
+                        help='Extract all available fields')
 
     parser = argparse.ArgumentParser(description='Export data from Jira to CSV format')
 
@@ -100,7 +106,7 @@ def main():
     else:
         func_progress=_progress
 
-    jira = Jira(args.base, username=args.user, password=args.password, progress=func_progress)
+    jira = Jira(args.base, username=args.user, password=args.password, one_shot=args.one_shot, all_fields=args.all_fields, progress=func_progress)
     
     processor = args.func(jira)
 
