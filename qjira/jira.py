@@ -90,6 +90,7 @@ class Jira:
             all_issues.extend(issues)
 
         # would prefer to use a generator for memory management  but, for now, simplicity rules
+        self._progress('\n')
         return all_issues
 
     def get_browse_url(self, issuekey):
