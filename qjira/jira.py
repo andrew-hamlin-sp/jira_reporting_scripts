@@ -72,7 +72,7 @@ class Jira:
             Log.debug('url = ' + url)
 
             if self._progress:
-                self._progress('Retrieving {} of {}...'.format(startAt, total))
+                self._progress(startAt, total)
 
             payload = self._get_json(url)
 
@@ -85,12 +85,11 @@ class Jira:
             startAt += count
 
             if self._progress:
-                self._progress('Retrieved {} of {}'.format(startAt, total))
-            
+                self._progress(startAt, total)
+
             all_issues.extend(issues)
 
         # would prefer to use a generator for memory management  but, for now, simplicity rules
-        self._progress('\n')
         return all_issues
 
     def get_browse_url(self, issuekey):

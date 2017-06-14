@@ -44,7 +44,11 @@ class Velocity:
         count = len(rows)
         
         for idx,row in enumerate(rows):
-            #print ('> row {} of {}'.format(idx+1, count))
+            #print ('> row {} keys= {}'.format(idx+1, row.keys()))
+            if not row.get('sprint_completeDate'):
+                #print ('skip incomplete sprint')
+                continue
+            
             point_value = row.get('story_points', DEFAULT_POINTS)
             planned_points = point_value if idx == 0 else DEFAULT_POINTS
             carried_points = point_value if idx >= 1 else DEFAULT_POINTS

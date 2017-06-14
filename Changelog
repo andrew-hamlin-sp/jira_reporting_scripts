@@ -1,5 +1,10 @@
+2017-06-14  Andrew Hamlin  <andrew.hamlin@sailpoint.com>
+	Version 0.97 - sorted issues by date in cycletime report.
+	added networkdays formula to cycletime report.
+	fixed velocity report to exclude sprints in progress.
+
 2017-06-13  Andrew Hamlin  <andrew.hamlin@sailpoint.com>
-	Version 0.96 - sorted sprints by date
+	Version 0.96 - sorted sprints by date in velocity report
 
 2017-06-08  Andrew Hamlin  <andrew.hamlin@sailpoint.com>
 	Version 0.95 - improved summary format for Harbor documents

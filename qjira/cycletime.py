@@ -1,6 +1,7 @@
 '''Class encapsulating cycle time of an issue. This class will
    calculate the days from being moved to In Progress by devs
-   to being Closed by testers.
+   to being Closed by testers. Results are sorted by start and
+   end dates, oldest to newest.
 
    Limitations: 
 
@@ -12,14 +13,18 @@
 '''
 import dateutil.parser
 import datetime
+from operator import itemgetter
 
 from .log import Log
 from .dataprocessor import calculate_rows
 
+def networkdays(start, end):
+    return '=NETWORKDAYS("{}","{}")'.format(start, end)
+
 class CycleTime:
 
     def __init__(self, jira):
-        self._header = ['project_key','fixVersions_0_name','issuetype_name','issue_key','story_points','status_InProgress','status_End']
+        self._header = ['project_key','fixVersions_0_name','issuetype_name','issue_key','story_points','status_InProgress','status_End', 'count_days']
         self._query = '((issuetype = Story AND status in (Done, Accepted)) OR (issuetype = Bug AND status = Closed))'
         self._jira = jira
         
@@ -35,7 +40,9 @@ class CycleTime:
 
         issues = self._jira.get_project_issues(query_string)
         Log.debug('Process {} issues'.format(len(issues)))
-        results = [row for iss in issues for row in self._cycletime_processing(iss)]
+        results = [row for iss in issues for row in self._cycletime_processing(iss)]        
+        results = sorted(results, key=itemgetter('status_End'))
+        results = sorted(results, key=itemgetter('status_InProgress'))
         return results
 
     def _cycletime_processing(self, issue):
@@ -50,5 +57,8 @@ class CycleTime:
             if not row.get('status_InProgress'):
                 row['status_InProgress'] = row['status_End']
 
+            # allow Excel to produce count of workdays
+            row['count_days'] = networkdays(row['status_InProgress'], row['status_End'])
+                
             yield row
             

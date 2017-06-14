@@ -16,8 +16,14 @@ from .summary import Summary
 from .jira import Jira
 from .log import Log
 
-def _progress ( msg ):
-    sys.stderr.write('\r' + msg)
+def _progress (start, total):
+    msg = '\rRetrieving {} of {}...'.format(start, total)
+    if start >= total:
+        msg = ' ' * len(msg)
+        sys.stderr.write('\r' + msg)
+        sys.stderr.flush()
+        msg += '\rRetrieved {} issues\n'.format(start, total)
+    sys.stderr.write(msg)
     sys.stderr.flush()
 
 def main():
@@ -97,7 +103,7 @@ def main():
         args.user = getpass.getuser()
         
     if not args.password:
-        args.password = getpass.getpass('Enter password for {}'.format(args.user))
+        args.password = getpass.getpass('Enter password for {}: '.format(args.user))
     
     # TODO: store credentials in a user protected file and pass in as 'auth=XXX'
 
