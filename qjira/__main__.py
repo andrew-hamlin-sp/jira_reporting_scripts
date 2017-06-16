@@ -116,8 +116,11 @@ def main():
     
     processor = args.func(jira)
 
-    outfile = open(args.outfile, 'w', newline='') if args.outfile else sys.stdout
-
+    try:
+        outfile = open(args.outfile, 'w', newline='') if args.outfile else sys.stdout
+    except TypeError:
+        outfile = open(args.outfile, 'wb') if args.outfile else sys.stdout
+        
     query = []
     if args.fixversion:
         query.append('fixVersion in ({})'.format(','.join(args.fixversion)))

@@ -1,5 +1,6 @@
 2017-06-16  Andrew Hamlin  <andrew.hamlin@sailpoint.com>
-	Version 0.971 - Fixed csv module windows crlf compatibility issue 
+	Version 0.971 - Fixed csv module windows crlf compatibility issue
+	Version 0.972 - Python 2.7 fix for csv module, open(file, 'wb')
 
 2017-06-14  Andrew Hamlin  <andrew.hamlin@sailpoint.com>
 	Version 0.97 - sorted issues by date in cycletime report.
