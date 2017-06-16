@@ -1,3 +1,4 @@
+
 #!python
 '''
 main.py
@@ -43,9 +44,8 @@ def main():
                         help='Restrict search to fixVersion(s)')
     parser_common.add_argument('-o', '--outfile',
                         metavar='file',
-                        type=argparse.FileType('w'),
-                        help='Output file (.csv) [default: stdout]',
-                        default=sys.stdout)
+                        nargs='?',
+                        help='Output file (.csv) [default: stdout]')
     parser_common.add_argument('--no-progress',
                         action='store_true',
                         dest='suppress_progress',
@@ -116,7 +116,7 @@ def main():
     
     processor = args.func(jira)
 
-    outfile = args.outfile
+    outfile = open(args.outfile, 'w', newline='') if args.outfile else sys.stdout
 
     query = []
     if args.fixversion:

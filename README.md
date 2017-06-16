@@ -4,6 +4,9 @@ To address some of the deficiencies in Jira reporting, here is a small command l
 exercise the [Jira REST API](https://docs.atlassian.com/jira/REST/cloud/) to retrieve information about Stories,
 including story points and iterations and export into CSV format. This enables building better reports in Excel.
 
+MacOS:   Python 2.7 & 3.6 (tested)
+Windows: Python 3.6 (tested), 2.7 (not tested)
+
 ## Summary
 
 Prints backlog summary and documentation links for stories in a project using Excel formulas. Note: In order to
