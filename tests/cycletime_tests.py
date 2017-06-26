@@ -5,19 +5,37 @@ import unittest
 from qjira.cycletime import CycleTime
 
 import test_data
+import datetime
 
 class TestCycleTime(unittest.TestCase):
 
     def setUp(self):
-        self.processor = CycleTime(None)
+        self.processor = CycleTime()
 
     def test_header(self):
         self.assertIsInstance(self.processor.header, list)
 
     def test_query(self):
-        self.assertEquals('((issuetype = Story AND status in (Done, Accepted)) OR (issuetype = Bug AND status = Closed))', self.processor.query)
+        self.assertEquals('issuetype = Story AND status in (Done, Accepted)', self.processor.query)
 
-    @unittest.skip('Not implemented')
     def test_process(self):
-        self.assertFalse(True)
+        data = self.processor.process([test_data.multiSprintStory()])
+        self.assertEqual(len(data), 1)
+        # cycletime command will record the in-progress to done dates 
+        self.assertDictContainsSubset(
+            {'status_InProgress': datetime.date(2017, 1, 30), 'status_Done':  datetime.date(2017, 1, 31)}, data[0])
+        # cycletime command will produce an Excel NETWORKDAYS formula
+        self.assertDictContainsSubset({'count_days': '=NETWORKDAYS("2017-01-30","2017-01-31")'}, data[0])
 
+
+    def test_process_done_wo_progress(self):
+        storyData = test_data.multiSprintStory()
+        del storyData['changelog']['histories'][0]
+
+        data = self.processor.process([storyData])
+        self.assertEqual(len(data), 1)
+        # cycletime command will record the in-progress to done dates 
+        self.assertDictContainsSubset(
+            {'status_InProgress': datetime.date(2017, 1, 31), 'status_Done':  datetime.date(2017, 1, 31)}, data[0])
+        # cycletime command will produce an Excel NETWORKDAYS formula
+        self.assertDictContainsSubset({'count_days': '=NETWORKDAYS("2017-01-31","2017-01-31")'}, data[0])

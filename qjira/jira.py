@@ -34,7 +34,7 @@ class Jira:
 
     }
             
-    def __init__ (self, baseUrl, username=None, password=None, auth=None, one_shot=False, all_fields=False, progress=None):
+    def __init__ (self, baseUrl, username=None, password=None, one_shot=False, all_fields=False, progress=None):
         ''' Construct new Jira client '''
         self.baseUrl = baseUrl
         self.username = username

@@ -1,4 +1,3 @@
-
 #!python
 '''
 main.py
@@ -16,6 +15,7 @@ from .cycletime import CycleTime
 from .summary import Summary
 from .jira import Jira
 from .log import Log
+from .container import Container
 
 def _progress (start, total):
     msg = '\rRetrieving {} of {}...'.format(start, total)
@@ -112,9 +112,10 @@ def main():
     else:
         func_progress=_progress
 
-    jira = Jira(args.base, username=args.user, password=args.password, one_shot=args.one_shot, all_fields=args.all_fields, progress=func_progress)
+    svc = Container()
+    svc['jira'] = Jira(args.base, username=args.user, password=args.password, one_shot=args.one_shot, all_fields=args.all_fields, progress=func_progress)
     
-    processor = args.func(jira)
+    processor = args.func()
 
     try:
         outfile = open(args.outfile, 'w', newline='') if args.outfile else sys.stdout
@@ -130,12 +131,14 @@ def main():
         query.append(processor.query)
 
     query_string = ' AND '.join(query)
+
+    issues = svc['jira'].get_project_issues(query_string)
         
     fieldnames = processor.header # TODO convert to array
     writer = csv.DictWriter(outfile, fieldnames=fieldnames, extrasaction='ignore')
     writer.writeheader()
 
-    for entry in processor.process(query_string):
+    for entry in processor.process(issues):
         writer.writerow(entry)
 
     outfile.close()

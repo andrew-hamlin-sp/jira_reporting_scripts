@@ -5,9 +5,9 @@ import dateutil.parser
 
 from .log import Log
 
-def calculate_rows(issue, pivot=None):
+def calculate_rows(issue, *args, **kwargs):
     '''factory method processing an issue into 1..N rows'''
-    return DataProcessor(issue, pivot=pivot).rows()
+    return DataProcessor(issue, *args, **kwargs).rows()
 
 def _generate_name(*args):
     return '_'.join([str(a) for a in args])
@@ -62,16 +62,13 @@ def _mapper(name, value):
 
 class DataProcessor:
 
-    def __init__(self, data, pivot=None):
+    def __init__(self, data, pivot=None, reverse_sprints=False):
         ''' process an jira issue'''
         self._pivot_field = pivot
-        
+        self._reverse_sprints = reverse_sprints
         self._data = self._pre_process(data)
-
         self._build_pivots()
-            
         self._build_cols()
-
         self._build_rows()
 
     def _pre_process(self, data):
@@ -90,9 +87,9 @@ class DataProcessor:
 
         # Sprint field must be converted from Java string representation to dict and sorted by start date
         if data['fields'].get('customfield_10016'):
-            data['fields']['sprint'] = [sprint for sprint in sorted(map(_extract_sprint, data['fields']['customfield_10016']), key=lambda x: x['startDate'])]
+            data['fields']['sprint'] = [sprint for sprint in sorted(map(_extract_sprint, data['fields']['customfield_10016']), key=lambda x: x['startDate'], reverse=self._reverse_sprints)]
             del data['fields']['customfield_10016']
-
+            
         return data
 
     def _build_pivots(self):
