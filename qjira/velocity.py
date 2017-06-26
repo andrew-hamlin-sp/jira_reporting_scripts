@@ -19,10 +19,9 @@ DEFAULT_POINTS = 0.0
 class Velocity:
     '''Analyze data for velocity metrics'''
     
-    def __init__(self, jira):
+    def __init__(self):
         self._fieldnames = ['project_key','fixVersions_0_name','issuetype_name','issue_key','sprint_name','sprint_startDate','sprint_endDate','story_points','planned_points','carried_points','completed_points']
-        self._query = 'issuetype in (Story, Bug)'
-        self._jira = jira
+        self._query = 'issuetype = Story'
         
     @property
     def header(self):
@@ -32,17 +31,14 @@ class Velocity:
     def query(self):
         return self._query
     
-    def process(self, query_string):
-        issues = self._jira.get_project_issues(query_string)
+    def process(self, issues):
         Log.debug('Process {} issues'.format(len(issues)))
-        results = [row for iss in issues for row in self._velocity_row_extras(iss)]
+        results = [row for iss in issues for row in self._processing(calculate_rows(iss, pivot='sprint'))]
         return results
 
-    def _velocity_row_extras(self, issue):
+    def _processing(self, rows):
         '''data processor wrapper to calculate points carried, completed'''
-        rows = calculate_rows(issue, pivot='sprint')
         count = len(rows)
-        
         for idx,row in enumerate(rows):
             #print ('> row {} keys= {}'.format(idx+1, row.keys()))
             if not row.get('sprint_completeDate'):

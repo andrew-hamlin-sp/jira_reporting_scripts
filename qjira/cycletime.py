@@ -23,10 +23,9 @@ def networkdays(start, end):
 
 class CycleTime:
 
-    def __init__(self, jira):
-        self._header = ['project_key','fixVersions_0_name','issuetype_name','issue_key','story_points','status_InProgress','status_End', 'count_days']
-        self._query = '((issuetype = Story AND status in (Done, Accepted)) OR (issuetype = Bug AND status = Closed))'
-        self._jira = jira
+    def __init__(self):
+        self._header = ['project_key','fixVersions_0_name','issuetype_name','issue_key','story_points','status_InProgress','status_Done', 'count_days']
+        self._query = 'issuetype = Story AND status in (Done, Accepted)'
         
     @property
     def header(self):
@@ -36,29 +35,24 @@ class CycleTime:
     def query(self):
         return self._query
         
-    def process(self, query_string):
-
-        issues = self._jira.get_project_issues(query_string)
+    def process(self, issues):
         Log.debug('Process {} issues'.format(len(issues)))
-        results = [row for iss in issues for row in self._cycletime_processing(iss)]        
-        results = sorted(results, key=itemgetter('status_End'))
+        results = [row for iss in issues for row in self._processing(calculate_rows(iss))]
+        results = sorted(results, key=itemgetter('status_Done'))
         results = sorted(results, key=itemgetter('status_InProgress'))
         return results
 
-    def _cycletime_processing(self, issue):
-        rows = calculate_rows(issue)
-
+    def _processing(self, rows):
         for row in rows:
             if not row.get('story_points'):
                 continue
-            
-            row['status_End'] = row['status_Done'] if row.get('status_Done') else row['status_Closed']
+
             # if finished without progress, then cycletime = 0
             if not row.get('status_InProgress'):
-                row['status_InProgress'] = row['status_End']
+                row['status_InProgress'] = row['status_Done']
 
             # allow Excel to produce count of workdays
-            row['count_days'] = networkdays(row['status_InProgress'], row['status_End'])
+            row['count_days'] = networkdays(row['status_InProgress'], row['status_Done'])
                 
             yield row
             

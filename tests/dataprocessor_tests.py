@@ -13,7 +13,7 @@ class TestDataProcessor(unittest.TestCase):
         pass
 
     def test_process_story_cycle_times(self):
-        dp = DataProcessor(test_data.STORY)
+        dp = DataProcessor(test_data.singleSprintStory())
         rows = dp.rows()
         self.assertEqual(len(rows), 1)
         self.assertDictContainsSubset({
@@ -25,21 +25,8 @@ class TestDataProcessor(unittest.TestCase):
             'status_Done': datetime.date(2017,1,31)
         }, rows[0])
 
-    def test_process_story_cycle_times_BUG(self):
-        dp = DataProcessor(test_data.BUG)
-        rows = dp.rows()
-        self.assertEqual(len(rows), 1)
-        self.assertDictContainsSubset({
-            'project_key': 'IIQCB',
-            'issuetype_name': 'Bug',
-            'issue_key': 'IIQCB-668',
-            'story_points': 1.0,
-            'status_InProgress': datetime.date(2016, 12, 13),
-            'status_Closed':datetime.date(2017, 1, 11)
-        }, rows[0])
-
     def test_process_story_cycle_times_negativedays_fix(self):
-        dp = DataProcessor(test_data.STORY_NEGATIVE_HISTORY)
+        dp = DataProcessor(test_data.negativeHistoryStory())
         rows = dp.rows()
         self.assertEqual(len(rows), 1)
         self.assertDictContainsSubset({
@@ -48,7 +35,7 @@ class TestDataProcessor(unittest.TestCase):
         }, rows[0])
     
     def test_process_story_sprints(self):
-        dp = DataProcessor(test_data.STORY, pivot='sprint')
+        dp = DataProcessor(test_data.singleSprintStory(), pivot='sprint')
         rows = dp.rows()
         self.assertEqual(len(rows), 1)
         self.assertDictContainsSubset({
@@ -62,32 +49,18 @@ class TestDataProcessor(unittest.TestCase):
         }, rows[0])
 
     def test_process_story_sprints_NONE(self):
-        dp = DataProcessor(test_data.STORY_NO_SPRINT, pivot='sprint')
+        dp = DataProcessor(test_data.noSprintStory(), pivot='sprint')
         self.assertEqual(len(dp.rows()), 0)
 
     def test_process_story_sprints_NOPTS(self):
-        dp = DataProcessor(test_data.STORY_NO_POINTS, pivot='sprint')
+        dp = DataProcessor(test_data.zeroPointStory(), pivot='sprint')
         rows = dp.rows()
         self.assertEqual(len(rows), 1)
         with self.assertRaises(KeyError):
             rows[0]['story_points']
     
-    def test_process_story_sprints_BUG(self):
-        dp = DataProcessor(test_data.BUG, pivot='sprint')
-        rows = dp.rows()
-        self.assertEqual(len(rows), 1)
-        self.assertDictContainsSubset({
-            'project_key':'IIQCB',
-            'issuetype_name': 'Bug',
-            'issue_key': 'IIQCB-668',
-            'story_points': 1.0,
-            'sprint_name': '7.2 Cycle 1 - 1',
-            'sprint_startDate': datetime.date(2017, 1, 3),
-            'sprint_endDate': datetime.date(2017, 1, 13)
-        }, rows[0])
-
     def test_process_story_sprints_MULTI_SPRINT(self):
-        dp = DataProcessor(test_data.STORY_MULTI_SPRINT, pivot='sprint')
+        dp = DataProcessor(test_data.multiSprintStory(), pivot='sprint')
         rows = dp.rows()
         self.assertEqual(len(rows), 2)
 
