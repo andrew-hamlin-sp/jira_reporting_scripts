@@ -10,6 +10,8 @@ import argparse
 import getpass
 import csv
 
+import locale
+
 from .velocity import Velocity
 from .cycletime import CycleTime
 from .summary import Summary
@@ -145,5 +147,8 @@ def main():
 
 
 if __name__ == "__main__":
+
+    locale.setlocale(locale.LC_TIME, 'en_US')
+    
     main()
 
