@@ -49,6 +49,7 @@ __TEST_DATA_TABLE = {
                     'created':'2017-01-30T11:56:10.061-0600',
                     'items':[
                         {
+                            'field':'status',
                             'fieldId':'status',
                             'to':'3',
                             'toString': 'In Progress'
@@ -59,6 +60,7 @@ __TEST_DATA_TABLE = {
                     'created':'2017-01-31T11:56:10.061-0600',
                     'items':[
                         {
+                            'field':'status',
                             'fieldId':'status',
                             'to':'10001',
                             'toString': 'Done'
@@ -93,6 +95,7 @@ __TEST_DATA_TABLE = {
                    'created':'2017-01-30T11:56:10.061-0600',
                    'items':[
                        {
+                           'field':'status',
                            'fieldId':'status',
                            'to':'3',
                            'toString': 'In Progress'
@@ -103,6 +106,7 @@ __TEST_DATA_TABLE = {
                    'created':'2017-01-31T11:56:10.061-0600',
                    'items':[
                        {
+                           'field':'status',
                            'fieldId':'status',
                            'to':'10001',
                            'toString': 'Done'
@@ -183,6 +187,7 @@ __TEST_DATA_TABLE = {
                     'created':'2017-01-20T11:56:10.061-0600',
                     'items':[
                         {
+                            'field':'status',
                             'fieldId':'status',
                             'to':'10001',
                             'toString': 'Done'
@@ -193,6 +198,7 @@ __TEST_DATA_TABLE = {
                     'created':'2017-01-30T11:56:10.061-0600',
                     'items':[
                         {
+                            'field':'status',
                             'fieldId':'status',
                             'to':'3',
                             'toString': 'In Progress'
@@ -203,6 +209,7 @@ __TEST_DATA_TABLE = {
                     'created':'2017-01-31T11:56:10.061-0600',
                     'items':[
                         {
+                            'field':'status',
                             'fieldId':'status',
                             'to':'10001',
                             'toString': 'Done'

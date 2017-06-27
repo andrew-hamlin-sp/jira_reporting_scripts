@@ -13,7 +13,7 @@ def _generate_name(*args):
     return '_'.join([str(a) for a in args])
 
 def _create_history_status_entry(hst):
-    field_name = hst['fieldId']
+    field_name = hst['field']
     normalized_string = hst['toString'].replace(' ', '')
     created_date = dateutil.parser.parse(hst['created']).date()
     return _generate_name(field_name,normalized_string),created_date
@@ -140,7 +140,7 @@ class DataProcessor:
 
             for history in histories:
                 for history_item in history['items']:
-                    if history_item['fieldId'] == 'status':
+                    if history_item['field'] == 'status':
                         history_item_status = dict(history_item.items(), created=history['created'])
                         ret_status.update({_create_history_status_entry(history_item_status)})
 

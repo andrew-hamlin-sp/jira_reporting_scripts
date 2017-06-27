@@ -47,6 +47,8 @@ class CycleTime:
             if not row.get('story_points'):
                 continue
 
+            Log.debug(row)
+            
             # if finished without progress, then cycletime = 0
             if not row.get('status_InProgress'):
                 row['status_InProgress'] = row['status_Done']
