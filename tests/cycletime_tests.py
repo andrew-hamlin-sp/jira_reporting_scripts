@@ -27,15 +27,18 @@ class TestCycleTime(unittest.TestCase):
         # cycletime command will produce an Excel NETWORKDAYS formula
         self.assertDictContainsSubset({'count_days': '=NETWORKDAYS("2017-01-30","2017-01-31")'}, data[0])
 
-
     def test_process_done_wo_progress(self):
-        storyData = test_data.multiSprintStory()
-        del storyData['changelog']['histories'][0]
-
-        data = self.processor.process([storyData])
+        data = self.processor.process([test_data.doneWithNoProgress()])
         self.assertEqual(len(data), 1)
         # cycletime command will record the in-progress to done dates 
         self.assertDictContainsSubset(
             {'status_InProgress': datetime.date(2017, 1, 31), 'status_Done':  datetime.date(2017, 1, 31)}, data[0])
         # cycletime command will produce an Excel NETWORKDAYS formula
         self.assertDictContainsSubset({'count_days': '=NETWORKDAYS("2017-01-31","2017-01-31")'}, data[0])
+
+    def test_process_accepted(self):
+        data = self.processor.process([test_data.acceptedStory()])
+        self.assertEqual(len(data), 1)
+        # cycletime command will record the in-progress to done dates 
+        self.assertDictContainsSubset(
+            {'status_InProgress': datetime.date(2017, 1, 30), 'status_Done':  datetime.date(2017, 1, 31)}, data[0])

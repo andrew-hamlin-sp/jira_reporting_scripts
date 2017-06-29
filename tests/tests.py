@@ -17,7 +17,7 @@ def suite():
     suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(velocity_tests.TestVelocity))
     suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(cycletime_tests.TestCycleTime))
     suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(summary_tests.TestSummary))
-    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(dataprocessor_tests.TestDataProcessor))
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(dataprocessor_tests.TestDataProcessor))            
     return suite
     
 if __name__ == '__main__':

@@ -1,3 +1,9 @@
+2017-06-29  Andrew Hamlin  <andrew.hamlin@sailpoint.com>
+
+	* Version 0.981
+
+	* Bug fix: avoid KeyError during list comprehension
+
 2017-06-27  Andrew Hamlin  <andrew.hamlin@sailpoint.com>
 
 	* Version 0.98

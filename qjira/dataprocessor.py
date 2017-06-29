@@ -13,10 +13,14 @@ def _generate_name(*args):
     return '_'.join([str(a) for a in args])
 
 def _create_history_status_entry(hst):
+    # currently filtered to only 'status' field entries
+    # if we include other field types, be aware that 'fieldId' does not exist for all field types
+    # do NOT know if we can depend on 'field' to exist either
     field_name = hst['field']
     normalized_string = hst['toString'].replace(' ', '')
     created_date = dateutil.parser.parse(hst['created']).date()
-    return _generate_name(field_name,normalized_string),created_date
+    entry = _generate_name(field_name,normalized_string),created_date
+    return entry
 
 def _extract_sprint(sprint):
     m = re.search('\[(.+)\]', sprint)
@@ -117,7 +121,8 @@ class DataProcessor:
         history_cols = self._extract_histories()
 
         cols = field_cols.copy()
-        cols.update(history_cols)
+        if history_cols:
+            cols.update(history_cols)
         Log.verbose('cols {}'.format(cols))
         self._cols = cols
         
@@ -133,21 +138,16 @@ class DataProcessor:
 
     def _extract_histories(self):
         data = self._data
-        ret_status = {}
 
-        try:
-            histories = sorted(data['changelog']['histories'], key=lambda x: x['created'])
-
-            for history in histories:
-                for history_item in history['items']:
-                    if history_item['field'] == 'status':
-                        history_item_status = dict(history_item.items(), created=history['created'])
-                        ret_status.update({_create_history_status_entry(history_item_status)})
-
-        except KeyError:
-            pass
+        if not data.get('changelog'):
+            return None
         
-        return ret_status
+        histories = sorted(data['changelog']['histories'], key=lambda x: x['created'])
+
+        # list comprehensions swallow KeyError - use dict.get(x) rather than dict['x']
+        # 'field' seems to be standard attribute available in every item, 'fieldId' only exists in a sub-set
+        return dict({_create_history_status_entry(dict(i, created=h['created']))
+                           for h in histories for i in h['items'] if 'status' == i.get('field')})
 
     def _build_rows(self):
         rows = []

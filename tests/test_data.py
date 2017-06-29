@@ -17,6 +17,12 @@ def noSprintStory():
 def zeroPointStory():
     return deepcopy(__TEST_DATA_TABLE['STORY_NO_POINTS'])
 
+def acceptedStory():
+    return deepcopy(__TEST_DATA_TABLE['STORY_ACCEPTED'])
+
+def doneWithNoProgress():
+    return deepcopy(__TEST_DATA_TABLE['STORY_DONE_NO_PROGRESS'])
+
 
 __SPRINT1 = 'com.atlassian.greenhopper.service.sprint.Sprint@be7f5f[id=82,rapidViewId=52,state=CLOSED,name=Chambers Sprint 9,goal=<null>,startDate=2016-04-25T10:44:22.273-05:00,endDate=2016-05-09T10:44:00.000-05:00,completeDate=2016-05-09T10:48:04.212-05:00,sequence=82]'
 
@@ -218,6 +224,117 @@ __TEST_DATA_TABLE = {
                 }
             ]
         }
-    }
+    },
+
+    'STORY_ACCEPTED':{
+        'key':123,
+        'fields':{
+            'customfield_10109': 3.0,
+            'customfield_10016':[
+                __SPRINT1
+            ],
+            'issuetype':{
+                'name':'Story',
+            },
+            'project':{
+                'key': 'Test'
+            },
+            'status':{
+                'name':'Done'
+            }
+        },
+        'changelog':{
+            'histories':[
+                {
+                    'created':'2017-01-30T11:56:10.061-0600',
+                    'items':[
+                        {
+                            'field':'status',
+                            'fieldId':'status',
+                            'to':'3',
+                            'toString': 'In Progress'
+                        }
+                    ]
+                },
+                {
+                    'created':'2017-01-31T11:56:10.061-0600',
+                    'items':[
+                        {
+                            'field':'status',
+                            'fieldId':'status',
+                            'to':'10001',
+                            'toString': 'Done'
+                        }
+                    ]
+                },
+                {
+                    'created':'2017-02-03T11:56:10.061-0600',
+                    'items':[
+                        {
+                            'field':'status',
+                            'fieldId':'status',
+                            'to':'10110',
+                            'toString': 'Accepted'
+                        }
+                    ]
+                },
+
+            ]
+        }
+    },
+
+    
+    'STORY_DONE_NO_PROGRESS':{
+        'key':123,
+        'fields':{
+            'customfield_10109': 3.0,
+            'customfield_10016':[
+                __SPRINT1
+            ],
+            'issuetype':{
+                'name':'Story',
+            },
+            'project':{
+                'key': 'Test'
+            },
+            'status':{
+                'name':'Done'
+            }
+        },
+        'changelog':{
+            'histories':[
+                {
+                    'created':'2017-01-31T11:56:10.061-0600',
+                    'items':[
+                        {
+                            'field': 'Link',
+                            'fieldtype':'jira',
+                            'to':'IIQCB-123',
+                            'toString':'This is a link type without a fieldId causing cycletime bug'
+                        },
+                        {
+                            'fieldId':'status',
+                            'field':'status',
+                            'to':'10001',
+                            'toString': 'Done'
+                        }
+                    ]
+                },
+                {
+                    'created':'2017-02-03T11:56:10.061-0600',
+                    'items':[
+                        {
+                            'fieldId':'status',
+                            'field':'status',
+                            'to':'10110',
+                            'toString': 'Accepted'
+                        }
+                    ]
+                },
+
+            ]
+        }
+    },
 }
+
         
