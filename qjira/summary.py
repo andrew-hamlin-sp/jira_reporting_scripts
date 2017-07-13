@@ -79,7 +79,7 @@ class Summary:
         
         epics = set(row['epic_issuekey'] for row in rows if row.get('epic_issuekey'))
         
-        epic_link_table = { epic:resolve_epic(epic) for epic in epics }
+        epic_link_table = { epic:resolve_epic(self._jira, epic) for epic in epics }
         
         results = []
         sprint_placeholder = 'na'

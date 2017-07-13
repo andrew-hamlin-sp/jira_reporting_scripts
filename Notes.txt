@@ -1,4 +1,4 @@
-Developer notes for future stuff
+Developer notes & future stuff
 
 Goals
  - retrieve data from jira and export to csv format for use within Excel (pivot tables, etc)
@@ -7,26 +7,22 @@ Goals
  - batch various conversions into useful commands
 
 Todos:
- - insert NETWORKDAYS formulas into CSV output where appropriate
  - date ranges
- - clean-up query methods, standard projects and fixversions arguments should be common 
+ - add tests around CLI arg parsing (e.g. base_url)
+ - add tests of summary (e.g. resolve_epic function)
 
 Appendix/Reference
 
-    '''Steps to encrypt/decrypt using cryptography package
+Modules documentation:
 
-    from cryptography.hazmat.primitives import serialization
-    from cryptography.hazmat.backends import default_backend
-    from cryptography.hazmat.primitives.asymmetric import padding
-    from cryptography.hazmat.primitives import hashes
+ requests - http://docs.python-requests.org/en/master/
 
+   HTTP requests
 
-    with open("/Users/andrew.hamlin/.ssh/id_rsa.pub", "rb") as key_file:
-        pub_key = serialization.load_ssh_public_key(key_file.read(), default_backend())
-    with open("/Users/andrew.hamlin/.ssh/id_rsa", "rb") as key_file:   
-        pri_key = serialization.load_pem_private_key(key_file.read(), password=b"PASSWORDHERE", backend=default_backend())
+ keyring - https://pypi.python.org/pypi/keyring/10.4.0
+ 
+   keyring module for safe username/password storage.
 
-    cipher = pub_key.encrypt(b"hello", padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA1()), algorithm=hashes.SHA1(), label=None))
-    pri_key.decrypt(cipher, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA1()), algorithm=hashes.SHA1(), label=None))
-    '''
+ dateutil - https://dateutil.readthedocs.io/en/stable/
 
+   Date formatting utility

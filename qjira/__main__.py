@@ -148,7 +148,7 @@ def _create_service(args, username, password):
         
     func_progress = None if args.suppress_progress else _progress
 
-    return Jira(args.base, username=username, password=password, one_shot=args.one_shot, all_fields=args.all_fields, progress=func_progress)
+    return Jira(args.base_url, username=username, password=password, one_shot=args.one_shot, all_fields=args.all_fields, progress=func_progress)
     
 def _create_query_string(args, processor):
             
@@ -165,7 +165,7 @@ def _create_query_string(args, processor):
 def main(argv=None):
 
     if argv is None:
-        argv = sys.argv
+        argv = sys.argv[1:]
     
     parser = _create_parser()
     
