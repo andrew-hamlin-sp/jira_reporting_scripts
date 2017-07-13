@@ -9,9 +9,6 @@ import test_data
 
 class TestDataProcessor(unittest.TestCase):
 
-    def setUp(self):
-        pass
-
     def test_process_story_cycle_times(self):
         dp = DataProcessor(test_data.singleSprintStory())
         rows = dp.rows()
@@ -58,7 +55,7 @@ class TestDataProcessor(unittest.TestCase):
         self.assertEqual(len(rows), 1)
         with self.assertRaises(KeyError):
             rows[0]['story_points']
-    
+
     def test_process_story_sprints_MULTI_SPRINT(self):
         dp = DataProcessor(test_data.multiSprintStory(), pivot='sprint')
         rows = dp.rows()

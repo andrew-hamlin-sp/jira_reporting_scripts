@@ -23,7 +23,7 @@ def networkdays(start, end):
 
 class CycleTime:
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         self._header = ['project_key','fixVersions_0_name','issuetype_name','issue_key','story_points','status_InProgress','status_Done', 'count_days']
         self._query = 'issuetype = Story AND status in (Done, Accepted)'
         

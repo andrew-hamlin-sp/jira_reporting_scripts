@@ -4,16 +4,15 @@ import unittest
 
 from qjira.summary import Summary
 from qjira.jira import Jira
-from qjira.container import Container
+#from qjira.container import Container
 
 import test_data
 
 class TestSummary(unittest.TestCase):
 
     def setUp(self):
-        c = Container()
-        c['jira'] = Jira('https://localhost')
-        self.processor = Summary()
+        service = Jira('https://localhost')
+        self.processor = Summary(service)
         
     def test_header(self):
         self.assertIsInstance(self.processor.header, list)

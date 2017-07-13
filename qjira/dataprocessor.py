@@ -143,11 +143,10 @@ class DataProcessor:
             return None
         
         histories = sorted(data['changelog']['histories'], key=lambda x: x['created'])
-
-        # list comprehensions swallow KeyError - use dict.get(x) rather than dict['x']
+        
         # 'field' seems to be standard attribute available in every item, 'fieldId' only exists in a sub-set
-        return dict({_create_history_status_entry(dict(i, created=h['created']))
-                           for h in histories for i in h['items'] if 'status' == i.get('field')})
+        return dict([_create_history_status_entry(dict(i, created=h['created']))
+                     for h in histories for i in h['items'] if 'status' == i.get('fieldId')])
 
     def _build_rows(self):
         rows = []

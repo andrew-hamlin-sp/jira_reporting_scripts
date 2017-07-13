@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='qjira',
-      version='0.981',
+      version='0.99',
       description='Query JIRA Cloud REST API',
       author='Andrew Hamlin',
       author_email='andrew.hamlin@sailpoint.com',
@@ -14,6 +14,7 @@ setup(name='qjira',
       install_requires=[
           'requests',
           'python-dateutil',
+          'keyring',
       ]
 )
      

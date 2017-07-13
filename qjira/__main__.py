@@ -10,14 +10,15 @@ import argparse
 import getpass
 import csv
 
+import keyring
 import locale
+from requests.exceptions import HTTPError
 
 from .velocity import Velocity
 from .cycletime import CycleTime
 from .summary import Summary
 from .jira import Jira
 from .log import Log
-from .container import Container
 
 def _progress (start, total):
     msg = '\rRetrieving {} of {}...'.format(start, total)
@@ -29,9 +30,34 @@ def _progress (start, total):
     sys.stderr.write(msg)
     sys.stderr.flush()
 
-def main():
-    # process command line arguments
+def _get_credentials (username, password):
+    if not username:
+        username = getpass.getuser()
 
+    _needs_storage = True
+    
+    if not password:
+        # retrieve password from system storage
+        if keyring.get_keyring():
+            password = keyring.get_password('qjira-sp', username)
+            if password:
+                _needs_storage = False
+
+    if not password:
+        password = getpass.getpass('Enter password for {}: '.format(username))
+        
+    if _needs_storage and keyring.get_keyring():
+        keyring.set_password('qjira-sp', username, password)
+        
+    return username, password
+
+def _clear_credentials(username):
+    if username and keyring.get_keyring():
+        keyring.delete_password('qjira-sp', username)
+
+def _create_parser():
+    
+    # process command line arguments
     parser_common = argparse.ArgumentParser(add_help=False)
     
     parser_common.add_argument('-p', '--project',
@@ -47,12 +73,14 @@ def main():
     parser_common.add_argument('-o', '--outfile',
                         metavar='file',
                         nargs='?',
+                        default=sys.stdout,
                         help='Output file (.csv) [default: stdout]')
     parser_common.add_argument('--no-progress',
                         action='store_true',
                         dest='suppress_progress',
                         help='Hide data download progress')       
     parser_common.add_argument('-b', '--base',
+                        dest='base_url',
                         metavar='url',
                         help='Jira Cloud base URL [default: sailpoint.atlassian.net]',
                         default='sailpoint.atlassian.net')
@@ -65,6 +93,7 @@ def main():
                         help='Password (insecure), if blank will prommpt',
                         default=None)
     parser_common.add_argument('-d',
+                        dest='debugLevel',
                         action='count',
                         help='Debug level')
     parser_common.add_argument('-1', '--one-shot',
@@ -74,12 +103,11 @@ def main():
                         action='store_true',
                         help='Extract all available fields')
 
-    parser = argparse.ArgumentParser(description='Export data from Jira to CSV format')
+    parser = argparse.ArgumentParser(prog='qjira', description='Export data from Jira to CSV format')
 
-    # sub-commands: velocity, cycletimes
-    # TODO: add backlog/loading by sprint, add summary including description, design & test docs
+    # sub-commands: velocity, cycletimes, summary
 
-    subparsers = parser.add_subparsers(dest='subparser_name', help='Available commands to process data')
+    subparsers = parser.add_subparsers(title='Available commands', dest='subparser_name', help='Available commands to process data')
 
     parser_cycletime = subparsers.add_parser('c',
                                              parents=[parser_common],
@@ -95,35 +123,35 @@ def main():
                                            parents=[parser_common],
                                            help='Produce [s]ummary report')
     parser_summary.set_defaults(func=Summary)
-    
-    args = parser.parse_args()
-    
-    if args.d:
-        Log.debugLevel = args.d
 
-    if not args.user:
-        args.user = getpass.getuser()
-        
-    if not args.password:
-        args.password = getpass.getpass('Enter password for {}: '.format(args.user))
-    
-    # TODO: store credentials in a user protected file and pass in as 'auth=XXX'
+    return parser
 
-    if args.suppress_progress:
-        func_progress = None
-    else:
-        func_progress=_progress
+def _create_outfile(out):
 
-    svc = Container()
-    svc['jira'] = Jira(args.base, username=args.user, password=args.password, one_shot=args.one_shot, all_fields=args.all_fields, progress=func_progress)
-    
-    processor = args.func()
+    if out is sys.stdout:
+        return out
 
     try:
-        outfile = open(args.outfile, 'w', newline='') if args.outfile else sys.stdout
+        outfile = open(out, 'w', newline='')
     except TypeError:
-        outfile = open(args.outfile, 'wb') if args.outfile else sys.stdout
+        outfile = open(out, 'wb')
+
+    return outfile
+
+
+def _validate_args(parser, args):
+    if not args.subparser_name:
+        parser.print_usage()
+        raise SystemExit()
+   
+def _create_service(args, username, password):
         
+    func_progress = None if args.suppress_progress else _progress
+
+    return Jira(args.base, username=username, password=password, one_shot=args.one_shot, all_fields=args.all_fields, progress=func_progress)
+    
+def _create_query_string(args, processor):
+            
     query = []
     if args.fixversion:
         query.append('fixVersion in ({})'.format(','.join(args.fixversion)))
@@ -132,19 +160,45 @@ def main():
     if processor.query:
         query.append(processor.query)
 
-    query_string = ' AND '.join(query)
+    return ' AND '.join(query)
 
-    issues = svc['jira'].get_project_issues(query_string)
-        
-    fieldnames = processor.header # TODO convert to array
-    writer = csv.DictWriter(outfile, fieldnames=fieldnames, extrasaction='ignore')
-    writer.writeheader()
+def main(argv=None):
 
-    for entry in processor.process(issues):
-        writer.writerow(entry)
+    if argv is None:
+        argv = sys.argv
+    
+    parser = _create_parser()
+    
+    args = parser.parse_args(argv)
 
-    outfile.close()
+    _validate_args(parser, args)
+    
+    if args.debugLevel:
+        Log.debugLevel = args.debugLevel
 
+    # handle username/password input
+    username, password = _get_credentials(args.user, args.password)        
+
+    service = _create_service(args, username, password)
+
+    processor = args.func(service)
+
+    query_string = _create_query_string(args, processor)
+
+    try:
+        issues = service.get_project_issues(query_string)
+    except HTTPError as err:
+        if 401 == err.response.status_code:
+            _clear_credentials(username)
+        raise err
+
+    with _create_outfile(out=args.outfile) as outfile:
+        entries = processor.process(issues)
+        fieldnames = processor.header
+        writer = csv.DictWriter(outfile, fieldnames=fieldnames, extrasaction='ignore')
+        writer.writeheader()
+        for entry in entries:
+            writer.writerow(entry)
 
 if __name__ == "__main__":
 

@@ -19,7 +19,7 @@ DEFAULT_POINTS = 0.0
 class Velocity:
     '''Analyze data for velocity metrics'''
     
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         self._fieldnames = ['project_key','fixVersions_0_name','issuetype_name','issue_key','sprint_name','sprint_startDate','sprint_endDate','story_points','planned_points','carried_points','completed_points']
         self._query = 'issuetype = Story'
         

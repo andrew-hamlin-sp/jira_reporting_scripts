@@ -11,18 +11,15 @@ from functools import partial
 import datetime
 from .log import Log
 from .dataprocessor import calculate_rows
-from .container import Container
 
 # Sprints w/o dates and Issues without sprints
 SORT_DEFAULT_YEAR = datetime.date(datetime.MINYEAR, 1, 1)
 SORT_REVERSE_YEAR = datetime.date(datetime.MAXYEAR, 1, 1)
 
-_svc = Container()
-
 # build table of epic links
-def resolve_epic(epic_key):
-    epic = _svc['jira'].get_issue(epic_key)
-    return _svc['jira'].get_browse_url(epic_key), epic['fields']['customfield_10019']
+def resolve_epic(service, epic_key):
+    epic = service.get_issue(epic_key)
+    return service.get_browse_url(epic_key), epic['fields']['customfield_10019']
 
 def sprint_startDate_sort(x, reverse=False):
     # Note: using simple dict.get with default value does not work here - unsure why
@@ -48,10 +45,13 @@ def hyperlink(url, name):
     
 class Summary:
 
-    def __init__(self, reverse=False):
+    def __init__(self, *args, **kwargs):
         self._fieldnames = ['issue_link','summary','assignee_displayName','design_doc_link','testplan_doc_link','story_points','epic_link']
         self._query = 'issuetype = Story'
-        self._reverseSort = reverse
+        self._reverseSort = kwargs.get('reverse', False)
+
+        if len(args) > 0:
+            self._jira = args[0]        
 
     @property
     def header(self):
@@ -100,7 +100,7 @@ class Summary:
                 row['epic_link'] = hyperlink(*epic_link)
 
             if issue_key:
-                row['issue_link'] = hyperlink(_svc['jira'].get_browse_url(issue_key), issue_key)
+                row['issue_link'] = hyperlink(self._jira.get_browse_url(issue_key), issue_key)
 
             for L in ['design_doc_link','testplan_doc_link']:
                 if row.get(L):
