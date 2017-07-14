@@ -1,3 +1,9 @@
+2017-07-14  Andrew Hamlin  <andrew.hamlin@sailpoint.com>
+
+	* Version 0.99
+
+	* Add keyring module, local credential storage for MacOS & Windows
+
 2017-06-29  Andrew Hamlin  <andrew.hamlin@sailpoint.com>
 
 	* Version 0.981

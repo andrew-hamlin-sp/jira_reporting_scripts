@@ -1,4 +1,4 @@
-# Jira Reporting Scripts
+# Jira Reporting Scripts (0.99)
 
 To address some of the deficiencies in Jira reporting, here is a small command line tool to 
 exercise the [Jira REST API](https://docs.atlassian.com/jira/REST/cloud/) to retrieve information about Stories,
@@ -6,6 +6,12 @@ including story points and iterations and export into CSV format. This enables b
 
 MacOS:   Python 2.7 & 3.6 (tested)
 Windows: Python 3.6 (tested), 2.7 (not tested)
+
+## New Features
+
+### OS credential storage
+
+Added the `keyring` module, enabling storage of your Jira credentials in your OSes keychain or credential vault. MacOS and Windows are supported. The script may prompt that Python wants to access `qjira-sp` in your credential store. You should allow it always, unless you really like typing your password over and over again.
 
 ## Summary
 
