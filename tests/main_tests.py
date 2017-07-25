@@ -27,7 +27,7 @@ class FakeService:
             raise HTTPError(response=response)
         return []
 
-def _test_create_service(*args):
+def _test_create_service(*args, **kwargs):
     return FakeService()
 
 class TestableKeyring(keyring.backend.KeyringBackend):

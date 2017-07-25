@@ -7,9 +7,7 @@ Goals
  - batch various conversions into useful commands
 
 Todos:
- - date ranges
- - add tests around CLI arg parsing (e.g. base_url)
- - add tests of summary (e.g. resolve_epic function)
+ - date range queries/filters in addition to just fixVersion filters
 
 Appendix/Reference
 

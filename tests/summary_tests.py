@@ -11,9 +11,11 @@ import test_data
 class TestSummary(unittest.TestCase):
 
     def setUp(self):
-        service = Jira('https://localhost')
-        self.processor = Summary(service)
+        service = Jira('localhost')
+        service.get_issue = lambda k: {'fields':{'customfield_10019':'epic name'}}
         
+        self.processor = Summary(service)
+
     def test_header(self):
         self.assertIsInstance(self.processor.header, list)
 
@@ -27,3 +29,5 @@ class TestSummary(unittest.TestCase):
         self.assertDictContainsSubset({'summary': 'CHAMBERS SPRINT 10  [05/10/2016 to 05/19/2016]'}, data[0])
         # summary command adds row for each story completed or in-progress for that sprint
         self.assertDictContainsSubset({'sprint_0_name': 'Chambers Sprint 10'}, data[1])
+        # make sure resolve epic link is called properly
+        self.assertDictContainsSubset({'epic_link': '=HYPERLINK("https://localhost/browse/test-1234","epic name")'}, data[1])

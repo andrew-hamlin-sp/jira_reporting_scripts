@@ -17,6 +17,7 @@ from requests.exceptions import HTTPError
 from .velocity import Velocity
 from .cycletime import CycleTime
 from .summary import Summary
+from .techdebt import TechDebt
 from .jira import Jira
 from .log import Log
 
@@ -105,7 +106,7 @@ def _create_parser():
 
     parser = argparse.ArgumentParser(prog='qjira', description='Export data from Jira to CSV format')
 
-    # sub-commands: velocity, cycletimes, summary
+    # sub-commands: velocity, cycletimes, summary, techdebt
 
     subparsers = parser.add_subparsers(title='Available commands', dest='subparser_name', help='Available commands to process data')
 
@@ -124,6 +125,11 @@ def _create_parser():
                                            help='Produce [s]ummary report')
     parser_summary.set_defaults(func=Summary)
 
+    parser_techdebt = subparsers.add_parser('d'
+                                            , parents=[parser_common]
+                                            , help='Produce tech [d]ebt report')
+    parser_techdebt.set_defaults(func=TechDebt)
+    
     return parser
 
 def _create_outfile(out):
@@ -137,26 +143,21 @@ def _create_outfile(out):
         outfile = open(out, 'wb')
 
     return outfile
-
-
-def _validate_args(parser, args):
-    if not args.subparser_name:
-        parser.print_usage()
-        raise SystemExit()
    
-def _create_service(args, username, password):
+def _create_service(username, password, base_url, one_shot=False, all_fields=False, suppress_progress=False):
         
-    func_progress = None if args.suppress_progress else _progress
+    func_progress = None if suppress_progress else _progress
 
-    return Jira(args.base_url, username=username, password=password, one_shot=args.one_shot, all_fields=args.all_fields, progress=func_progress)
+    return Jira(base_url, username=username, password=password, one_shot=one_shot, all_fields=all_fields, progress=func_progress)
     
-def _create_query_string(args, processor):
+def _create_query_string(processor, fixversion=None, project=None):
             
     query = []
-    if args.fixversion:
-        query.append('fixVersion in ({})'.format(','.join(args.fixversion)))
-    if args.project:
-        query.append('project in ({})'.format(','.join(args.project)))
+    
+    if fixversion:
+        query.append('fixVersion in ({})'.format(','.join(fixversion)))
+    if project:
+        query.append('project in ({})'.format(','.join(project)))
     if processor.query:
         query.append(processor.query)
 
@@ -171,19 +172,21 @@ def main(argv=None):
     
     args = parser.parse_args(argv)
 
-    _validate_args(parser, args)
-    
+    if not args.subparser_name:
+        parser.print_usage()
+        raise SystemExit()
+
     if args.debugLevel:
         Log.debugLevel = args.debugLevel
 
     # handle username/password input
     username, password = _get_credentials(args.user, args.password)        
 
-    service = _create_service(args, username, password)
+    service = _create_service(username, password, args.base_url, one_shot=args.one_shot, all_fields=args.all_fields, suppress_progress=args.suppress_progress)
 
     processor = args.func(service)
 
-    query_string = _create_query_string(args, processor)
+    query_string = _create_query_string(processor, fixversion=args.fixversion, project=args.project)
 
     try:
         issues = service.get_project_issues(query_string)

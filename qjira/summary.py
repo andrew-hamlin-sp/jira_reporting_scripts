@@ -1,8 +1,5 @@
 '''
 Summarize the backlog
-
-To Do: replace epic issue key with call back to Jira to retrieve the Epic Name property
-
 '''
 
 from operator import itemgetter
