@@ -23,7 +23,6 @@ class TestTechDebt(unittest.TestCase):
 
         # project Test, type Story, points 3
         # project Test Two, type Bug, points 3
-        self.assertDictEqual({'project_name':'Test', 'bug_points': 0, 'story_points': 3.0, 'tech_debt': '0%'}, data[0])
-        self.assertDictEqual({'project_name':'Test Two', 'bug_points': 3.0, 'story_points': 0, 'tech_debt': '100%'}, data[1])
-        self.assertDictEqual({'project_name':'Grand Total', 'bug_points': 3.0, 'story_points': 3.0, 'tech_debt': '50%'}, data[2])
-        
+        self.assertDictEqual({'project_name':'Test', 'bug_points': '0', 'story_points': '3', 'tech_debt': '0%'}, data[0])
+        self.assertDictEqual({'project_name':'Test Two', 'bug_points': '3', 'story_points': '0', 'tech_debt': '100%'}, data[1])
+        self.assertDictEqual({'project_name':'Grand Total', 'bug_points': '3', 'story_points': '3', 'tech_debt': '50%'}, data[2])

@@ -43,6 +43,9 @@ class TechDebt:
             else:
                 Log.warn('Unknown issuetype_name: %s', x['issuetype_name'])
 
+        def _format_points(f):
+            return '{:.0f}'.format(f)
+        
         tmp = {}
         bug_total = 0
         story_total = 0
@@ -57,8 +60,8 @@ class TechDebt:
         techdebtbyproj = []
         for k, v in tmp.items():
             techdebtbyproj.append({'project_name': k
-                                   , 'bug_points': v[0]
-                                   , 'story_points': v[1]
+                                   , 'bug_points': _format_points(v[0])
+                                   , 'story_points': _format_points(v[1])
                                    , 'tech_debt': _tech_debt_perc(v)
             })
 
@@ -66,8 +69,8 @@ class TechDebt:
         
         # Grand total
         sorted_list.append({'project_name': 'Grand Total'
-                            , 'bug_points': bug_total
-                            , 'story_points': story_total
+                            , 'bug_points': _format_points(bug_total)
+                            , 'story_points': _format_points(story_total)
                             , 'tech_debt': _tech_debt_perc( (bug_total, story_total) )
         })
         
