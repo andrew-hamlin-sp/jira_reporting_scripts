@@ -1,4 +1,4 @@
-# Jira Reporting Scripts (0.99)
+# Jira Reporting Scripts (0.99.2)
 
 To address some of the deficiencies in Jira reporting, here is a small command line tool to 
 exercise the [Jira REST API](https://docs.atlassian.com/jira/REST/cloud/) to retrieve information about Stories,
@@ -12,6 +12,10 @@ Windows: Python 3.6 (tested), 2.7 (not tested)
 ### OS credential storage
 
 Added the `keyring` module, enabling storage of your Jira credentials in your OSes keychain or credential vault. MacOS and Windows are supported. The script may prompt that Python wants to access `qjira-sp` in your credential store. You should allow it always, unless you really like typing your password over and over again.
+
+### Tech Debt command
+
+Added the tech debt `d` command, prints a table of story points versus bug points including percentage of tech debt (bugs) completed per project.
 
 ## Summary
 
@@ -36,6 +40,10 @@ Limitations:
   * This does not subtract time for an issue moved from In Progress back to Open. 
 
   * This does not record separate values for bugs being dev complete 'Resolved' and being test complete 'Closed'.
+
+## Tech Debt
+
+Generate table of project_name, bug_points, story_points, & tech_debt percentage.
 
 ## Future enhancements
   
