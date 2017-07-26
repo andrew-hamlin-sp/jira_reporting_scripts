@@ -3,11 +3,13 @@ Analyze tech debt ratios Story vs Bug points.
 '''
 
 from operator import itemgetter
-from .dataprocessor import calculate_rows
+#from .dataprocessor import calculate_rows
+from .command import Command
 
-class TechDebt:
+class TechDebt(Command):
 
     def __init__(self, *args, **kwargs):
+        Command.__init__(self, args, kwargs)
         self._fieldnames = [ 'project_name', 'bug_points', 'story_points', 'tech_debt' ]
         self._query = 'issuetype in (Story, Bug) AND status in (Accepted, Closed, Done)'
 
@@ -19,7 +21,7 @@ class TechDebt:
     def query(self):
         return self._query
     
-    def process(self, issues):
+    def post_process(self, rows):
         """
         Build a table including:
         Project name | Bug pts | Story pts | Debt %
@@ -27,8 +29,6 @@ class TechDebt:
         NameN        |
         Grand total  |
         """
-        rows = [row for issue in issues for row in calculate_rows(issue)]
-
         def _tech_debt_perc(val):
             return '{:.0f}%'.format(100 * (val[0] / ( val[0] + val[1] )))
 

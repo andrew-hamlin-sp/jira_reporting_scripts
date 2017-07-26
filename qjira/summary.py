@@ -7,7 +7,8 @@ from functools import partial
 
 import datetime
 from .log import Log
-from .dataprocessor import calculate_rows
+from .dataprocessor import DataProcessor
+from .command import Command
 
 # Sprints w/o dates and Issues without sprints
 SORT_DEFAULT_YEAR = datetime.date(datetime.MINYEAR, 1, 1)
@@ -40,9 +41,10 @@ def hyperlink(url, name):
         name = url
     return '=HYPERLINK("{}","{}")'.format(url, name)
     
-class Summary:
+class Summary(Command):
 
     def __init__(self, *args, **kwargs):
+        Command.__init__(self, args, kwargs, processor=DataProcessor(reverse_sprints=True))
         self._fieldnames = ['issue_link','summary','assignee_displayName','design_doc_link','testplan_doc_link','story_points','epic_link']
         self._query = 'issuetype = Story'
         self._reverseSort = kwargs.get('reverse', False)
@@ -61,10 +63,7 @@ class Summary:
     def new_row(self):
         return {k:'=T(" ")' for k in self._fieldnames}
     
-    def process(self, issues):
-        Log.debug('Process {} issues'.format(len(issues)))
-
-        rows = [row for issue in issues for row in calculate_rows(issue, reverse_sprints=True)]
+    def post_process(self, rows):
         # Secondary sort by issuekey
         rows = sorted(rows, key=itemgetter('issue_key'))
         # Secondary sort by epickey

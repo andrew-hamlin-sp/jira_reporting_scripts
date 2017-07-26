@@ -16,14 +16,16 @@ import datetime
 from operator import itemgetter
 
 from .log import Log
-from .dataprocessor import calculate_rows
+#from .dataprocessor import calculate_rows
+from .command import Command
 
 def networkdays(start, end):
     return '=NETWORKDAYS("{}","{}")'.format(start, end)
 
-class CycleTime:
+class CycleTime(Command):
 
     def __init__(self, *args, **kwargs):
+        Command.__init__(self, args, kwargs)
         self._header = ['project_key','fixVersions_0_name','issuetype_name','issue_key','story_points','status_InProgress','status_Done', 'count_days']
         self._query = 'issuetype = Story AND status in (Done, Accepted)'
         
@@ -35,14 +37,8 @@ class CycleTime:
     def query(self):
         return self._query
         
-    def process(self, issues):
-        Log.debug('Process {} issues'.format(len(issues)))
-        results = [row for iss in issues for row in self._processing(calculate_rows(iss))]
-        results = sorted(results, key=itemgetter('status_Done'))
-        results = sorted(results, key=itemgetter('status_InProgress'))
-        return results
-
-    def _processing(self, rows):
+    def post_process(self, rows):
+        results = []
         for row in rows:
             if not row.get('story_points'):
                 continue
@@ -56,5 +52,9 @@ class CycleTime:
             # allow Excel to produce count of workdays
             row['count_days'] = networkdays(row['status_InProgress'], row['status_Done'])
                 
-            yield row
+            results.append(row)
+        
+        results = sorted(results, key=itemgetter('status_Done'))
+        results = sorted(results, key=itemgetter('status_InProgress'))
+        return results
             

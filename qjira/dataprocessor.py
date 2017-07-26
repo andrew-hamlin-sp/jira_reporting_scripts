@@ -5,10 +5,6 @@ import dateutil.parser
 
 from .log import Log
 
-def calculate_rows(issue, *args, **kwargs):
-    '''factory method processing an issue into 1..N rows'''
-    return DataProcessor(issue, *args, **kwargs).rows()
-
 def _generate_name(*args):
     return '_'.join([str(a) for a in args])
 
@@ -66,14 +62,16 @@ def _mapper(name, value):
 
 class DataProcessor:
 
-    def __init__(self, data, pivot=None, reverse_sprints=False):
+    def __init__(self, pivot=None, reverse_sprints=False):
         ''' process an jira issue'''
         self._pivot_field = pivot
         self._reverse_sprints = reverse_sprints
+
+    def transform(self, data):
         self._data = self._pre_process(data)
         self._build_pivots()
         self._build_cols()
-        self._build_rows()
+        return self._generate_rows()
 
     def _pre_process(self, data):
         ''' clean up some custom fields'''
@@ -148,7 +146,7 @@ class DataProcessor:
         return dict([_create_history_status_entry(dict(i, created=h['created']))
                      for h in histories for i in h['items'] if 'status' == i.get('fieldId')])
 
-    def _build_rows(self):
+    def _generate_rows(self):
         rows = []
         if self._pivot_field:
             for p in self._pivots:
@@ -158,7 +156,4 @@ class DataProcessor:
         else:
             rows.append(self._cols)
 
-        self._rows = rows
-                
-    def rows(self):
-        return self._rows
+        return rows

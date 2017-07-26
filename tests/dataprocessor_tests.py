@@ -10,8 +10,8 @@ import test_data
 class TestDataProcessor(unittest.TestCase):
 
     def test_process_story_cycle_times(self):
-        dp = DataProcessor(test_data.singleSprintStory())
-        rows = dp.rows()
+        dp = DataProcessor()
+        rows = dp.transform(test_data.singleSprintStory())
         self.assertEqual(len(rows), 1)
         self.assertDictContainsSubset({
             'project_key': 'Test',
@@ -23,8 +23,8 @@ class TestDataProcessor(unittest.TestCase):
         }, rows[0])
 
     def test_process_story_cycle_times_negativedays_fix(self):
-        dp = DataProcessor(test_data.negativeHistoryStory())
-        rows = dp.rows()
+        dp = DataProcessor()
+        rows = dp.transform(test_data.negativeHistoryStory())
         self.assertEqual(len(rows), 1)
         self.assertDictContainsSubset({
             'status_InProgress': datetime.date(2017,1,30),
@@ -32,8 +32,8 @@ class TestDataProcessor(unittest.TestCase):
         }, rows[0])
     
     def test_process_story_sprints(self):
-        dp = DataProcessor(test_data.singleSprintStory(), pivot='sprint')
-        rows = dp.rows()
+        dp = DataProcessor(pivot='sprint')
+        rows = dp.transform(test_data.singleSprintStory())
         self.assertEqual(len(rows), 1)
         self.assertDictContainsSubset({
             'project_key':'Test',
@@ -46,19 +46,20 @@ class TestDataProcessor(unittest.TestCase):
         }, rows[0])
 
     def test_process_story_sprints_NONE(self):
-        dp = DataProcessor(test_data.noSprintStory(), pivot='sprint')
-        self.assertEqual(len(dp.rows()), 0)
+        dp = DataProcessor(pivot='sprint')
+        rows = dp.transform(test_data.noSprintStory())
+        self.assertEqual(len(rows), 0)
 
     def test_process_story_sprints_NOPTS(self):
-        dp = DataProcessor(test_data.zeroPointStory(), pivot='sprint')
-        rows = dp.rows()
+        dp = DataProcessor(pivot='sprint')
+        rows = dp.transform(test_data.zeroPointStory())
         self.assertEqual(len(rows), 1)
         with self.assertRaises(KeyError):
             rows[0]['story_points']
 
     def test_process_story_sprints_MULTI_SPRINT(self):
-        dp = DataProcessor(test_data.multiSprintStory(), pivot='sprint')
-        rows = dp.rows()
+        dp = DataProcessor(pivot='sprint')
+        rows = dp.transform(test_data.multiSprintStory())
         self.assertEqual(len(rows), 2)
 
         start_id = 82

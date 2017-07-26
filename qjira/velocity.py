@@ -11,15 +11,17 @@
 '''
 import datetime
 
+from .command import Command
+from .dataprocessor import DataProcessor
 from .log import Log
-from .dataprocessor import calculate_rows
 
 DEFAULT_POINTS = 0.0
 
-class Velocity:
+class Velocity(Command):
     '''Analyze data for velocity metrics'''
     
     def __init__(self, *args, **kwargs):
+        Command.__init__(self, args, kwargs, processor=DataProcessor(pivot='sprint'))
         self._fieldnames = ['project_key','fixVersions_0_name','issuetype_name','issue_key','sprint_name','sprint_startDate','sprint_endDate','story_points','planned_points','carried_points','completed_points']
         self._query = 'issuetype = Story'
         
@@ -30,15 +32,11 @@ class Velocity:
     @property
     def query(self):
         return self._query
-    
-    def process(self, issues):
-        Log.debug('Process {} issues'.format(len(issues)))
-        results = [row for iss in issues for row in self._processing(calculate_rows(iss, pivot='sprint'))]
-        return results
 
-    def _processing(self, rows):
+    def post_process(self, rows):
         '''data processor wrapper to calculate points carried, completed'''
         count = len(rows)
+        results = []
         for idx,row in enumerate(rows):
             #print ('> row {} keys= {}'.format(idx+1, row.keys()))
             if not row.get('sprint_completeDate'):
@@ -55,7 +53,8 @@ class Velocity:
                 'completed_points': completed_points
             }
             row.update(update)
-            yield row
+            results.append(row)
+        return results
 
     def _isComplete(self, row):
 
