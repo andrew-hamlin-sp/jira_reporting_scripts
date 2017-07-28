@@ -45,7 +45,7 @@ class Summary(Command):
 
     def __init__(self, *args, **kwargs):
         Command.__init__(self, args, kwargs, processor=DataProcessor(reverse_sprints=True))
-        self._fieldnames = ['issue_link','summary','assignee_displayName','design_doc_link','testplan_doc_link','story_points','epic_link']
+        self._fieldnames = ['issue_link','summary','assignee_displayName','design_doc_link','testplan_doc_link','story_points','status_name','epic_link']
         self._query = 'issuetype = Story'
         self._reverseSort = kwargs.get('reverse', False)
 

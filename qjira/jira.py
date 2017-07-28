@@ -30,7 +30,7 @@ class Jira:
 
     QUERY_STRING_DICT = {
         'expand': 'changelog',
-        'fields': '-*navigable,project,issuetype,summary,assignee,fixVersions,customfield_10109,customfield_10016,customfield_11101,customfield_14300,customfield_10017'
+        'fields': '-*navigable,project,issuetype,status,summary,assignee,fixVersions,customfield_10109,customfield_10016,customfield_11101,customfield_14300,customfield_10017'
 
     }
             
