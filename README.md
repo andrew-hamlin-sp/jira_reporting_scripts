@@ -17,6 +17,10 @@ Added the `keyring` module, enabling storage of your Jira credentials in your OS
 
 Added the tech debt `d` command, prints a table of story points versus bug points including percentage of tech debt (bugs) completed per project.
 
+### Bug Backlog command
+
+Added the bug backlog `b` command, prints all bugs by fix version.
+
 ## Summary
 
 Prints backlog summary and documentation links for stories in a project using Excel formulas. Note: In order to
@@ -44,6 +48,10 @@ Limitations:
 ## Tech Debt
 
 Generate table of project_name, bug_points, story_points, & tech_debt percentage.
+
+## Bug Backlog
+
+Prints backlog summary of bugs by fix version. This adds a row per fix version for filtering in Excel.
 
 ## Future enhancements
   

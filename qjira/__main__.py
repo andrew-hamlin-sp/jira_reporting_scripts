@@ -18,6 +18,7 @@ from .velocity import Velocity
 from .cycletime import CycleTime
 from .summary import Summary
 from .techdebt import TechDebt
+from .backlog import Backlog
 from .jira import Jira
 from .log import Log
 
@@ -119,6 +120,9 @@ def _create_parser():
                                             parents=[parser_common],
                                             help='Produce [v]elocity data')
     parser_velocity.set_defaults(func=Velocity)
+    parser_velocity.add_argument('--include-bugs', '-B',
+                                 action='store_true',
+                                 help='Include bugs in velocity calculation')
 
     parser_summary = subparsers.add_parser('s',
                                            parents=[parser_common],
@@ -129,6 +133,11 @@ def _create_parser():
                                             , parents=[parser_common]
                                             , help='Produce tech [d]ebt report')
     parser_techdebt.set_defaults(func=TechDebt)
+
+    parser_backlog = subparsers.add_parser('b',
+                                           parents=[parser_common],
+                                           help='Query [b]ug backlog by fixVersion')
+    parser_backlog.set_defaults(func=Backlog)
     
     return parser
 
@@ -179,12 +188,16 @@ def main(argv=None):
     if args.debugLevel:
         Log.debugLevel = args.debugLevel
 
+    # TODO: handle optional/command specific arguments
+    extra_args = {k:v for k,v in vars(args).items() if k not in ['subparser_name', 'func', 'outfile', 'debugLevel', 'user', 'password', 'base_url', 'one_shot', 'all_fields', 'suppress_progress', 'fixversion', 'project']}
+    #print('extra_args: ', extra_args)
+    
     # handle username/password input
     username, password = _get_credentials(args.user, args.password)        
 
     service = _create_service(username, password, args.base_url, one_shot=args.one_shot, all_fields=args.all_fields, suppress_progress=args.suppress_progress)
 
-    processor = args.func(service)
+    processor = args.func(service, **extra_args)
 
     query_string = _create_query_string(processor, fixversion=args.fixversion, project=args.project)
 

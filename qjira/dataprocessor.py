@@ -8,14 +8,21 @@ from .log import Log
 def _generate_name(*args):
     return '_'.join([str(a) for a in args])
 
-def _create_history_status_entry(hst):
+def _create_history_entry(hst):
     # currently filtered to only 'status' field entries
     # if we include other field types, be aware that 'fieldId' does not exist for all field types
     # do NOT know if we can depend on 'field' to exist either
-    field_name = hst['field']
-    normalized_string = hst['toString'].replace(' ', '')
+#    print('History:', hst)
+
+    if hst['fieldId'] == 'status':
+        field_name = hst['field'].replace(' ', '')
+        normalized_string = hst['toString'].replace(' ', '')
+    else:
+        field_name = hst['field'].replace(' ', '_').lower()
+        normalized_string = 'changed'
     created_date = dateutil.parser.parse(hst['created']).date()
     entry = _generate_name(field_name,normalized_string),created_date
+    #print ('Entry;',entry)
     return entry
 
 def _extract_sprint(sprint):
@@ -116,6 +123,9 @@ class DataProcessor:
 
     def _build_cols(self):
         field_cols = self._extract_fields()
+        # 1. extract all the history entries
+        # 2. update status columns from history
+        # 3. for design and test links, add created date column 
         history_cols = self._extract_histories()
 
         cols = field_cols.copy()
@@ -143,8 +153,8 @@ class DataProcessor:
         histories = sorted(data['changelog']['histories'], key=lambda x: x['created'])
         
         # 'field' seems to be standard attribute available in every item, 'fieldId' only exists in a sub-set
-        return dict([_create_history_status_entry(dict(i, created=h['created']))
-                     for h in histories for i in h['items'] if 'status' == i.get('fieldId')])
+        return dict([_create_history_entry(dict(i, created=h['created']))
+                     for h in histories for i in h['items'] if 'fieldId' in i])
 
     def _generate_rows(self):
         rows = []
@@ -155,5 +165,5 @@ class DataProcessor:
                 rows.append(r)            
         else:
             rows.append(self._cols)
-
+        #print('Rows:', rows)
         return rows

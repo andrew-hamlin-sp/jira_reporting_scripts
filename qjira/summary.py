@@ -40,7 +40,15 @@ def hyperlink(url, name):
     if not name:
         name = url
     return '=HYPERLINK("{}","{}")'.format(url, name)
-    
+
+def doc_link_marked_new(row, link_col, date_col):
+    name = row[link_col].rpartition('/')[2]
+    if date_col in row and row[date_col] >= datetime.date.today()+datetime.timedelta(days=-14):
+        name = "[New] " + name
+        
+    return hyperlink(row[link_col], name)
+
+
 class Summary(Command):
 
     def __init__(self, *args, **kwargs):
@@ -92,15 +100,18 @@ class Summary(Command):
             epic_key = row.get('epic_issuekey')
             issue_key = row.get('issue_key')
             if epic_key:
-                epic_link = epic_link_table[epic_key]
-                row['epic_link'] = hyperlink(*epic_link)
+                url, name = epic_link_table[epic_key]
+                row['epic_link'] = hyperlink(url, name)
 
             if issue_key:
                 row['issue_link'] = hyperlink(self._jira.get_browse_url(issue_key), issue_key)
 
-            for L in ['design_doc_link','testplan_doc_link']:
-                if row.get(L):
-                    row[L] = hyperlink(row[L], row[L].rpartition('/')[2])
+            if 'design_doc_link' in row:
+                row['design_doc_link'] = doc_link_marked_new(row, 'design_doc_link', 'eng_design_changed')
+
+            if 'testplan_doc_link' in row:
+                row['testplan_doc_link'] = doc_link_marked_new(row, 'testplan_doc_link', 'eng_test_plan_changed')
+            
             res.update(row)
             results.append(res)
         return results

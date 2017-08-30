@@ -10,6 +10,7 @@ import summary_tests
 import dataprocessor_tests
 import main_tests
 import techdebt_tests
+import backlog_tests
 
 def suite():
     suite = unittest.TestSuite()
@@ -20,6 +21,7 @@ def suite():
     suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(dataprocessor_tests.TestDataProcessor))
     suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(main_tests.TestMainCLI))
     suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(techdebt_tests.TestTechDebt))
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(backlog_tests.TestBacklog))
     return suite
     
 if __name__ == '__main__':

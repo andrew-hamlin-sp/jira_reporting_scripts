@@ -1,12 +1,14 @@
 import test_context
 
 import unittest
+import datetime
 
 from qjira.summary import Summary
 from qjira.jira import Jira
 #from qjira.container import Container
 
 import test_data
+
 
 class TestSummary(unittest.TestCase):
 
@@ -31,3 +33,23 @@ class TestSummary(unittest.TestCase):
         self.assertDictContainsSubset({'sprint_0_name': 'Chambers Sprint 10'}, data[1])
         # make sure resolve epic link is called properly
         self.assertDictContainsSubset({'epic_link': '=HYPERLINK("https://localhost/browse/test-1234","epic name")'}, data[1])
+
+    def test_doc_links_marked_new(self):
+        """Test that design doc and test plan links are annotated with *NEW* text"""
+
+        # linked within past 14 day, mark with new
+        row0 = {
+            'link_url': 'https://localhost/my/doclink/DOC-1234',
+            'link_changed': datetime.date.today()+datetime.timedelta(days=-14)
+        }
+
+        # linked earlier than past 14 days, not marked
+        row1 = {
+            'link_url': 'https://localhost/my/doclink/DOC-5678',
+            'link_changed': datetime.date.today()+datetime.timedelta(days=-15)
+        }
+
+        from qjira.summary import doc_link_marked_new, hyperlink
+
+        self.assertEquals(hyperlink(row0['link_url'], '[New] DOC-1234'), doc_link_marked_new(row0, 'link_url', 'link_changed'))
+        self.assertEquals(hyperlink(row1['link_url'], 'DOC-5678'), doc_link_marked_new(row1, 'link_url', 'link_changed'))

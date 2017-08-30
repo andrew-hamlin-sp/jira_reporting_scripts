@@ -22,8 +22,14 @@ class Velocity(Command):
     
     def __init__(self, *args, **kwargs):
         Command.__init__(self, args, kwargs, processor=DataProcessor(pivot='sprint'))
+
+        self.include_bugs = kwargs.get('include_bugs', False)
+                    
         self._fieldnames = ['project_key','fixVersions_0_name','issuetype_name','issue_key','sprint_name','sprint_startDate','sprint_endDate','story_points','planned_points','carried_points','completed_points']
-        self._query = 'issuetype = Story'
+        if self.include_bugs:
+            self._query = 'issuetype in (Story, Bug)'
+        else:
+            self._query = 'issuetype = Story'
         
     @property
     def header(self):
