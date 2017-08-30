@@ -54,7 +54,9 @@ Generate table of project_name, bug_points, story_points, & tech_debt percentage
 Prints backlog summary of bugs by fix version. This adds a row per fix version for filtering in Excel.
 
 ## Future enhancements
-  
+
+  *  Enable Commands to extend the Jira field values
+
   *  Unify sprint names & date ranges
 
 ## Installation

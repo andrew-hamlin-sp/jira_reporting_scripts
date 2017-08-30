@@ -9,12 +9,20 @@ from .command import Command
 from .dataprocessor import DataProcessor
 from .log import Log
 
+from .jira import Jira
+
 class Backlog(Command):
 
     def __init__(self, *args, **kwargs):
         Command.__init__(self, args, kwargs, processor=DataProcessor(pivot='fixVersions'))
 
-        self._fieldnames = ['project_key', 'fixVersions_name', 'issuetype_name', 'issue_key']
+        # add additional nav fields
+        fields = Jira.QUERY_STRING_DICT['fields']
+        Jira.QUERY_STRING_DICT.update({
+            'fields': fields + ',priority,created,updated'
+        })
+        
+        self._fieldnames = ['project_key', 'fixVersions_name', 'issuetype_name', 'issue_key', 'summary', 'priority_name', 'status_name', 'assignee_displayName', 'created', 'updated']
         self._query = 'issuetype = Bug AND resolution = Unresolved ORDER BY priority DESC'
 
     @property
