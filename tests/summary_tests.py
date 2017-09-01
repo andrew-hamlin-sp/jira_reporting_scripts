@@ -1,4 +1,4 @@
-import test_context
+from . import test_context
 
 import unittest
 import datetime
@@ -7,7 +7,7 @@ from qjira.summary import Summary
 from qjira.jira import Jira
 #from qjira.container import Container
 
-import test_data
+from . import test_data
 
 
 class TestSummary(unittest.TestCase):

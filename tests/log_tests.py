@@ -1,8 +1,17 @@
-import test_context
+""" Tests of the simplistic logging facility.
+Note these are currently skipped on python 2.7. The contextlib2 documentation
+states that it requires unittest2 for Python 2.x and this has not been done yet.
+"""
+from . import test_context
 
 import unittest
 
-from contextlib import redirect_stderr
+try:
+    from contextlib import redirect_stderr
+except ImportError:
+    from contextlib2 import redirect_stderr
+
+
 import io
 
 from qjira.log import Log
@@ -15,11 +24,12 @@ class LogTest(unittest.TestCase):
 
     def tearDown(self):
         Log.debugLevel = 0
-        
+
     def test_error(self):
         with redirect_stderr(self.std_err):
             Log.error('hello')
-        self.assertEquals('[ERROR] hello\n', self.std_err.getvalue())
+        output = self.std_err.getvalue()
+        self.assertEquals('[ERROR] hello\n', output)
 
     def test_info(self):
         Log.debugLevel = 1

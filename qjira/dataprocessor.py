@@ -37,36 +37,33 @@ def _extract_sprint(sprint):
         return d
     raise ValueError
 
-def _transform_dict(name, value):
-    for col in [(_generate_name(name, k1),v1) for k1, v1 in value.items()]:
-        yield col
-    
-def _transform_list(name, value):
-    for idx,item in enumerate(value):
-        item_name = _generate_name(name, idx)
-        item_type = type(item)
-        if item_type is dict:
-            for col in _transform_dict(item_name, item):
-                yield col
-        else:
-            yield item_name, item
-    return
+def flatten_json_struct(data):
+    """data is a dict of nested JSON structures, returns a flattened array of tuples.
+    skips entry when v == None
+    """
+    for k,v in data.items():
+        if type(v) != dict and type(v) != list:
+            # python 2.7 will have problems with non-ASCII characters which Jira may return
+            # and, CSV files ought to contain only ASCII data
+            #if type(v) == unicode:
+            #    yield k, unicode(v).encode('ascii', errors='replace').decode()
+            #else:
+            yield k, v
+                
+        elif type(v) == list:
+            new_data = { _generate_name(k,idx):val for idx,val in enumerate(v) }
+            #print ('recursing %s' % new_data)
+            for item in flatten_json_struct(new_data):
+                #print ('yielding flatted item %s %s', (item, type(item)))
+                yield item[0], item[1]            
+        elif type(v) == dict:
+            new_data = { _generate_name(k, k1): v1 for k1, v1 in v.items()}
+            #print ('recursing %s' % new_data)
+            for item in flatten_json_struct(new_data):
+                #print ('yielding flatted item %s %s', (item, type(item)))
+                yield item[0], item[1]
 
-# flatten the dictionary object `json`
-def _mapper(name, value):
-    value_type = type(value)
-
-    if value_type is dict:
-        for subitem in _transform_dict(name, value):
-            yield subitem
-    elif value_type is list:
-        for subitem in _transform_list(name, value):
-            yield subitem
-    else:
-        yield name, value
-
-    return
-
+        
 class DataProcessor:
 
     def __init__(self, pivot=None, reverse_sprints=False):
@@ -111,7 +108,10 @@ class DataProcessor:
                 if data['fields'][pivot_field]:
                     for src_idx, src_item in enumerate(data['fields'][pivot_field]):
                         #print ('> src_idx {} is {}'.format(src_idx, src_item))
-                        pivot_item = {k:v for k,v in _mapper(pivot_field, src_item)}
+                        #pivot_item = {k:v for k,v in _mapper(pivot_field, src_item)}
+                        # TODO replace for loop with dict comprehension !?
+                        pivot_item = dict(flatten_json_struct({pivot_field: src_item}))
+                        
                         pivots.append(pivot_item)
                     del data['fields'][pivot_field]
                     #print('> pivots {}'.format(pivots))
@@ -138,10 +138,12 @@ class DataProcessor:
         data = self._data
         cols = dict(issue_key=data['key'])
 
-        for key,val in data['fields'].items():
-            if not val: continue
-            cols.update({k:v for k,v in _mapper(key,val)})
+        #for key,val in data['fields'].items():
+        #    if not val: continue
+        #    cols.update({k:v for k,v in _mapper(key,val)})
 
+        cols.update(dict(flatten_json_struct(data['fields'])))
+            
         return cols
 
     def _extract_histories(self):

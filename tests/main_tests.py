@@ -1,11 +1,8 @@
-import test_context
+from . import test_context
 
 import unittest
-
 import keyring
 import keyring.backend
-
-from contextlib import redirect_stdout
 import io
 
 from requests.exceptions import HTTPError
@@ -61,24 +58,14 @@ class TestMainCLI(unittest.TestCase):
     
     def setUp(self):
         keyring.get_keyring().entries['qjira-sp_userb'] = 'xyzzy'
-        self.std_out = io.StringIO()
         prog._create_service = _test_create_service
 
     def tearDown(self):
         FakeService.Raises401 = False
-        
-    def test_with_empty_args(self):
-        with self.assertRaises(SystemExit):
-            with redirect_stdout(self.std_out):
-                prog.main([])
-                
-        self.assertRegex(self.std_out.getvalue(), 'usage:')
-        
-    def test_stores_credentials(self):
-        with redirect_stdout(self.std_out):
-            prog.main(['s','-p','IIQCB','-w','xyzzy','-u','usera'])
 
-        self.assertEquals('xyzzy', keyring.get_keyring().entries['qjira-sp_usera'])
+    def test_stores_credentials(self):
+        prog.main(['s','-p','IIQCB','-w','blah','-u','usera'])
+        self.assertEquals('blah', keyring.get_keyring().entries['qjira-sp_usera'])
         
     def test_not_authorized_clears_credentials(self):
         self.assertEquals('xyzzy', keyring.get_keyring().entries['qjira-sp_userb'])

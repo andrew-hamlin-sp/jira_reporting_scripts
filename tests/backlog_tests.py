@@ -1,10 +1,10 @@
-import test_context
+from . import test_context
 
 import unittest
 
 from qjira.backlog import Backlog
 
-import test_data
+from . import test_data
 
 class TestBacklog(unittest.TestCase):
 

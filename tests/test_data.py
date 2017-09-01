@@ -1,4 +1,5 @@
-'''Canned test data'''
+# -*- coding: utf-8 -*-
+"""Canned test data"""
 
 from copy import deepcopy
 
@@ -25,6 +26,9 @@ def doneWithNoProgress():
 
 def simpleBug():
     return deepcopy(__TEST_DATA_TABLE['BUG_SIMPLE'])
+
+def nested_data():
+    return deepcopy(__TEST_DATA_TABLE['NESTED_DATA'])
 
 
 __SPRINT1 = 'com.atlassian.greenhopper.service.sprint.Sprint@be7f5f[id=82,rapidViewId=52,state=CLOSED,name=Chambers Sprint 9,goal=<null>,startDate=2016-04-25T10:44:22.273-05:00,endDate=2016-05-09T10:44:00.000-05:00,completeDate=2016-05-09T10:48:04.212-05:00,sequence=82]'
@@ -53,7 +57,8 @@ __TEST_DATA_TABLE = {
                 'name':'Done'
             },
             'customfield_14300': 'https://harbor.sailpoint.com/docs/DOC-20236',
-            'customfield_11101': 'https://harbor.sailpoint.com/docs/DOC-19296'
+            'customfield_11101': 'https://harbor.sailpoint.com/docs/DOC-19296',
+            'summary': u'Performance optimization on “My access review” widget on the home screen',
         },
         'changelog':{
             'histories':[
@@ -534,6 +539,123 @@ __TEST_DATA_TABLE = {
           }
         ],
       }
+    },
+
+    'NESTED_DATA': {
+        "expand": "operations,versionedRepresentations,editmeta,changelog,renderedFields",
+        "id": "85943",
+        "self": "https://sailpoint.atlassian.net/rest/api/2/issue/85943",
+        "key": "IIQETN-5728",
+        "changelog": {
+            "startAt": 0,
+            "maxResults": 8,
+            "total": 8,
+            "histories": [
+                {
+                    "id": "397023",
+                    "author": {
+                        "self": "https://sailpoint.atlassian.net/rest/api/2/user?username=ray.shea",
+                        "name": "ray.shea",
+                        "key": "ray.shea",
+                        "accountId": "557058:997e3bfd-ff57-4d6f-9759-7fb3fdb35bb6",
+                        "emailAddress": "ray.shea@sailpoint.com",
+                        "avatarUrls": {
+                            "48x48": "https://avatar-cdn.atlassian.com/e442fa7b029a9c8bf3abd445e6fd415f?s=48&d=https%3A%2F%2Fsailpoint.atlassian.net%2Fsecure%2Fuseravatar%3FownerId%3Dray.shea%26avatarId%3D10801%26noRedirect%3Dtrue",
+                            "24x24": "https://avatar-cdn.atlassian.com/e442fa7b029a9c8bf3abd445e6fd415f?s=24&d=https%3A%2F%2Fsailpoint.atlassian.net%2Fsecure%2Fuseravatar%3Fsize%3Dsmall%26ownerId%3Dray.shea%26avatarId%3D10801%26noRedirect%3Dtrue",
+                            "16x16": "https://avatar-cdn.atlassian.com/e442fa7b029a9c8bf3abd445e6fd415f?s=16&d=https%3A%2F%2Fsailpoint.atlassian.net%2Fsecure%2Fuseravatar%3Fsize%3Dxsmall%26ownerId%3Dray.shea%26avatarId%3D10801%26noRedirect%3Dtrue",
+                            "32x32": "https://avatar-cdn.atlassian.com/e442fa7b029a9c8bf3abd445e6fd415f?s=32&d=https%3A%2F%2Fsailpoint.atlassian.net%2Fsecure%2Fuseravatar%3Fsize%3Dmedium%26ownerId%3Dray.shea%26avatarId%3D10801%26noRedirect%3Dtrue"
+                        },
+                        "displayName": "Ray Shea",
+                        "active": True,
+                        "timeZone": "America/Chicago"
+                    },
+                    "created": "2017-08-25T11:52:55.519-0500",
+                    "items": [
+                        {
+                            "field": "Fix Version",
+                            "fieldtype": "jira",
+                            "fieldId": "fixVersions",
+                            "from": None,
+                            "fromString": None,
+                            "to": "15469",
+                            "toString": "7.2"
+                        }
+                    ]
+                },
+            ]
+        },
+        "fields": {
+            "summary": "Applying/Clearing Group By for the first time makes Filter button appear applied",
+            "issuetype": {
+                "self": "https://sailpoint.atlassian.net/rest/api/2/issuetype/10102",
+                "id": "10102",
+                "description": "",
+                "iconUrl": "https://sailpoint.atlassian.net/secure/viewavatar?size=xsmall&avatarId=10303&avatarType=issuetype",
+                "name": "Bug",
+                "subtask": False,
+                "avatarId": 10303
+            },
+            "created": "2017-08-24T16:48:42.000-0500",
+            "customfield_14300": None,
+            "project": {
+                "self": "https://sailpoint.atlassian.net/rest/api/2/project/11502",
+                "id": "11502",
+                "key": "IIQETN",
+                "name": "IIQ - Bugs",
+                "avatarUrls": {
+                    "48x48": "https://sailpoint.atlassian.net/secure/projectavatar?avatarId=10324",
+                    "24x24": "https://sailpoint.atlassian.net/secure/projectavatar?size=small&avatarId=10324",
+                    "16x16": "https://sailpoint.atlassian.net/secure/projectavatar?size=xsmall&avatarId=10324",
+                    "32x32": "https://sailpoint.atlassian.net/secure/projectavatar?size=medium&avatarId=10324"
+                }
+            },
+            "fixVersions": [
+                {
+                    "self": "https://sailpoint.atlassian.net/rest/api/2/version/24117",
+                    "id": "24117",
+                    "description": "",
+                    "name": "7.3",
+                    "archived": False,
+                    "released": False
+                }
+            ],
+            "customfield_11101": None,
+            "priority": None,
+            "customfield_10016": None,
+            "customfield_10017": None,
+            "customfield_10109": None,
+            "assignee": {
+                "self": "https://sailpoint.atlassian.net/rest/api/2/user?username=ray.shea",
+                "name": "ray.shea",
+                "key": "ray.shea",
+                "accountId": "557058:997e3bfd-ff57-4d6f-9759-7fb3fdb35bb6",
+                "emailAddress": "ray.shea@sailpoint.com",
+                "avatarUrls": {
+                    "48x48": "https://avatar-cdn.atlassian.com/e442fa7b029a9c8bf3abd445e6fd415f?s=48&d=https%3A%2F%2Fsailpoint.atlassian.net%2Fsecure%2Fuseravatar%3FownerId%3Dray.shea%26avatarId%3D10801%26noRedirect%3Dtrue",
+                    "24x24": "https://avatar-cdn.atlassian.com/e442fa7b029a9c8bf3abd445e6fd415f?s=24&d=https%3A%2F%2Fsailpoint.atlassian.net%2Fsecure%2Fuseravatar%3Fsize%3Dsmall%26ownerId%3Dray.shea%26avatarId%3D10801%26noRedirect%3Dtrue",
+                    "16x16": "https://avatar-cdn.atlassian.com/e442fa7b029a9c8bf3abd445e6fd415f?s=16&d=https%3A%2F%2Fsailpoint.atlassian.net%2Fsecure%2Fuseravatar%3Fsize%3Dxsmall%26ownerId%3Dray.shea%26avatarId%3D10801%26noRedirect%3Dtrue",
+                    "32x32": "https://avatar-cdn.atlassian.com/e442fa7b029a9c8bf3abd445e6fd415f?s=32&d=https%3A%2F%2Fsailpoint.atlassian.net%2Fsecure%2Fuseravatar%3Fsize%3Dmedium%26ownerId%3Dray.shea%26avatarId%3D10801%26noRedirect%3Dtrue"
+                },
+                "displayName": "Ray Shea",
+                "active": True,
+                "timeZone": "America/Chicago"
+            },
+            "updated": "2017-08-29T10:33:05.000-0500",
+            "status": {
+                "self": "https://sailpoint.atlassian.net/rest/api/2/status/1",
+                "description": "The issue is open and ready for the assignee to start work on it.",
+                "iconUrl": "https://sailpoint.atlassian.net/images/icons/statuses/open.png",
+                "name": "Open",
+                "id": "1",
+                "statusCategory": {
+                    "self": "https://sailpoint.atlassian.net/rest/api/2/statuscategory/2",
+                    "id": 2,
+                    "key": "new",
+                    "colorName": "blue-gray",
+                    "name": "To Do"
+                }
+            }
+        }
     },
 }
 
