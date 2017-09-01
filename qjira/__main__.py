@@ -11,6 +11,7 @@ import sys
 import argparse
 import getpass
 import csv
+import io
 
 import keyring
 import locale

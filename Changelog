@@ -1,5 +1,9 @@
 2018-09-01  Andrew Hamlin  <andrew.hamlin@sailpoint.com>
 
+	* Version 0.99.5
+
+	* io Import fixed
+	
 	* Version 0.99.4
 
 	* Bug fix for `csv` module supports only `ascii` text in Python 2.7
