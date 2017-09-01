@@ -1,6 +1,6 @@
 '''An ultra stupid logger'''
-from __future__ import print_function
 import sys
+from six import print_
 
 class Log:
     '''Simple logger'''
@@ -9,20 +9,26 @@ class Log:
     debugLevel = 0
     
     @staticmethod
-    def eprint (*args, **kwargs):
+    def eprint (msg, **kwargs):
         '''print args to stderr'''
-        print(*args, file=sys.stderr, **kwargs)
+        print_(msg, file=sys.stderr, **kwargs)
 
     @staticmethod
     def error (*msg):
         '''Log as an error'''
-        Log.eprint('[ERROR]', *msg)
+        msg = ' '.join(list(msg))
+        Log.eprint('[ERROR] {}'.format(msg))
 
+    @staticmethod
+    def isErrorEnabled():
+        return True
+        
     @staticmethod
     def info (*msg):
         '''Log message when debug >= 0'''
         if Log.isInfoEnabled():
-            Log.eprint('[INFO]', *msg)
+            msg = ' '.join(list(msg))
+            Log.eprint('[INFO] {}'.format(msg))
 
     @staticmethod
     def isInfoEnabled ():
@@ -34,7 +40,8 @@ class Log:
     def debug (*msg):
         '''Log message when debug >= 1'''
         if Log.isDebugEnabled():
-            Log.eprint('[DEBUG]', *msg)
+            msg = ' '.join(list(msg))
+            Log.eprint('[DEBUG] {}'.format(msg))
 
     @staticmethod
     def isDebugEnabled ():
@@ -46,7 +53,8 @@ class Log:
     def verbose (*msg):
         '''Log message when debug >= 2'''
         if Log.isVerboseEnabled():
-            Log.eprint('[VERBOSE]', *msg)
+            msg = ' '.join(list(msg))
+            Log.eprint('[VERBOSE] {}'.format(msg))
 
     @staticmethod
     def isVerboseEnabled ():

@@ -4,7 +4,9 @@ Analyze tech debt ratios Story vs Bug points.
 
 from operator import itemgetter
 #from .dataprocessor import calculate_rows
+
 from .command import Command
+from .log import Log
 
 class TechDebt(Command):
 
@@ -41,7 +43,8 @@ class TechDebt(Command):
             elif x['issuetype_name'] == 'Bug':
                 return { x['project_name']: (story_points, 0) }
             else:
-                Log.warn('Unknown issuetype_name: %s', x['issuetype_name'])
+                Log.error('Unknown issuetype_name: %s', x['issuetype_name'])
+            return None
 
         def _format_points(f):
             return '{:.0f}'.format(f)

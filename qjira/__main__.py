@@ -1,4 +1,6 @@
-#!python
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 '''
 main.py
 Author: Andrew Hamlin
@@ -56,7 +58,7 @@ def _get_credentials (username, password):
 def _clear_credentials(username):
     if username and keyring.get_keyring():
         keyring.delete_password('qjira-sp', username)
-
+        
 def _create_parser():
     
     # process command line arguments
@@ -146,10 +148,13 @@ def _create_outfile(out):
     if out is sys.stdout:
         return out
 
-    try:
-        outfile = open(out, 'w', newline='')
-    except TypeError:
-        outfile = open(out, 'wb')
+    outfile = io.open(out, 'wb')
+    # try Python 3.x first
+    # otherwise, use Python 2.6/2.7 io.open
+#    try:
+#        outfile = io.open(out, 'w', newline='')
+#    except TypeError:
+#        outfile = open(out, 'wb')
 
     return outfile
    
@@ -211,10 +216,14 @@ def main(argv=None):
     with _create_outfile(out=args.outfile) as outfile:
         entries = processor.process(issues)
         fieldnames = processor.header
-        writer = csv.DictWriter(outfile, fieldnames=fieldnames, extrasaction='ignore')
+        writer = csv.DictWriter(outfile, fieldnames=fieldnames, dialect='excel', extrasaction='ignore')
         writer.writeheader()
         for entry in entries:
-            writer.writerow(entry)
+            try:
+                writer.writerow(entry)
+            except UnicodeEncodeError:
+                sys.stderr.write('Failed to encode: ', sys.exc_info[0])
+                #writer.writerow({k:unicode(v, 'utf-8') for k,v in entry.items})
 
 if __name__ == "__main__":
 

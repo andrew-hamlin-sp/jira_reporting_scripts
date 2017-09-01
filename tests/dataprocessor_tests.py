@@ -1,11 +1,13 @@
-import test_context
+from . import test_context
 
 import unittest
 import datetime
 
+import io
+
 from qjira.dataprocessor import DataProcessor
 
-import test_data
+from . import test_data
 
 class TestDataProcessor(unittest.TestCase):
 
@@ -33,8 +35,8 @@ class TestDataProcessor(unittest.TestCase):
     
     def test_process_story_sprints(self):
         dp = DataProcessor(pivot='sprint')
-        rows = dp.transform(test_data.singleSprintStory())
-        self.assertEqual(len(rows), 1)
+        rows = dp.transform(test_data.multiSprintStory())
+        self.assertEqual(len(rows), 2)
         self.assertDictContainsSubset({
             'project_key':'Test',
             'issuetype_name': 'Story',
@@ -67,3 +69,14 @@ class TestDataProcessor(unittest.TestCase):
             self.assertDictContainsSubset({
                 'sprint_id': str(start_id + idx)
             }, row)
+
+    def test_nested_data_flattens(self):
+        dp = DataProcessor()
+        rows = dp.transform(test_data.nested_data())
+        self.assertEqual(len(rows), 1)
+        #print({'k %s = v %s' % (k, type(v)) for k,v in rows[0].items() if type(v) == dict})
+        row = rows[0]
+        [self.assertFalse(type(v)==list, msg='flattened data contains list') for v in row.values()]
+        [self.assertFalse(type(v)==dict, msg='flattened data contains dict') for v in row.values()]
+
+        

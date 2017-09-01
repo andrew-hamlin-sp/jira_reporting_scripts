@@ -1,10 +1,10 @@
-import test_context
+from . import test_context
 
 import unittest
 
 from qjira.techdebt import TechDebt
 
-import test_data
+from . import test_data
 
 class TestTechDebt(unittest.TestCase):
 

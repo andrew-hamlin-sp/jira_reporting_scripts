@@ -2,7 +2,6 @@
 
 import requests
 import json
-
 try:
     from urllib import urlencode
 except ImportError:
