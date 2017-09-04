@@ -14,15 +14,15 @@ from .jira import Jira
 class Backlog(Command):
 
     def __init__(self, *args, **kwargs):
-        Command.__init__(self, args, kwargs, processor=DataProcessor(pivot='fixVersions'))
+        Command.__init__(self, *args, processor=DataProcessor(pivot='fixVersions'), **kwargs)
 
         # add additional nav fields
         fields = Jira.QUERY_STRING_DICT['fields']
         Jira.QUERY_STRING_DICT.update({
-            'fields': fields + ',priority,created,updated'
+            'fields': fields + ',priority,created,updated,customfield_10112,customfield_10400'
         })
         
-        self._fieldnames = ['project_key', 'fixVersions_name', 'issuetype_name', 'issue_key', 'summary', 'priority_name', 'status_name', 'assignee_displayName', 'created', 'updated']
+        self._fieldnames = ['project_key', 'fixVersions_name', 'issuetype_name', 'issue_key', 'summary', 'priority_name', 'status_name', 'assignee_displayName', 'created', 'updated','severity_value']
         self._query = 'issuetype = Bug AND resolution = Unresolved ORDER BY priority DESC'
 
     @property
@@ -32,7 +32,6 @@ class Backlog(Command):
     @property
     def query(self):
         return self._query
-
 
     def post_process(self, rows):
         return rows

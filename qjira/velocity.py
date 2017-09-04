@@ -21,7 +21,7 @@ class Velocity(Command):
     '''Analyze data for velocity metrics'''
     
     def __init__(self, *args, **kwargs):
-        Command.__init__(self, args, kwargs, processor=DataProcessor(pivot='sprint'))
+        Command.__init__(self, *args, processor=DataProcessor(pivot='sprint'), **kwargs)
 
         self.include_bugs = kwargs.get('include_bugs', False)
                     

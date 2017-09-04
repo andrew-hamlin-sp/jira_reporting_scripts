@@ -14,13 +14,20 @@ init:
 	python setup.py develop
 
 clean:
+	rm -fr build qjira.egg-info
 	cd qjira && rm -fr __pycache__ && rm -f *.pyc
 	cd tests && rm -fr __pycache__ && rm -f *.pyc
 test:
-	python setup.py test
+	python setup.py build test
+
+dist:
+	python setup.py bdist
+
+dist-all:
+	python setup.py sdist
 
 install:
 	@echo run setuptools
 
 
-.PHONY: all init test install
+.PHONY: all init clean test install dist dist-all

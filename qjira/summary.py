@@ -29,7 +29,7 @@ def sprint_startDate_sort(x, reverse=False):
 
 def sprint_header(sprint_name, sprint_startDate, sprint_endDate):
     if sprint_name and sprint_startDate and sprint_endDate:
-        return '{}  [{:%x} to {:%x}]'.format(sprint_name.upper(), sprint_startDate, sprint_endDate)
+        return '{}  [{} to {}]'.format(sprint_name.upper(), sprint_startDate, sprint_endDate)
     elif  sprint_name:
         return '{}'.format(sprint_name.upper())
     else:

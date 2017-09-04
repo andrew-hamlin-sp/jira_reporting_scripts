@@ -28,7 +28,7 @@ class TestSummary(unittest.TestCase):
         data = self.processor.process([test_data.multiSprintStory()])
         self.assertEquals(len(data), 2)
         # summary command groups by assigned sprint and inserts single SUMMARY row
-        self.assertDictContainsSubset({'summary': 'CHAMBERS SPRINT 10  [05/10/2016 to 05/19/2016]'}, data[0])
+        self.assertDictContainsSubset({'summary': 'CHAMBERS SPRINT 10  [2016-05-10 to 2016-05-19]'}, data[0])
         # summary command adds row for each story completed or in-progress for that sprint
         self.assertDictContainsSubset({'sprint_0_name': 'Chambers Sprint 10'}, data[1])
         # make sure resolve epic link is called properly
@@ -37,19 +37,20 @@ class TestSummary(unittest.TestCase):
     def test_doc_links_marked_new(self):
         """Test that design doc and test plan links are annotated with *NEW* text"""
 
-        # linked within past 14 day, mark with new
-        row0 = {
-            'link_url': 'https://localhost/my/doclink/DOC-1234',
-            'link_changed': datetime.date.today()+datetime.timedelta(days=-14)
-        }
+        data = self.processor.process([test_data.singleSprintStory()])
+        self.assertEqual(len(data), 2) # summary adds a sprint header
+        
+        # original data will not be marked newline
+        self.assertNotRegexpMatches(data[1].get('design_doc_link'), '\[New\]')
+        self.assertNotRegexpMatches(data[1].get('testplan_doc_link'), '\[New\]')
 
-        # linked earlier than past 14 days, not marked
-        row1 = {
-            'link_url': 'https://localhost/my/doclink/DOC-5678',
-            'link_changed': datetime.date.today()+datetime.timedelta(days=-15)
-        }
+        # modify the dates to mark these as News
+        update_json = test_data.singleSprintStory()
+        days_ago = datetime.datetime.utcnow()+datetime.timedelta(days=-14)
+        for history in update_json['changelog']['histories']:
+            history['created'] = days_ago.strftime('%Y-%m-%dT%H:%M:%S.000-0500')
 
-        from qjira.summary import doc_link_marked_new, hyperlink
-
-        self.assertEquals(hyperlink(row0['link_url'], '[New] DOC-1234'), doc_link_marked_new(row0, 'link_url', 'link_changed'))
-        self.assertEquals(hyperlink(row1['link_url'], 'DOC-5678'), doc_link_marked_new(row1, 'link_url', 'link_changed'))
+        print(update_json['changelog']['histories'])
+        data = self.processor.process([update_json])
+        self.assertRegexpMatches(data[1].get('design_doc_link'), '\[New\]')
+        self.assertRegexpMatches(data[1].get('testplan_doc_link'), '\[New\]')

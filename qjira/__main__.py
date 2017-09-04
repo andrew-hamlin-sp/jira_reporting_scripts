@@ -12,10 +12,13 @@ import argparse
 import getpass
 import csv
 import io
+import six
 
 import keyring
 import locale
 from requests.exceptions import HTTPError
+
+from contextlib import closing
 
 from .velocity import Velocity
 from .cycletime import CycleTime
@@ -24,6 +27,42 @@ from .techdebt import TechDebt
 from .backlog import Backlog
 from .jira import Jira
 from .log import Log
+
+PY3 = sys.version_info[0] > 2
+
+class UnicodeWriter:
+    """Basically a re-implementation of csv.DictWriter including encoding support"""
+    def __init__(self, f, fieldnames, dialect='excel', restval='', extrasaction='raise',
+                 encoding='utf-8', *args, **kwargs):
+        self.fieldnames = fieldnames
+        self.restval = restval
+        self.extrasaction = extrasaction
+        self.dialect = dialect
+        self.encoding = encoding
+        self.kwargs = kwargs
+        self.writer = csv.writer(f, dialect=self.dialect,
+                                 **self.kwargs)
+
+    def writeheader(self):
+        header = dict(zip(self.fieldnames, self.fieldnames))
+        self.writerow(header)
+
+    def _dict_to_list(self, rowdict):
+        if self.extrasaction == 'raise':
+            wrong_fields = [k for k in rowdict if k not in self.fieldnames]
+            if wrong_fields:
+                raise ValueError('dict contains fields not in fieldnames: '
+                                 + ', '.join([repr(k) for k in wrong_fields]))
+
+        return [rowdict.get(key, self.restval) for key in self.fieldnames]
+        
+    def writerow(self, rowdict):
+        row = [six.text_type(s).encode(self.encoding, errors='replace') for s in self._dict_to_list(rowdict)]
+        self.writer.writerow(row)
+
+    def writerows(self, rows):
+        for row in rows:
+            self.writerow(row)
 
 def _progress (start, total):
     msg = '\rRetrieving {} of {}...'.format(start, total)
@@ -144,21 +183,20 @@ def _create_parser():
     
     return parser
 
-def _create_outfile(out):
-
-    if out is sys.stdout:
+def _create_outfile(out, encoding='utf-8'):
+    # where we passed a file object?
+    if hasattr(out, 'write'):
         return out
+    elif PY3:
+        return io.open(out, 'wt',
+                       encoding=encoding, newline='')
+    else:
+        return io.open(out, 'wb')
+    # def __exit__(self, type, value, traceback):
+    #     self.f.close()
 
-    outfile = io.open(out, 'wb')
-    # try Python 3.x first
-    # otherwise, use Python 2.6/2.7 io.open
-#    try:
-#        outfile = io.open(out, 'w', newline='')
-#    except TypeError:
-#        outfile = open(out, 'wb')
 
-    return outfile
-   
+
 def _create_service(username, password, base_url, one_shot=False, all_fields=False, suppress_progress=False):
         
     func_progress = None if suppress_progress else _progress
@@ -214,21 +252,15 @@ def main(argv=None):
             _clear_credentials(username)
         raise err
 
-    with _create_outfile(out=args.outfile) as outfile:
-        entries = processor.process(issues)
-        fieldnames = processor.header
-        writer = csv.DictWriter(outfile, fieldnames=fieldnames, dialect='excel', extrasaction='ignore')
+    entries = processor.process(issues)
+    fieldnames = processor.header
+    with closing(_create_outfile(args.outfile, encoding='utf-8')) as out:
+        writer = UnicodeWriter(out, fieldnames=fieldnames, extrasaction='ignore', encoding='utf-8')
         writer.writeheader()
         for entry in entries:
-            try:
-                writer.writerow(entry)
-            except UnicodeEncodeError:
-                sys.stderr.write('Failed to encode: ', sys.exc_info[0])
-                #writer.writerow({k:unicode(v, 'utf-8') for k,v in entry.items})
+            writer.writerow(entry)
 
 if __name__ == "__main__":
-
     locale.setlocale(locale.LC_TIME, 'en_US')
-    
     main()
 

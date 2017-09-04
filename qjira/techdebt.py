@@ -11,7 +11,7 @@ from .log import Log
 class TechDebt(Command):
 
     def __init__(self, *args, **kwargs):
-        Command.__init__(self, args, kwargs)
+        Command.__init__(self, *args, **kwargs)
         self._fieldnames = [ 'project_name', 'bug_points', 'story_points', 'tech_debt' ]
         self._query = 'issuetype in (Story, Bug) AND status in (Accepted, Closed, Done)'
 

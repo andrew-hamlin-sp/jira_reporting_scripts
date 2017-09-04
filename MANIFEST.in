@@ -1,0 +1,4 @@
+include Changelog README.md MANIFEST
+
+recursive-include qjira *.py
+recursive-include tests *.py *.json

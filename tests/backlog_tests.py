@@ -21,4 +21,12 @@ class TestBacklog(unittest.TestCase):
         data = self.processor.process([])
         self.assertEqual(len(data), 0)
 
-    
+    def test_process_1(self):
+        data = self.processor.process([test_data.singleSprintStory()])
+        self.assertEqual(len(data), 1)
+        
+        self.assertDictContainsSubset({
+            'customer': 3,
+            'priority_name': 'High',
+            'severity_value': 'Normal'
+        }, data[0])

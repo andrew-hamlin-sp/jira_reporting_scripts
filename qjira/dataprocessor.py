@@ -1,27 +1,25 @@
 '''data.py - process a jira issue'''
 
 import re
-import dateutil.parser
+from dateutil import parser as date_parser
 
 from .log import Log
+
+re_prog = re.compile('[0-9]{4}\-[0-9]{2}\-[0-9]{2}T[0-9]{2}\:[0-9]{2}:[0-9]{2}\.[0-9]{3}\-[0-9]{4}')
+
 
 def _generate_name(*args):
     return '_'.join([str(a) for a in args])
 
 def _create_history_entry(hst):
-    # currently filtered to only 'status' field entries
-    # if we include other field types, be aware that 'fieldId' does not exist for all field types
-    # do NOT know if we can depend on 'field' to exist either
-#    print('History:', hst)
-
     if hst['fieldId'] == 'status':
         field_name = hst['field'].replace(' ', '')
         normalized_string = hst['toString'].replace(' ', '')
     else:
         field_name = hst['field'].replace(' ', '_').lower()
         normalized_string = 'changed'
-    created_date = dateutil.parser.parse(hst['created']).date()
-    entry = _generate_name(field_name,normalized_string),created_date
+    created_date = date_parser.parse(hst['created']).date()
+    entry = _generate_name(field_name,normalized_string), created_date
     #print ('Entry;',entry)
     return entry
 
@@ -31,35 +29,40 @@ def _extract_sprint(sprint):
         d = dict(e.split('=') for e in m.group(1).split(','))
         for n in ('startDate','endDate','completeDate'):
             try:
-                d[n] = dateutil.parser.parse(d[n]).date()
+                the_date = date_parser.parse(d[n]).date()
+                d[n]= the_date
             except ValueError:
                 d[n] = None
         return d
     raise ValueError
 
-def flatten_json_struct(data):
+def flatten_json_struct(data, count_fields=[], datetime_fields=[]):
     """data is a dict of nested JSON structures, returns a flattened array of tuples.
     skips entry when v == None
     """
     for k,v in data.items():
         if type(v) != dict and type(v) != list:
-            # python 2.7 will have problems with non-ASCII characters which Jira may return
-            # and, CSV files ought to contain only ASCII data
-            #if type(v) == unicode:
-            #    yield k, unicode(v).encode('ascii', errors='replace').decode()
-            #else:
-            yield k, v
-                
+            if k in datetime_fields and re_prog.match(v):
+                yield k, date_parser.parse(v).date()
+            else:
+                yield k, v                
         elif type(v) == list:
-            new_data = { _generate_name(k,idx):val for idx,val in enumerate(v) }
-            #print ('recursing %s' % new_data)
-            for item in flatten_json_struct(new_data):
-                #print ('yielding flatted item %s %s', (item, type(item)))
-                yield item[0], item[1]            
+            if k in count_fields:
+                yield k, len(v)
+            else:
+                new_data = { _generate_name(k,idx):val for idx,val in enumerate(v) }
+                #print ('recursing %s' % new_data)
+                for item in flatten_json_struct(new_data,
+                                                count_fields=count_fields,
+                                                datetime_fields=datetime_fields):
+                    #print ('yielding flatted item %s %s', (item, type(item)))
+                    yield item[0], item[1]            
         elif type(v) == dict:
             new_data = { _generate_name(k, k1): v1 for k1, v1 in v.items()}
             #print ('recursing %s' % new_data)
-            for item in flatten_json_struct(new_data):
+            for item in flatten_json_struct(new_data,
+                                            count_fields=count_fields,
+                                            datetime_fields=datetime_fields):
                 #print ('yielding flatted item %s %s', (item, type(item)))
                 yield item[0], item[1]
 
@@ -84,18 +87,21 @@ class DataProcessor:
         custom_field_map = [('customfield_10109','story_points'),
                             ('customfield_11101','design_doc_link'),
                             ('customfield_14300','testplan_doc_link'),
-                            ('customfield_10017','epic_issuekey')]
+                            ('customfield_10017','epic_issuekey'),
+                            ('customfield_10112','severity'),
+                            ('customfield_10400','customer')]
 
+        fields = data['fields']
         for s, d in custom_field_map:
-            if data['fields'].get(s):
-                data['fields'][d] = data['fields'][s]
+            if fields.get(s):
+                data['fields'][d] = fields[s]
                 del data['fields'][s]
 
         # Sprint field must be converted from Java string representation to dict and sorted by start date
-        if data['fields'].get('customfield_10016'):
+        if fields.get('customfield_10016'):
             data['fields']['sprint'] = [sprint for sprint in sorted(map(_extract_sprint, data['fields']['customfield_10016']), key=lambda x: x['startDate'], reverse=self._reverse_sprints)]
             del data['fields']['customfield_10016']
-            
+
         return data
 
     def _build_pivots(self):
@@ -111,7 +117,6 @@ class DataProcessor:
                         #pivot_item = {k:v for k,v in _mapper(pivot_field, src_item)}
                         # TODO replace for loop with dict comprehension !?
                         pivot_item = dict(flatten_json_struct({pivot_field: src_item}))
-                        
                         pivots.append(pivot_item)
                     del data['fields'][pivot_field]
                     #print('> pivots {}'.format(pivots))
@@ -137,13 +142,11 @@ class DataProcessor:
     def _extract_fields(self):
         data = self._data
         cols = dict(issue_key=data['key'])
-
-        #for key,val in data['fields'].items():
-        #    if not val: continue
-        #    cols.update({k:v for k,v in _mapper(key,val)})
-
-        cols.update(dict(flatten_json_struct(data['fields'])))
-            
+        cols.update(dict(flatten_json_struct(data['fields'],
+                                             count_fields=['customer'],
+                                             datetime_fields=['created',
+                                                              'updated',
+                                                              'lastViewed'])))
         return cols
 
     def _extract_histories(self):

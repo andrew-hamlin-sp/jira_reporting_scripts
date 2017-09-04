@@ -4,6 +4,8 @@ states that it requires unittest2 for Python 2.x and this has not been done yet.
 """
 from . import test_context
 
+import sys
+import io
 import unittest
 
 try:
@@ -11,15 +13,14 @@ try:
 except ImportError:
     from contextlib2 import redirect_stderr
 
-
-import io
-
 from qjira.log import Log
+
+PY3 = sys.version_info[0] > 2
 
 class LogTest(unittest.TestCase):
 
     def setUp(self):
-        self.std_err = io.StringIO()
+        self.std_err = io.StringIO() if PY3 else io.BytesIO()
         Log.debugLevel = 0
 
     def tearDown(self):

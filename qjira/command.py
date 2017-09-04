@@ -25,15 +25,7 @@ class Command(object):
         Log.debug('Transforming {0} issues', len(flat_list))
         rows = [row for item in flat_list for row in self.processor.transform(item)]
         Log.debug('Processing {} rows', len(rows))
-        return self.convert2ascii(self.post_process(rows))
-
-    def convert2ascii(self, rows):
-        # csv files should be ascii formatted
-        def _ascii_escape(s):
-            data = unicode(s).encode('ascii', errors='replace')
-            return data.decode()
-
-        return list(map(lambda r: {k:_ascii_escape(v) for k,v in r.items()}, rows))
+        return self.post_process(rows)
     
     def post_process(self, rows):
         raise NotImplementedError()

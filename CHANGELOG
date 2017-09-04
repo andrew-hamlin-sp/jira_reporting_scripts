@@ -1,9 +1,19 @@
-2018-09-01  Andrew Hamlin  <andrew.hamlin@sailpoint.com>
+2017-09-05  Andrew Hamlin  <andrew.hamlin@sailpoint.com>
+
+	* Version 0.99.7
+
+	* Major build system refactoring for better Python 2/3 support using six
+
+	* Test coverage improved
+
+	* Fixed unicode support for CSV module
+
+2017-09-01  Andrew Hamlin  <andrew.hamlin@sailpoint.com>
 
 	* Version 0.99.5
 
 	* io Import fixed
-	
+
 	* Version 0.99.4
 
 	* Bug fix for `csv` module supports only `ascii` text in Python 2.7

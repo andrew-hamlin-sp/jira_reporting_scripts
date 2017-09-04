@@ -1,11 +1,12 @@
 from setuptools import setup, find_packages
 
 setup(name='qjira',
-      version='0.99.5',
+      version='0.99.7',
       description='Query JIRA Cloud REST API',
       author='Andrew Hamlin',
       author_email='andrew.hamlin@sailpoint.com',
-      packages=find_packages(exclude='tests'),
+      packages=find_packages(exclude=['tests']),
+      include_package_data=True,
       classifiers=[
           'Programming Language :: Python :: 2',
           'Programming Language :: Python :: 3',
@@ -16,13 +17,12 @@ setup(name='qjira',
           ]
       },
       test_suite='tests.suite',
-      use_2to3=True,
-      use_2to3_exclude_fixers=['lib2to3.fixes.fix_urllib'],
       install_requires=[
           'requests',
           'python-dateutil',
           'keyring',
           'six',
       ],
+      tests_require=['contextlib2;python_version<"3.4"']
 )
      
