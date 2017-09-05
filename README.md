@@ -1,4 +1,4 @@
-# Jira Reporting Scripts (0.99.5)
+# Jira Reporting Scripts (0.99.7)
 
 To address some of the deficiencies in Jira reporting, here is a small command line tool to 
 exercise the [Jira REST API](https://docs.atlassian.com/jira/REST/cloud/) to retrieve information about Stories,
@@ -97,7 +97,13 @@ Prints backlog summary of bugs by fix version. This adds a row per fix version f
 
 Use python virtualenv to isolate the required libraries. `$ source bin/activate`
 
-Update dependencies, `$ pip freeze > requirements.txt`
+Update dependencies, `$ make init`
+
+Clean build tree, `$ make clean`
+
+Package distribution, `$ make dist` or `$ make dist-all`
+
+Run all tests, `$ make test`
 
 Run from development virtualenv, `$ python -mqjira -h`
 
