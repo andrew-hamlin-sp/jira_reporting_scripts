@@ -69,10 +69,14 @@ def flatten_json_struct(data, count_fields=[], datetime_fields=[]):
         
 class DataProcessor:
 
-    def __init__(self, pivot=None, reverse_sprints=False):
+    def __init__(self, pivot=None,
+                 reverse_sprints=False, count_fields=[],
+                 datetime_fields=['created', 'updated', 'lastViewed']):
         ''' process an jira issue'''
         self._pivot_field = pivot
         self._reverse_sprints = reverse_sprints
+        self._count_fields = count_fields
+        self._datetime_fields = datetime_fields
 
     def transform(self, data):
         self._data = self._pre_process(data)
@@ -143,10 +147,8 @@ class DataProcessor:
         data = self._data
         cols = dict(issue_key=data['key'])
         cols.update(dict(flatten_json_struct(data['fields'],
-                                             count_fields=['customer'],
-                                             datetime_fields=['created',
-                                                              'updated',
-                                                              'lastViewed'])))
+                                             count_fields=self._count_fields,
+                                             datetime_fields=self._datetime_fields)))
         return cols
 
     def _extract_histories(self):
