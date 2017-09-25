@@ -9,14 +9,13 @@ class Log:
     debugLevel = 0
     
     @staticmethod
-    def eprint (msg, **kwargs):
+    def eprint (msg, *args, **kwargs):
         '''print args to stderr'''
         print_(msg, file=sys.stderr, **kwargs)
 
     @staticmethod
-    def error (*msg):
+    def error (msg):
         '''Log as an error'''
-        msg = ' '.join(list(msg))
         Log.eprint('[ERROR] {}'.format(msg))
 
     @staticmethod
@@ -24,10 +23,9 @@ class Log:
         return True
         
     @staticmethod
-    def info (*msg):
+    def info (msg):
         '''Log message when debug >= 0'''
         if Log.isInfoEnabled():
-            msg = ' '.join(list(msg))
             Log.eprint('[INFO] {}'.format(msg))
 
     @staticmethod
@@ -37,10 +35,9 @@ class Log:
         return True
         
     @staticmethod
-    def debug (*msg):
+    def debug (msg):
         '''Log message when debug >= 1'''
         if Log.isDebugEnabled():
-            msg = ' '.join(list(msg))
             Log.eprint('[DEBUG] {}'.format(msg))
 
     @staticmethod
@@ -50,10 +47,9 @@ class Log:
         return True
         
     @staticmethod
-    def verbose (*msg):
+    def verbose (msg):
         '''Log message when debug >= 2'''
         if Log.isVerboseEnabled():
-            msg = ' '.join(list(msg))
             Log.eprint('[VERBOSE] {}'.format(msg))
 
     @staticmethod

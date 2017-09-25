@@ -9,64 +9,71 @@
    Sprints without defined start and end dates  will not be reported.
 
 '''
-import datetime
 
-from .command import Command
-from .dataprocessor import DataProcessor
+from .command import PivotCommand
 from .log import Log
 
 DEFAULT_POINTS = 0.0
 
-class Velocity(Command):
+class VelocityCommand(PivotCommand):
     '''Analyze data for velocity metrics'''
-    
-    def __init__(self, *args, **kwargs):
-        Command.__init__(self, *args, processor=DataProcessor(pivot='sprint'), **kwargs)
 
-        self.include_bugs = kwargs.get('include_bugs', False)
-                    
-        self._fieldnames = ['project_key','fixVersions_0_name','issuetype_name','issue_key','sprint_name','sprint_startDate','sprint_endDate','story_points','planned_points','carried_points','completed_points']
-        if self.include_bugs:
-            self._query = 'issuetype in (Story, Bug)'
-        else:
-            self._query = 'issuetype = Story'
+    def __init__(self, include_bugs=False, *args, **kwargs):
+        super(VelocityCommand, self).__init__(*args, **kwargs)
+        self._include_bugs = include_bugs
+
+    @property
+    def pivot_field(self):
+        return 'sprint'
         
     @property
     def header(self):
-        return self._fieldnames
+        return  ['project_key','fixVersions_0_name','issuetype_name','issue_key',
+                 'sprint_name','sprint_startDate','sprint_endDate','story_points',
+                 'planned_points','carried_points','completed_points']
 
     @property
     def query(self):
-        return self._query
+        if self._include_bugs:
+            return 'issuetype in (Story, Bug)'
+        else:
+            return 'issuetype = Story'
 
     def post_process(self, rows):
-        '''data processor wrapper to calculate points carried, completed'''
-        count = len(rows)
-        results = []
+        '''data processor wrapper to calculate points as planned, carried, completed'''
+        last_issue_seen = None
+        counter = 0
         for idx,row in enumerate(rows):
-            #print ('> row {} keys= {}'.format(idx+1, row.keys()))
             if not row.get('sprint_completeDate'):
-                #print ('skip incomplete sprint')
+                #print ('> skip incomplete sprint')
                 continue
-            
+
+            if row['issue_key'] is not last_issue_seen:
+                last_issue_seen = row['issue_key']
+                counter = 0
+            else:
+                counter += 1
             point_value = row.get('story_points', DEFAULT_POINTS)
-            planned_points = point_value if idx == 0 else DEFAULT_POINTS
-            carried_points = point_value if idx >= 1 else DEFAULT_POINTS
-            completed_points = point_value if idx == count-1 and self._isComplete(row) else DEFAULT_POINTS
+            planned_points = point_value if counter == 0 else DEFAULT_POINTS
+            carried_points = point_value if counter >= 1 else DEFAULT_POINTS
+            completed_points = point_value if self._isComplete(row) else DEFAULT_POINTS
             update = {
                 'planned_points': planned_points,
                 'carried_points': carried_points,
                 'completed_points': completed_points
             }
             row.update(update)
-            results.append(row)
-        return results
+            yield row
 
     def _isComplete(self, row):
-
-        if row['issuetype_name'] == 'Story':
-            return row.get('status_Done', False)
-        elif row['issuetype_name'] == 'Bug':
-            return row.get('status_Closed', False)
-
-        return False
+        '''Issue is complete when status changed between sprint startDate & endDate'''
+        completedDate = row.get('status_Done') \
+                        if row['issuetype_name'] == 'Story' \
+                        else row.get('status_Closed')
+        if not completedDate:
+            return False
+        
+        sprintStartDate = row.get('sprint_startDate')
+        sprintCompletionDate = row.get('sprint_completeDate')
+        #print('> isComplete start: {0}, completion: {1}, done: {2}'.format(sprintStartDate, sprintCompletionDate, completedDate))
+        return completedDate >= sprintStartDate and completedDate <= sprintCompletionDate

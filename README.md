@@ -1,8 +1,11 @@
-# Jira Reporting Scripts (0.99.7)
+# Jira Reporting Scripts (0.99.8)
 
 To address some of the deficiencies in Jira reporting, here is a small command line tool to 
 exercise the [Jira REST API](https://docs.atlassian.com/jira/REST/cloud/) to retrieve information about Stories,
 including story points and iterations and export into CSV format. This enables building better reports in Excel.
+
+Notes: 0.99.8 has been refactored to make use of generators for improved efficiency
+ and significantly cleaned up the codebase. Also, csv content is now only ASCII text.
 
 MacOS:   Python 2.7 & 3.6 (tested)
 Windows: Python 3.6 (tested), 2.7 (not tested)
@@ -13,13 +16,13 @@ Windows: Python 3.6 (tested), 2.7 (not tested)
 
 Added the `keyring` module, enabling storage of your Jira credentials in your OSes keychain or credential vault. MacOS and Windows are supported. The script may prompt that Python wants to access `qjira-sp` in your credential store. You should allow it always, unless you really like typing your password over and over again.
 
-### Tech Debt command
+### Technical Debt
 
-Added the tech debt `d` command, prints a table of story points versus bug points including percentage of tech debt (bugs) completed per project.
+Added the `debt` command, prints a table of story points versus bug points including percentage of tech debt (bugs) completed per project.
 
-### Bug Backlog command
+### Bug Backlog
 
-Added the bug backlog `b` command, prints all bugs by fix version.
+Added the bug `backlog` command, prints all bugs by fix version.
 
 ## Summary
 
@@ -55,7 +58,7 @@ Prints backlog summary of bugs by fix version. This adds a row per fix version f
 
 ## Future enhancements
 
-  *  Enable Commands to extend the Jira field values
+  *  Add argument including set of default IIQ project names 
 
   *  Unify sprint names & date ranges
 
@@ -70,28 +73,41 @@ Prints backlog summary of bugs by fix version. This adds a row per fix version f
   * View help message
   
 `$ qjira -h`
-`$ qjira v -h`
+`$ qjira {command} -h`
 
   * Produce velocity data
   
-`$ qjira v -p IIQHH`
+`$ qjira velocity -f 7.2 IIQHH`
   
   * Produce cycletime data
   
-`$ qjira c -p IIQCB`
+`$ qjira cycletime -f 7.2 IIQCB`
 
   * Produce summary report
 
-`$ qjira s -p IIQCB`
+`$ qjira summary -f 7.2 IIQCB`
 
-  * Multiple projects and specific fix versions
+  * Produce technical debt report
   
-`$ qjira v -p IIQCB -p IIQHH -F 7.2`
+`$ qjira debt -f 7.2 IIQCB`
+
+  * Produce bug backlog listing
+  
+`$ qjira backlog -f 7.3 IIQETN`
+
+  * Multiple projects and output CSV file
+  
+`$ qjira velocity IIQCB IIQHH -o velocity.csv`
 
 ## Dependencies
 
   * requests
+  
   * python-dateutil
+  
+  * keyring
+  
+  * six
 
 ## Development
 

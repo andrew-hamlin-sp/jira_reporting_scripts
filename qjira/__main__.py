@@ -1,6 +1,5 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-
 '''
 main.py
 Author: Andrew Hamlin
@@ -9,62 +8,20 @@ Description: script to execute commands against jira
 
 import sys
 import argparse
-import getpass
-import csv
-import io
-import six
 
-import keyring
 import locale
 from requests.exceptions import HTTPError
 
-from contextlib import closing
-
-from .velocity import Velocity
-from .cycletime import CycleTime
-from .summary import Summary
-from .techdebt import TechDebt
-from .backlog import Backlog
-from .jira import Jira
+from .velocity import VelocityCommand
+from .cycletime import CycleTimeCommand
+from .summary import SummaryCommand
+from .techdebt import TechDebtCommand
+from .backlog import BacklogCommand
 from .log import Log
+from . import unicode_csv_writer
+from . import credential_store as creds
 
-PY3 = sys.version_info[0] > 2
-
-class UnicodeWriter:
-    """Basically a re-implementation of csv.DictWriter including encoding support"""
-    def __init__(self, f, fieldnames, dialect='excel', restval='', extrasaction='raise',
-                 encoding='utf-8', *args, **kwargs):
-        self.fieldnames = fieldnames
-        self.restval = restval
-        self.extrasaction = extrasaction
-        self.dialect = dialect
-        self.encoding = encoding
-        self.kwargs = kwargs
-        self.writer = csv.writer(f, dialect=self.dialect,
-                                 **self.kwargs)
-
-    def writeheader(self):
-        header = dict(zip(self.fieldnames, self.fieldnames))
-        self.writerow(header)
-
-    def _dict_to_list(self, rowdict):
-        if self.extrasaction == 'raise':
-            wrong_fields = [k for k in rowdict if k not in self.fieldnames]
-            if wrong_fields:
-                raise ValueError('dict contains fields not in fieldnames: '
-                                 + ', '.join([repr(k) for k in wrong_fields]))
-
-        return [rowdict.get(key, self.restval) for key in self.fieldnames]
-        
-    def writerow(self, rowdict):
-        row = [six.text_type(s).encode(self.encoding, errors='replace') for s in self._dict_to_list(rowdict)]
-        self.writer.writerow(row)
-
-    def writerows(self, rows):
-        for row in rows:
-            self.writerow(row)
-
-def _progress (start, total):
+def _progress(start, total):
     msg = '\rRetrieving {} of {}...'.format(start, total)
     if start >= total:
         msg = ' ' * len(msg)
@@ -74,193 +31,125 @@ def _progress (start, total):
     sys.stderr.write(msg)
     sys.stderr.flush()
 
-def _get_credentials (username, password):
-    if not username:
-        username = getpass.getuser()
-
-    _needs_storage = True
-    
-    if not password:
-        # retrieve password from system storage
-        if keyring.get_keyring():
-            password = keyring.get_password('qjira-sp', username)
-            if password:
-                _needs_storage = False
-
-    if not password:
-        password = getpass.getpass('Enter password for {}: '.format(username))
-        
-    if _needs_storage and keyring.get_keyring():
-        keyring.set_password('qjira-sp', username, password)
-        
-    return username, password
-
-def _clear_credentials(username):
-    if username and keyring.get_keyring():
-        keyring.delete_password('qjira-sp', username)
-        
-def _create_parser():
-    
-    # process command line arguments
+def create_parser():
     parser_common = argparse.ArgumentParser(add_help=False)
-    
-    parser_common.add_argument('-p', '--project',
-                        metavar='project',
-                        action='append',
-                        required=True,
-                        help='Project name')
-    parser_common.add_argument('-F', '--fix-version',
-                        dest='fixversion',
-                        metavar='fixVersion',
-                        action='append',
-                        help='Restrict search to fixVersion(s)')
+    parser_common.add_argument('project',
+                               nargs='+',
+                               metavar='project',
+                               help='Project name')
+    parser_common.add_argument('-f', '-F', '--fix-version',
+                               dest='fixversion',
+                               metavar='fixVersion',
+                               action='append',
+                               help='Restrict search to fixVersion(s)')
     parser_common.add_argument('-o', '--outfile',
-                        metavar='file',
-                        nargs='?',
-                        default=sys.stdout,
-                        help='Output file (.csv) [default: stdout]')
+                               metavar='file',
+                               nargs='?',
+                               default=sys.stdout,
+                               help='Output file (.csv) [default: stdout]')
     parser_common.add_argument('--no-progress',
-                        action='store_true',
-                        dest='suppress_progress',
-                        help='Hide data download progress')       
+                               action='store_true',
+                               dest='suppress_progress',
+                               help='Hide data download progress')       
     parser_common.add_argument('-b', '--base',
-                        dest='base_url',
-                        metavar='url',
-                        help='Jira Cloud base URL [default: sailpoint.atlassian.net]',
-                        default='sailpoint.atlassian.net')
+                               dest='base_url',
+                               metavar='url',
+                               help='Jira Cloud base URL [default: sailpoint.atlassian.net]',
+                               default='sailpoint.atlassian.net')
     parser_common.add_argument('-u', '--user',
-                        metavar='user',
-                        help='Username [default: %s]' % getpass.getuser(),
-                        default=None)
+                               metavar='user',
+                               help='Username, if blank will use logged on user',
+                               default=None)
     parser_common.add_argument('-w', '--password',
-                        metavar='pwd',
-                        help='Password (insecure), if blank will prommpt',
-                        default=None)
-    parser_common.add_argument('-d',
+                               metavar='pwd',
+                               help='Password (insecure), if blank will prommpt',
+                               default=None)
+#    parser_common.add_argument('-1', '--one-shot',
+#                        action='store_true',
+#                        help='Exit after 1 HTTP request (for debug purpose only)')
+    parser_common.add_argument('-A', '--all-fields',
+                               action='store_true',
+                               help='Extract all available fields')
+
+    parser = argparse.ArgumentParser(prog='qjira',
+                                     description='Export data from Jira to CSV format')
+    parser.add_argument('-d',
                         dest='debugLevel',
                         action='count',
                         help='Debug level')
-    parser_common.add_argument('-1', '--one-shot',
-                        action='store_true',
-                        help='Exit after 1 HTTP request (for debug purpose only)')
-    parser_common.add_argument('-A', '--all-fields',
-                        action='store_true',
-                        help='Extract all available fields')
-
-    parser = argparse.ArgumentParser(prog='qjira', description='Export data from Jira to CSV format')
+    parser.set_defaults(func=None)
 
     # sub-commands: velocity, cycletimes, summary, techdebt
-
-    subparsers = parser.add_subparsers(title='Available commands', dest='subparser_name', help='Available commands to process data')
-
-    parser_cycletime = subparsers.add_parser('c',
+    subparsers = parser.add_subparsers(title='Available commands',
+                                       dest='subparser_name',
+                                       help='Available commands to process data')
+    
+    parser_cycletime = subparsers.add_parser('cycletime',
                                              parents=[parser_common],
-                                             help='Produce [c]ycletime data')
-    parser_cycletime.set_defaults(func=CycleTime)
+                                             help='Produce cycletime data')
+    parser_cycletime.set_defaults(func=CycleTimeCommand)
 
-    parser_velocity = subparsers.add_parser('v',
+    parser_velocity = subparsers.add_parser('velocity',
                                             parents=[parser_common],
-                                            help='Produce [v]elocity data')
-    parser_velocity.set_defaults(func=Velocity)
+                                            help='Produce velocity data')
+    parser_velocity.set_defaults(func=VelocityCommand)
     parser_velocity.add_argument('--include-bugs', '-B',
                                  action='store_true',
                                  help='Include bugs in velocity calculation')
 
-    parser_summary = subparsers.add_parser('s',
+    parser_summary = subparsers.add_parser('summary',
                                            parents=[parser_common],
-                                           help='Produce [s]ummary report')
-    parser_summary.set_defaults(func=Summary)
+                                           help='Produce summary report')
+    parser_summary.set_defaults(func=SummaryCommand)
 
-    parser_techdebt = subparsers.add_parser('d'
-                                            , parents=[parser_common]
-                                            , help='Produce tech [d]ebt report')
-    parser_techdebt.set_defaults(func=TechDebt)
+    parser_techdebt = subparsers.add_parser('debt',
+                                            parents=[parser_common],
+                                            help='Produce tech debt report')
+    parser_techdebt.set_defaults(func=TechDebtCommand)
 
-    parser_backlog = subparsers.add_parser('b',
+    parser_backlog = subparsers.add_parser('backlog',
                                            parents=[parser_common],
-                                           help='Query [b]ug backlog by fixVersion')
-    parser_backlog.set_defaults(func=Backlog)
+                                           help='Query bug backlog by fixVersion')
+    parser_backlog.set_defaults(func=BacklogCommand)
     
     return parser
 
-def _create_outfile(out, encoding='utf-8'):
-    # where we passed a file object?
-    if hasattr(out, 'write'):
-        return out
-    elif PY3:
-        return io.open(out, 'wt',
-                       encoding=encoding, newline='')
-    else:
-        return io.open(out, 'wb')
-    # def __exit__(self, type, value, traceback):
-    #     self.f.close()
-
-
-
-def _create_service(username, password, base_url, one_shot=False, all_fields=False, suppress_progress=False):
-        
-    func_progress = None if suppress_progress else _progress
-
-    return Jira(base_url, username=username, password=password, one_shot=one_shot, all_fields=all_fields, progress=func_progress)
+def main(args=None):
     
-def _create_query_string(processor, fixversion=None, project=None):
-            
-    query = []
+    parser = create_parser()
+    my_args = parser.parse_args(args)
+
+    if not my_args.func:
+         parser.print_usage()
+         raise SystemExit()
+
+    if my_args.debugLevel:
+        Log.debugLevel = my_args.debugLevel
     
-    if fixversion:
-        query.append('fixVersion in ({})'.format(','.join(fixversion)))
-    if project:
-        query.append('project in ({})'.format(','.join(project)))
-    if processor.query:
-        query.append(processor.query)
+    # filter out arguments commands do not need to understand
+    func_args = {k:v for k,v in vars(my_args).items()
+                 if k not in ['func', 'subparser_name', 'outfile', 'debugLevel',
+                              'suppress_progress', 'user', 'password']}
 
-    return ' AND '.join(query)
+    # build up some additional keyword args for the commands
+    if not my_args.suppress_progress:
+        func_args.update({'progress_cb': _progress})
 
-def main(argv=None):
+    username, password = creds.get_credentials(my_args.user,
+                                               my_args.password)
+    func_args.update({
+        'username': username,
+        'password': password
+    })
 
-    if argv is None:
-        argv = sys.argv[1:]
-    
-    parser = _create_parser()
-    
-    args = parser.parse_args(argv)
-
-    if not args.subparser_name:
-        parser.print_usage()
-        raise SystemExit()
-
-    if args.debugLevel:
-        Log.debugLevel = args.debugLevel
-
-    # TODO: handle optional/command specific arguments
-    extra_args = {k:v for k,v in vars(args).items() if k not in ['subparser_name', 'func', 'outfile', 'debugLevel', 'user', 'password', 'base_url', 'one_shot', 'all_fields', 'suppress_progress', 'fixversion', 'project']}
-    #print('extra_args: ', extra_args)
-    
-    # handle username/password input
-    username, password = _get_credentials(args.user, args.password)        
-
-    service = _create_service(username, password, args.base_url, one_shot=args.one_shot, all_fields=args.all_fields, suppress_progress=args.suppress_progress)
-
-    processor = args.func(service, **extra_args)
-
-    query_string = _create_query_string(processor, fixversion=args.fixversion, project=args.project)
-
+    command = my_args.func(**func_args)
     try:
-        issues = service.get_project_issues(query_string)
+        unicode_csv_writer.write(my_args.outfile, command)
     except HTTPError as err:
-        if 401 == err.response.status_code:
-            _clear_credentials(username)
+        creds.clear_credentials(username)
         raise err
-
-    entries = processor.process(issues)
-    fieldnames = processor.header
-    with closing(_create_outfile(args.outfile, encoding='utf-8')) as out:
-        writer = UnicodeWriter(out, fieldnames=fieldnames, extrasaction='ignore', encoding='utf-8')
-        writer.writeheader()
-        for entry in entries:
-            writer.writerow(entry)
 
 if __name__ == "__main__":
     locale.setlocale(locale.LC_TIME, 'en_US')
-    main()
+    main(args=sys.argv[1:])
 

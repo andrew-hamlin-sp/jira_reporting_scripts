@@ -5,36 +5,23 @@ import io
 import unittest
 import keyring
 import keyring.backend
+import re
 
 from requests.exceptions import HTTPError
 from requests import Response
 
 try:
-    from contextlib import redirect_stdout
+    from contextlib import redirect_stdout, redirect_stderr
 except ImportError:
-    from contextlib2 import redirect_stdout
-
-PY3 = sys.version_info[0] > 2
+    from contextlib2 import redirect_stdout, redirect_stderr
 
 import qjira.__main__ as prog
-from qjira.__main__ import UnicodeWriter
+import qjira.jira as j
 
-class FakeService:
+from . import test_util
+from . import test_data
 
-    Raises401 = False
-    
-    def __init__(*args, **kwargs):
-        pass
-
-    def get_project_issues(self, *args, **kwargs):
-        if self.Raises401:
-            response = Response()
-            response.status_code = 401
-            raise HTTPError(response=response)
-        return []
-
-def _test_create_service(*args, **kwargs):
-    return FakeService()
+PY3 = sys.version_info > (3,)
 
 class TestableKeyring(keyring.backend.KeyringBackend):
 
@@ -59,7 +46,7 @@ class TestableKeyring(keyring.backend.KeyringBackend):
         del self.entries[key]
     
 
-class TestMainCLI(unittest.TestCase):
+class TestMainCLI(test_util.SPTestCase, test_util.MockJira, unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -67,39 +54,51 @@ class TestMainCLI(unittest.TestCase):
         
     def setUp(self):
         keyring.get_keyring().entries['qjira-sp_userb'] = 'xyzzy'
-        prog._create_service = _test_create_service
         self.std_out = io.StringIO() if PY3 else io.BytesIO()
+        self.std_err = io.StringIO() if PY3 else io.BytesIO()
+
+        self.setup_mock_jira(j)
 
     def tearDown(self):
-        FakeService.Raises401 = False
+        self.teardown_mock_jira(j)
 
     def test_stores_credentials(self):
         with redirect_stdout(self.std_out):
-            prog.main(['s','-p','IIQCB','-w','blah','-u','usera'])
+            prog.main(['cycletime','-w','blah','-u','usera', 'IIQCB'])
             
-        self.assertEquals('blah', keyring.get_keyring().entries['qjira-sp_usera'])
+        self.assertEqual('blah', keyring.get_keyring().entries['qjira-sp_usera'])
         
     def test_not_authorized_clears_credentials(self):
-        self.assertEquals('xyzzy', keyring.get_keyring().entries['qjira-sp_userb'])
-        FakeService.Raises401 = True
+        self.assertEqual('xyzzy', keyring.get_keyring().entries['qjira-sp_userb'])
+        self.raise401 = True
 
         with redirect_stdout(self.std_out):
             with self.assertRaises(HTTPError):
-                prog.main(['s','-p','IIQCB','-w','xyzzy','-u','userb'])
+                prog.main(['cycletime','-w','xyzzy','-u','userb', 'IIQCB'])
             
         with self.assertRaises(KeyError):
             keyring.get_keyring().entries['qjira-sp_userb']
 
-    def test_unicode_writer_encodes_utf8(self):
+    def test_progress_shown(self):
+        re_1of1 = re.compile('Retrieved 1 issue')
+        self.json_response = {
+            'total': 1,
+            'issues': [test_data.singleSprintStory()]
+        }
         with redirect_stdout(self.std_out):
-            writer = UnicodeWriter(sys.stdout, [u'summary'], encoding='utf-8')
-            writer.writeheader()
-            writer.writerow({u'summary': u'Performance optimization on \u201cMy access review\u201d widget on the home screen'})
-        self.assertTrue(True)
-        
-    def test_unicode_writer_encodes_ascii(self):
-        with redirect_stdout(self.std_out):
-            writer = UnicodeWriter(sys.stdout, [u'summary'], encoding='ascii')
-            writer.writeheader()
-            writer.writerow({u'summary': u'Performance optimization on \u201cMy access review\u201d widget on the home screen'})
-        self.assertTrue(True)
+            with redirect_stderr(self.std_err):
+                prog.main(['cycletime', '-w', 'blah', 'TEST'])
+
+        self.assertRegex_(self.std_err.getvalue(), re_1of1)
+
+    def test_progress_hidden(self):
+        re_1of1 = re.compile('Retrieved 1 issue')
+        self.json_response = {
+            'total': 1,
+            'issues': [test_data.singleSprintStory()]
+        }
+        with redirect_stderr(self.std_err):
+            with redirect_stdout(self.std_out):
+                prog.main(['cycletime', '-w', 'blah', '--no-progress', 'TEST'])
+
+        self.assertNotRegex_(self.std_err.getvalue(), re_1of1)

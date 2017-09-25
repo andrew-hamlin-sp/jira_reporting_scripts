@@ -30,23 +30,23 @@ class LogTest(unittest.TestCase):
         with redirect_stderr(self.std_err):
             Log.error('hello')
         output = self.std_err.getvalue()
-        self.assertEquals('[ERROR] hello\n', output)
+        self.assertEqual('[ERROR] hello\n', output)
 
     def test_info(self):
         Log.debugLevel = 1
         with redirect_stderr(self.std_err):
             Log.info('hello')
-        self.assertEquals('[INFO] hello\n', self.std_err.getvalue())
+        self.assertEqual('[INFO] hello\n', self.std_err.getvalue())
 
     def test_debug(self):
         Log.debugLevel = 2
         with redirect_stderr(self.std_err):
             Log.debug('hello')
-        self.assertEquals('[DEBUG] hello\n', self.std_err.getvalue())
+        self.assertEqual('[DEBUG] hello\n', self.std_err.getvalue())
 
     def test_verbose(self):
         Log.debugLevel = 3
         with redirect_stderr(self.std_err):
             Log.verbose('hello')
-        self.assertEquals('[VERBOSE] hello\n', self.std_err.getvalue())
+        self.assertEqual('[VERBOSE] hello\n', self.std_err.getvalue())
 
