@@ -4,7 +4,6 @@ import unittest
 import datetime
 
 from qjira.summary import SummaryCommand
-import qjira.jira as j
 
 from . import test_data
 from . import test_util
@@ -12,11 +11,11 @@ from . import test_util
 class TestSummary(test_util.MockJira, unittest.TestCase):
 
     def setUp(self):
-        self.setup_mock_jira(j)
+        self.setup_mock_jira()
         self.command_under_test = SummaryCommand(base_url='localhost:3000', project=['TEST'])
 
     def tearDown(self):
-        self.teardown_mock_jira(j)
+        self.teardown_mock_jira()
         
     def test_header(self):
         self.assertIsInstance(self.command_under_test.header, list)

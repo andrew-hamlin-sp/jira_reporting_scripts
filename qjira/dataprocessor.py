@@ -1,5 +1,4 @@
 '''data.py - process a jira issue'''
-
 import re
 import six
 from dateutil import parser as date_parser
@@ -45,11 +44,11 @@ def flatten_json_struct(data, count_fields=[], datetime_fields=[]):
     Skips entry when value is None
     """
     for k,v in data.items():
-        if type(v) != dict and type(v) != list:
+        if v and type(v) != dict and type(v) != list:
             if k in datetime_fields and re_prog.match(v):
                 #print('> yielding date {0}'.format(k))
                 yield k, date_parser.parse(v).date()
-            elif v:
+            else:
                 #print('> yielding value {0}: {1}'.format(k, v))
                 yield k, v
         elif type(v) == list:

@@ -5,11 +5,11 @@ main.py
 Author: Andrew Hamlin
 Description: script to execute commands against jira
 '''
-
 import sys
+import io
 import argparse
-
 import locale
+
 from requests.exceptions import HTTPError
 
 from .velocity import VelocityCommand
@@ -17,62 +17,90 @@ from .cycletime import CycleTimeCommand
 from .summary import SummaryCommand
 from .techdebt import TechDebtCommand
 from .backlog import BacklogCommand
+from .jql import JQLCommand
 from .log import Log
 from . import unicode_csv_writer
 from . import credential_store as creds
+
+PY3 = sys.version_info > (3,)
+
+def _print(msg):
+    sys.stderr.write(msg)
+    sys.stderr.flush()
 
 def _progress(start, total):
     msg = '\rRetrieving {} of {}...'.format(start, total)
     if start >= total:
         msg = ' ' * len(msg)
-        sys.stderr.write('\r' + msg)
-        sys.stderr.flush()
+        _print('\r' + msg)
         msg += '\rRetrieved {} issues\n'.format(start, total)
-    sys.stderr.write(msg)
-    sys.stderr.flush()
+    _print(msg)    
 
+def _open(filepath, encoding):
+    '''Open the file with given encoding.
+
+    If the filepath is the default sys.stdout, just return it.
+    '''
+    if sys.stdout == filepath:
+        return filepath
+    elif PY3:
+        return io.open(filepath, 'wt',
+                       encoding=encoding,
+                       newline='')
+    else:
+        return io.open(filepath, 'wb')
+    
 def create_parser():
+
     parser_common = argparse.ArgumentParser(add_help=False)
-    parser_common.add_argument('project',
-                               nargs='+',
-                               metavar='project',
-                               help='Project name')
-    parser_common.add_argument('-f', '-F', '--fix-version',
-                               dest='fixversion',
-                               metavar='fixVersion',
-                               action='append',
-                               help='Restrict search to fixVersion(s)')
+
     parser_common.add_argument('-o', '--outfile',
                                metavar='file',
                                nargs='?',
                                default=sys.stdout,
                                help='Output file (.csv) [default: stdout]')
+
     parser_common.add_argument('--no-progress',
                                action='store_true',
                                dest='suppress_progress',
                                help='Hide data download progress')       
+
     parser_common.add_argument('-b', '--base',
                                dest='base_url',
                                metavar='url',
                                help='Jira Cloud base URL [default: sailpoint.atlassian.net]',
                                default='sailpoint.atlassian.net')
+
     parser_common.add_argument('-u', '--user',
                                metavar='user',
                                help='Username, if blank will use logged on user',
                                default=None)
+
     parser_common.add_argument('-w', '--password',
                                metavar='pwd',
                                help='Password (insecure), if blank will prommpt',
                                default=None)
-#    parser_common.add_argument('-1', '--one-shot',
-#                        action='store_true',
-#                        help='Exit after 1 HTTP request (for debug purpose only)')
+    
     parser_common.add_argument('-A', '--all-fields',
                                action='store_true',
-                               help='Extract all available fields')
+                               help='Extract all "navigable" fields in Jira, [fields=*navigable]')
+
+    parser_command_options = argparse.ArgumentParser(add_help=False, parents=[parser_common])
+        
+    parser_command_options.add_argument('-f', '-F', '--fix-version',
+                               dest='fixversion',
+                               metavar='fixVersion',
+                               action='append',
+                               help='Restrict search to fixVersion(s)')
+
+    parser_command_options.add_argument('project',
+                                        nargs='+',
+                                        metavar='project',
+                                        help='Project name')
 
     parser = argparse.ArgumentParser(prog='qjira',
                                      description='Export data from Jira to CSV format')
+    
     parser.add_argument('-d',
                         dest='debugLevel',
                         action='count',
@@ -85,12 +113,12 @@ def create_parser():
                                        help='Available commands to process data')
     
     parser_cycletime = subparsers.add_parser('cycletime',
-                                             parents=[parser_common],
+                                             parents=[parser_command_options],
                                              help='Produce cycletime data')
     parser_cycletime.set_defaults(func=CycleTimeCommand)
 
     parser_velocity = subparsers.add_parser('velocity',
-                                            parents=[parser_common],
+                                            parents=[parser_command_options],
                                             help='Produce velocity data')
     parser_velocity.set_defaults(func=VelocityCommand)
     parser_velocity.add_argument('--include-bugs', '-B',
@@ -98,19 +126,29 @@ def create_parser():
                                  help='Include bugs in velocity calculation')
 
     parser_summary = subparsers.add_parser('summary',
-                                           parents=[parser_common],
+                                           parents=[parser_command_options],
                                            help='Produce summary report')
     parser_summary.set_defaults(func=SummaryCommand)
 
     parser_techdebt = subparsers.add_parser('debt',
-                                            parents=[parser_common],
+                                            parents=[parser_command_options],
                                             help='Produce tech debt report')
     parser_techdebt.set_defaults(func=TechDebtCommand)
 
     parser_backlog = subparsers.add_parser('backlog',
-                                           parents=[parser_common],
+                                           parents=[parser_command_options],
                                            help='Query bug backlog by fixVersion')
     parser_backlog.set_defaults(func=BacklogCommand)
+
+    parser_jql = subparsers.add_parser('jql',
+                                       parents=[parser_common],
+                                       help='Query using JQL')
+
+    parser_jql.add_argument('jql',
+                            help='JQL statement')
+
+    parser_jql.set_defaults(func=JQLCommand)
+                                       
     
     return parser
 
@@ -142,9 +180,12 @@ def main(args=None):
         'password': password
     })
 
+    encoding = 'ASCII'
+
     command = my_args.func(**func_args)
     try:
-        unicode_csv_writer.write(my_args.outfile, command)
+        with _open(my_args.outfile, encoding) as f:
+            unicode_csv_writer.write(f, command, encoding)
     except HTTPError as err:
         creds.clear_credentials(username)
         raise err

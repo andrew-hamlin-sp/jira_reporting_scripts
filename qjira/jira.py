@@ -1,5 +1,5 @@
 '''Executes simple queries of Jira Cloud REST API'''
-
+from __future__ import unicode_literals
 import requests
 
 try:
@@ -52,6 +52,10 @@ def _get_json(url, username=None, password=None, headers=HEADERS):
     return r.json()
 
 def _as_data(issue, reverse_sprints=False):
+    if Log.isVerboseEnabled():
+        Log.verbose('enter jira._as_data: issue, reverse_sprints={0}'.format(reverse_sprints))
+        Log.verbose('issue={0}'.format(issue))
+        
     data = {
         'issue_key':issue['key']
     }
@@ -74,7 +78,9 @@ def _as_data(issue, reverse_sprints=False):
         change_history = dict([create_history(dict(item, created=h['created']))
                                for h in histories for item in h['items'] if 'fieldId' in item])
         data.update(change_history)
-        
+
+    if Log.isVerboseEnabled():
+        Log.verbose('exit jira._as_data: {0}'.format(data))
     return data
 
 def default_fields():

@@ -3,7 +3,6 @@ from . import test_context
 import unittest
 
 from qjira.backlog import BacklogCommand
-import qjira.jira as j
 
 from . import test_data
 from . import test_util
@@ -11,11 +10,11 @@ from . import test_util
 class TestBacklog(test_util.MockJira, unittest.TestCase):
 
     def setUp(self):
-        self.setup_mock_jira(j)
+        self.setup_mock_jira()
         self.processor = BacklogCommand(project=['TEST'], base_url='localhost:3000')
 
     def tearDown(self):
-        self.teardown_mock_jira(j)
+        self.teardown_mock_jira()
         
     def test_header(self):
         self.assertIsInstance(self.processor.header, list)

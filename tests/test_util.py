@@ -1,6 +1,5 @@
 import sys
 import copy
-import unittest
 from functools import partial
 
 from requests.exceptions import HTTPError
@@ -10,7 +9,9 @@ try:
     from urlparse import urlparse, parse_qs
 except ImportError:
     from urllib.parse import urlparse, parse_qs
-    
+
+import qjira.jira as _jira
+
 PY3 = sys.version_info > (3,)
 
 class SPTestCase(object):
@@ -34,14 +35,14 @@ class MockJira(object):
     See the assumption that self accesses the assert methods.
     '''
 
-    def setup_mock_jira(self, jira):
-        self._original_get_json = jira._get_json
-        jira._get_json = self.get_json
+    def setup_mock_jira(self):
+        self._original_get_json = _jira._get_json
+        _jira._get_json = self.get_json
         self._json_response = {'total': 0, 'issues': []}
         self._raise401 = False
  
-    def teardown_mock_jira(self, jira):
-        jira._get_json = self._original_get_json
+    def teardown_mock_jira(self):
+        _jira._get_json = self._original_get_json
         self._actual_url = None
         
     def get_json(self, url, *args, **kwargs):

@@ -22,7 +22,8 @@ class CycleTimeCommand(BaseCommand):
     '''
     @property
     def header(self):
-         return ['project_key','fixVersions_0_name','issuetype_name','issue_key','story_points','status_InProgress','status_Done', 'count_days']
+         return ['project_key','fixVersions_0_name','issuetype_name','issue_key',
+                 'story_points','status_InProgress','status_Done', 'count_days']
 
     @property
     def query(self):

@@ -9,7 +9,6 @@
    Sprints without defined start and end dates  will not be reported.
 
 '''
-
 from .command import PivotCommand
 from .log import Log
 

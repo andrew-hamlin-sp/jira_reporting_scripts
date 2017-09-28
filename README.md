@@ -1,4 +1,4 @@
-# Jira Reporting Scripts (0.99.8)
+# Jira Reporting Scripts (0.99.9)
 
 To address some of the deficiencies in Jira reporting, here is a small command line tool to 
 exercise the [Jira REST API](https://docs.atlassian.com/jira/REST/cloud/) to retrieve information about Stories,
@@ -16,6 +16,10 @@ Windows: Python 3.6 (tested), 2.7 (not tested)
 
 Added the `keyring` module, enabling storage of your Jira credentials in your OSes keychain or credential vault. MacOS and Windows are supported. The script may prompt that Python wants to access `qjira-sp` in your credential store. You should allow it always, unless you really like typing your password over and over again.
 
+### JQL query
+
+Added the `jql` command, print output of any provided JQL query.
+
 ### Technical Debt
 
 Added the `debt` command, prints a table of story points versus bug points including percentage of tech debt (bugs) completed per project.
@@ -23,6 +27,28 @@ Added the `debt` command, prints a table of story points versus bug points inclu
 ### Bug Backlog
 
 Added the bug `backlog` command, prints all bugs by fix version.
+
+# Commands
+
+```
+usage: qjira [-h] [-d] {cycletime,velocity,summary,debt,backlog,jql} ...
+
+Export data from Jira to CSV format
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -d                    Debug level
+
+Available commands:
+  {cycletime,velocity,summary,debt,backlog,jql}
+                        Available commands to process data
+    cycletime           Produce cycletime data
+    velocity            Produce velocity data
+    summary             Produce summary report
+    debt                Produce tech debt report
+    backlog             Query bug backlog by fixVersion
+    jql                 Query using JQL
+```
 
 ## Summary
 
@@ -56,19 +82,21 @@ Generate table of project_name, bug_points, story_points, & tech_debt percentage
 
 Prints backlog summary of bugs by fix version. This adds a row per fix version for filtering in Excel.
 
-## Future enhancements
+# Future enhancements
+
+  *  Add field and count_field arguments to JQL command
 
   *  Add argument including set of default IIQ project names 
 
   *  Unify sprint names & date ranges
 
-## Installation
+# Installation
 
   * Uses setuptools for installation. On MacOS, install requires root permission via `sudo`. 
 
 `$ pip install git+https://github.com/andrew-hamlin-sp/jira_reporting_scripts.git`
 
-## Command line usage
+# Command line usage
 
   * View help message
   
@@ -99,7 +127,7 @@ Prints backlog summary of bugs by fix version. This adds a row per fix version f
   
 `$ qjira velocity IIQCB IIQHH -o velocity.csv`
 
-## Dependencies
+# Dependencies
 
   * requests
   
@@ -109,7 +137,7 @@ Prints backlog summary of bugs by fix version. This adds a row per fix version f
   
   * six
 
-## Development
+# Development
 
 Use python virtualenv to isolate the required libraries. `$ source bin/activate`
 

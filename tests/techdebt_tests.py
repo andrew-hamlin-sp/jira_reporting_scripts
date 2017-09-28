@@ -2,21 +2,20 @@ from . import test_context
 
 import unittest
 
-import qjira.jira as j
-
 from qjira.techdebt import TechDebtCommand
+
 from . import test_data
 from . import test_util
 
 class TestTechDebt(test_util.MockJira, unittest.TestCase):
 
     def setUp(self):
-        self.setup_mock_jira(j)
+        self.setup_mock_jira()
         self.command_under_test = TechDebtCommand(project=['TEST'],
                                                   base_url='localhost:3000')
 
     def tearDown(self):
-        self.teardown_mock_jira(j)
+        self.teardown_mock_jira()
 
     def test_header(self):
         self.assertIsInstance(self.command_under_test.header, list)

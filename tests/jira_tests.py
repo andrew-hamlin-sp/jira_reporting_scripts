@@ -5,13 +5,11 @@ import json
 import datetime
 
 from functools import partial
-    
-from . import test_data
-from . import test_util
 
 import qjira.jira as j
 
-#from qjira.jira import Jira
+from . import test_data
+from . import test_util
 
 TEST_BASE_URL = 'localhost:3000'
 
@@ -19,10 +17,10 @@ class TestJiraFunc(test_util.MockJira, unittest.TestCase):
 
     def setUp(self):
         self.maxDiff = None
-        self.setup_mock_jira(j)
+        self.setup_mock_jira()
 
     def tearDown(self):
-        self.teardown_mock_jira(j)
+        self.teardown_mock_jira()
                 
     def test_get_project_issues(self):
         """test that all expected fields are urlencoded properly""" 

@@ -1,7 +1,6 @@
 '''
 Analyze tech debt ratios Story vs Bug points.
 '''
-
 from functools import partial, cmp_to_key, reduce as reduce_
 
 from .command import BaseCommand

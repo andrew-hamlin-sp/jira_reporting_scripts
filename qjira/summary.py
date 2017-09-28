@@ -1,7 +1,6 @@
 '''
 Summarize the backlog
 '''
-
 from operator import itemgetter
 from functools import partial
 

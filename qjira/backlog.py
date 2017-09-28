@@ -4,7 +4,6 @@ pivot the issues on fixVersion fields for sorting
 between future unreleased versions and dev_backlog,
 for example.
 """
-
 from .command import PivotCommand
 from .log import Log
 

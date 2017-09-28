@@ -3,7 +3,6 @@ from . import test_context
 import unittest
 
 from qjira.velocity import VelocityCommand
-import qjira.jira as j
 
 from . import test_data
 from . import test_util
@@ -11,11 +10,11 @@ from . import test_util
 class TestVelocity(test_util.MockJira, unittest.TestCase):
 
     def setUp(self):
-        self.setup_mock_jira(j)
+        self.setup_mock_jira()
         self.command_under_test = VelocityCommand(base_url='localhost:3000', project=['TEST'])
         
     def tearDown(self):
-        self.teardown_mock_jira(j)
+        self.teardown_mock_jira()
         
     def test_header(self):
         self.assertIsInstance(self.command_under_test.header, list)
@@ -73,11 +72,11 @@ class TestVelocity(test_util.MockJira, unittest.TestCase):
 class TestVelocityWithBugs(test_util.MockJira, unittest.TestCase):
 
     def setUp(self):
-        self.setup_mock_jira(j)
+        self.setup_mock_jira()
         self.command_under_test = VelocityCommand(base_url='localhost:3000', project=['TEST'], include_bugs=True)
 
     def tearDown(self):
-        self.teardown_mock_jira(j)
+        self.teardown_mock_jira()
 
     def test_query(self):
         self.assertEqual('issuetype in (Story, Bug)', self.command_under_test.query)

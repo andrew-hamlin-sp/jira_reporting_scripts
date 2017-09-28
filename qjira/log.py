@@ -1,6 +1,6 @@
 '''An ultra stupid logger'''
 import sys
-from six import print_
+from six import text_type, print_
 
 class Log:
     '''Simple logger'''
@@ -11,7 +11,7 @@ class Log:
     @staticmethod
     def eprint (msg, *args, **kwargs):
         '''print args to stderr'''
-        print_(msg, file=sys.stderr, **kwargs)
+        print_(text_type(msg).encode(), file=sys.stderr, **kwargs)
 
     @staticmethod
     def error (msg):

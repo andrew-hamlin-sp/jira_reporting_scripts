@@ -10,6 +10,7 @@ from . import jira_tests
 from . import log_tests
 from . import main_tests    
 from . import unicode_csv_writer_tests
+from . import jql_tests
 
 def suite():
     suite = unittest.TestSuite()
@@ -21,9 +22,11 @@ def suite():
     suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(techdebt_tests.TestTechDebt))
     suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(backlog_tests.TestBacklog))
     suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(unicode_csv_writer_tests.TestUnicodeWriter))
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(unicode_csv_writer_tests.TestAllFields))
     suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(log_tests.LogTest))
     suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(main_tests.TestMainCLI))
-
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(jql_tests.TestJQLCommand))
+    
     return suite
     
 if __name__ == '__main__':

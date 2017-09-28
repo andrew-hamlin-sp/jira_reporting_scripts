@@ -1,8 +1,8 @@
 """ Command base class for processing Jira issues"""
-
 import abc
-from functools import partial
 import copy
+import re
+from functools import partial
 
 from . import jira
 from . import dataprocessor as dp
@@ -14,6 +14,7 @@ def query_builder(name, items):
 class BaseCommand:
 
     __metaclass__ = abc.ABCMeta
+    
     def __init__(self, base_url=None, project=[],
                  fixversion=[], all_fields=False,
                  *args, **kwargs):
@@ -28,8 +29,6 @@ class BaseCommand:
 
         fixversion - list of FixVersion values
         '''
-        if not project:
-            raise TypeError('Missing keyword "project"')
         if not base_url:
             raise TypeError('Missing keyword "base_url"')
 
@@ -37,25 +36,31 @@ class BaseCommand:
         self._base_url = base_url
         self._fixversions = fixversion
         self._all_fields = all_fields
-        
+                
         self.kwargs = kwargs
-        # TODO handle all_fields
+        
         self._http_request = self._configure_http_request()
 
     def _configure_http_request(self):
         '''Sub-classes can continue currying this function.'''
-        #username = self.kwargs.pop('username')
-        #password = self.kwargs.pop('password')
-        #progress_cb = self.kwargs.pop('progress_cb')
-        #all_fields = self.kwargs.pop('all_fields')
         return partial(jira.all_issues,
                        self._base_url,
                        fields=self._get_jira_fields(),
                        **self.kwargs)
-                
+
+    @property
+    def show_all_fields(self):
+        return self._all_fields
+    
     @abc.abstractproperty
     def header(self):
-        '''Return the list of CSV column headers to print.'''
+        '''Return the list of CSV column headers to print.
+
+        Note: unicode_csv_writer.write interprets "no header"
+        as "use all existing fields", see JQLCommand.
+
+        See also, expand_header.
+        '''
         raise NotImplementedError()
 
     @abc.abstractproperty
@@ -90,11 +95,28 @@ class BaseCommand:
         return ' AND '.join(query)
 
     def _get_jira_fields(self):
-        if self._all_fields:
-            return self.retrieve_fields(['*'])
+        if self.show_all_fields:
+            return self.retrieve_fields(['*navigable'])
         else:
             return self.retrieve_fields(jira.default_fields())
 
+    def expand_header(self, keys):
+        '''Return a list of column names based on the keys.
+
+        A command may define a header including regex values, such as sprint_.+?_name.
+
+        Note: these are pure Python regex expressions not simple name globs such as, *.
+        '''
+        if self.show_all_fields or not self.header:
+            return keys
+        else:
+            expanded_headers = []
+            for h in self.header:
+                for k in keys:
+                    if re.match(h, k):
+                        expanded_headers.append(k)
+            return expanded_headers
+        
     def http_request(self):
         query_string = self._create_query_string()
         req = self._http_request(query_string)
@@ -118,6 +140,7 @@ class BaseCommand:
         http_req = self.http_request()
         generate_rows = ({k:v for k,v in flatten_rows(x)}
                          for x in self.pre_process(http_req))
+        Log.debug('execute: {0}'.format(generate_rows))
         return self.post_process(generate_rows)
 
 class PivotCommand(BaseCommand):
@@ -135,6 +158,7 @@ class PivotCommand(BaseCommand):
             if pivot_on in x and x[pivot_on]:
                 pivots = copy.copy(x[pivot_on])
                 del x[pivot_on]
+                Log.debug('Pivot on field {0}, {1} item(s)'.format(pivot_on, len(pivots)))
                 #print('> pivot on {0} sprints'.format(len(sprints)))
                 '''Create new json object for each sprint'''
                 for pivot in pivots:

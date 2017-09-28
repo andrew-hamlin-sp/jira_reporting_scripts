@@ -6,6 +6,8 @@ import unittest
 import keyring
 import keyring.backend
 import re
+import os
+import tempfile
 
 from requests.exceptions import HTTPError
 from requests import Response
@@ -16,7 +18,6 @@ except ImportError:
     from contextlib2 import redirect_stdout, redirect_stderr
 
 import qjira.__main__ as prog
-import qjira.jira as j
 
 from . import test_util
 from . import test_data
@@ -57,14 +58,15 @@ class TestMainCLI(test_util.SPTestCase, test_util.MockJira, unittest.TestCase):
         self.std_out = io.StringIO() if PY3 else io.BytesIO()
         self.std_err = io.StringIO() if PY3 else io.BytesIO()
 
-        self.setup_mock_jira(j)
+        self.setup_mock_jira()
 
     def tearDown(self):
-        self.teardown_mock_jira(j)
+        self.teardown_mock_jira()
 
     def test_stores_credentials(self):
         with redirect_stdout(self.std_out):
-            prog.main(['cycletime','-w','blah','-u','usera', 'IIQCB'])
+            with redirect_stderr(self.std_err):
+                prog.main(['cycletime','-w','blah','-u','usera', 'IIQCB'])
             
         self.assertEqual('blah', keyring.get_keyring().entries['qjira-sp_usera'])
         
@@ -72,9 +74,10 @@ class TestMainCLI(test_util.SPTestCase, test_util.MockJira, unittest.TestCase):
         self.assertEqual('xyzzy', keyring.get_keyring().entries['qjira-sp_userb'])
         self.raise401 = True
 
-        with redirect_stdout(self.std_out):
-            with self.assertRaises(HTTPError):
-                prog.main(['cycletime','-w','xyzzy','-u','userb', 'IIQCB'])
+        with self.assertRaises(HTTPError):
+            with redirect_stdout(self.std_out):
+                with redirect_stderr(self.std_err):
+                    prog.main(['cycletime','-w','xyzzy','-u','userb', 'IIQCB'])
             
         with self.assertRaises(KeyError):
             keyring.get_keyring().entries['qjira-sp_userb']
@@ -102,3 +105,18 @@ class TestMainCLI(test_util.SPTestCase, test_util.MockJira, unittest.TestCase):
                 prog.main(['cycletime', '-w', 'blah', '--no-progress', 'TEST'])
 
         self.assertNotRegex_(self.std_err.getvalue(), re_1of1)
+
+    def test_write_to_file(self):
+        f, path = tempfile.mkstemp(suffix='csv')
+        self.json_response = {
+            'total': 1,
+            'issues': [test_data.singleSprintStory()]
+        }
+        lines = None
+        try:
+            prog.main(['cycletime', '-w', 'blah', '--no-progress', '-o', path, 'TEST'])
+            with open(path, 'r') as o:
+                lines = o.readlines()
+        finally:
+            os.unlink(path)
+        self.assertEqual(2, len(lines))
