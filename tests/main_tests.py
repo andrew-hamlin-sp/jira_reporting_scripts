@@ -114,9 +114,12 @@ class TestMainCLI(test_util.SPTestCase, test_util.MockJira, unittest.TestCase):
         }
         lines = None
         try:
-            prog.main(['cycletime', '-w', 'blah', '--no-progress', '-o', path, 'TEST'])
+            with redirect_stderr(self.std_err):
+                with redirect_stdout(self.std_out):
+                    prog.main(['cycletime', '-w', 'blah', '--no-progress', '-o', path, 'TEST'])
             with open(path, 'r') as o:
                 lines = o.readlines()
         finally:
             os.unlink(path)
         self.assertEqual(2, len(lines))
+

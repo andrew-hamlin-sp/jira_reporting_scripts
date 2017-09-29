@@ -26,6 +26,7 @@ def suite():
     suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(log_tests.LogTest))
     suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(main_tests.TestMainCLI))
     suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(jql_tests.TestJQLCommand))
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(jql_tests.TestJQLCommandWithAdditionalFieldsColumns))
     
     return suite
     

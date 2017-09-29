@@ -41,8 +41,8 @@ def _open(filepath, encoding):
 
     If the filepath is the default sys.stdout, just return it.
     '''
-    if sys.stdout == filepath:
-        return filepath
+    if not filepath:
+        return sys.stdout
     elif PY3:
         return io.open(filepath, 'wt',
                        encoding=encoding,
@@ -57,7 +57,7 @@ def create_parser():
     parser_common.add_argument('-o', '--outfile',
                                metavar='file',
                                nargs='?',
-                               default=sys.stdout,
+                               default=None,
                                help='Output file (.csv) [default: stdout]')
 
     parser_common.add_argument('--no-progress',
@@ -147,6 +147,14 @@ def create_parser():
     parser_jql.add_argument('jql',
                             help='JQL statement')
 
+    parser_jql.add_argument('--field', '-f',
+                            action='append',
+                            help='Add field(s) to Jira request')
+
+    parser_jql.add_argument('--column', '-c',
+                            action='append',
+                            help='Add column(s) to CSV output')
+    
     parser_jql.set_defaults(func=JQLCommand)
                                        
     
@@ -182,6 +190,7 @@ def main(args=None):
 
     encoding = 'ASCII'
 
+    Log.debug('Args: {0}'.format(func_args))
     command = my_args.func(**func_args)
     try:
         with _open(my_args.outfile, encoding) as f:

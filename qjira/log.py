@@ -11,7 +11,8 @@ class Log:
     @staticmethod
     def eprint (msg, *args, **kwargs):
         '''print args to stderr'''
-        print_(text_type(msg).encode(), file=sys.stderr, **kwargs)
+        #print_(text_type(msg).encode(), file=sys.stderr, **kwargs)
+        print_(msg, file=sys.stderr, **kwargs)
 
     @staticmethod
     def error (msg):

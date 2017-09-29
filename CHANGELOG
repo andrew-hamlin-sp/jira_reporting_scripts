@@ -1,3 +1,9 @@
+2017-09-29  Andrew Hamlin  <andrew.hamlin@sailpoint.com>
+
+	* Version 0.99.10
+
+	* Bug fix, regex expansion of column names is inaccurate
+
 2017-09-28  Andrew Hamlin  <andrew.hamlin@sailpoint.com>
 
 	* Version 0.99.9

@@ -19,7 +19,9 @@ def write(f, command, encoding):
     encoding - the output encoding to use
     '''
     writer = None
-    fieldnames = lambda row: [_encode(encoding, s) for s in command.expand_header(row.keys())]
+
+    # XXX Bug: only expands known keys from the FIRST row
+    fieldnames = lambda row: [_encode(encoding, s) for s in command.expand_header(row)]
 
     for row in command.execute():
         if not writer:
@@ -29,6 +31,3 @@ def write(f, command, encoding):
             writer.writeheader()
 
         writer.writerow({k: _encode(encoding, v) for k, v in row.items()})
-
-    if hasattr(writer, 'close'):
-        writer.close()
