@@ -39,5 +39,14 @@ class TestJQLCommand(test_util.MockJira, unittest.TestCase):
         row = next(self.command.execute())
         cols = self.command.expand_header(row.keys())
         self.assertListEqual(['project_key', 'issue_key','issuetype_name',
-                              'summary', 'assignee_name', 'sprint_0_name',
+                              'summary', 'status_name', 'assignee_name', 'sprint_0_name',
                               'fixVersions_0_name'], cols)
+
+class TestJQLCommandWithColumns(test_util.MockJira, unittest.TestCase):
+
+    def setUp(self):
+        self.setup_mock_jira()
+        self.command = JQLCommand(base_url='localhost:3000', jql=TestJQLCommand._jql_param, fields=['customer'])
+
+    def tearDown(self):
+        self.teardown_mock_jira()

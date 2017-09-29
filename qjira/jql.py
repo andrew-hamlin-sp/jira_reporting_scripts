@@ -11,14 +11,13 @@ class JQLCommand(BaseCommand):
             raise TypeError('Missing keyword "jql"')
 
         self._jql = jql
-        #self._all_fields = True
         
     @property
     def header(self):
         '''JQL command returns all fields.
         '''
         return ['project_key', 'issue_key', 'issuetype_name', 'summary',
-                'status_name', 'assignee_name', 'sprint_.+?_name', 'fixVersions_.+?_name']
+                'status_name', 'assignee_name', 'sprint_0_name', 'fixVersions_0_name']
     
     @property
     def query(self):

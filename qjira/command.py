@@ -56,9 +56,6 @@ class BaseCommand:
     def header(self):
         '''Return the list of CSV column headers to print.
 
-        Note: unicode_csv_writer.write interprets "no header"
-        as "use all existing fields", see JQLCommand.
-
         See also, expand_header.
         '''
         raise NotImplementedError()
@@ -100,22 +97,18 @@ class BaseCommand:
         else:
             return self.retrieve_fields(jira.default_fields())
 
-    def expand_header(self, keys):
-        '''Return a list of column names based on the keys.
+    def expand_header(self, d):
+        '''Return a list of column names from a dict object.
 
-        A command may define a header including regex values, such as sprint_.+?_name.
+        If the command was launched with the show_all_fields option or does not supply a header list, 
+        then use all keys of the provided row.
 
-        Note: these are pure Python regex expressions not simple name globs such as, *.
+        Otherwise, return the defined set of fields from the header property.
         '''
         if self.show_all_fields or not self.header:
-            return keys
+            return d.keys()
         else:
-            expanded_headers = []
-            for h in self.header:
-                for k in keys:
-                    if re.match(h, k):
-                        expanded_headers.append(k)
-            return expanded_headers
+            return self.header
         
     def http_request(self):
         query_string = self._create_query_string()

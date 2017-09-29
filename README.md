@@ -1,4 +1,4 @@
-# Jira Reporting Scripts (0.99.9)
+# Jira Reporting Scripts (0.99.10)
 
 To address some of the deficiencies in Jira reporting, here is a small command line tool to 
 exercise the [Jira REST API](https://docs.atlassian.com/jira/REST/cloud/) to retrieve information about Stories,
