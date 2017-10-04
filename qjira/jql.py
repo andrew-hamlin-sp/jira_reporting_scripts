@@ -25,7 +25,7 @@ class JQLCommand(BaseCommand):
         self._jql = jql
         self._add_fields = add_field
         self._add_columns = add_column
-            
+
     @property
     def header(self):
         '''JQL command returns all fields.
