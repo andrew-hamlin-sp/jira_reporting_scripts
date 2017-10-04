@@ -73,12 +73,14 @@ class TestMainCLI(test_util.SPTestCase, test_util.MockJira, unittest.TestCase):
     def test_not_authorized_clears_credentials(self):
         self.assertEqual('xyzzy', keyring.get_keyring().entries['qjira-sp_userb'])
         self.raise401 = True
+        
+        with redirect_stdout(self.std_out):
+            with redirect_stderr(self.std_err):
+                prog.main(['cycletime','-w','xyzzy','-u','userb', 'IIQCB'])
 
-        with self.assertRaises(HTTPError):
-            with redirect_stdout(self.std_out):
-                with redirect_stderr(self.std_err):
-                    prog.main(['cycletime','-w','xyzzy','-u','userb', 'IIQCB'])
-            
+        error_msg = self.std_err.getvalue()
+        self.assertRegex_(error_msg, r'[ERROR].*Unauthorized')
+                
         with self.assertRaises(KeyError):
             keyring.get_keyring().entries['qjira-sp_userb']
 

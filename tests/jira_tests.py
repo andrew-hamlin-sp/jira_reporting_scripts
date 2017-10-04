@@ -7,6 +7,7 @@ import datetime
 from functools import partial
 
 import qjira.jira as j
+from qjira.log import Log
 
 from . import test_data
 from . import test_util
@@ -67,3 +68,4 @@ class TestJiraFunc(test_util.MockJira, unittest.TestCase):
             },
             data)
         self.assertEqual(1, len(data['sprint']))
+        

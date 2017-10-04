@@ -55,7 +55,7 @@ def create_parser():
     parser_common = argparse.ArgumentParser(add_help=False)
 
     parser_common.add_argument('-o', '--outfile',
-                               metavar='file',
+                               metavar='FILENAME',
                                nargs='?',
                                default=None,
                                help='Output file (.csv) [default: stdout]')
@@ -67,17 +67,17 @@ def create_parser():
 
     parser_common.add_argument('-b', '--base',
                                dest='base_url',
-                               metavar='url',
+                               metavar='URL',
                                help='Jira Cloud base URL [default: sailpoint.atlassian.net]',
                                default='sailpoint.atlassian.net')
 
     parser_common.add_argument('-u', '--user',
-                               metavar='user',
+                               metavar='USER',
                                help='Username, if blank will use logged on user',
                                default=None)
 
     parser_common.add_argument('-w', '--password',
-                               metavar='pwd',
+                               metavar='PWD',
                                help='Password (insecure), if blank will prommpt',
                                default=None)
     
@@ -89,7 +89,7 @@ def create_parser():
         
     parser_command_options.add_argument('-f', '-F', '--fix-version',
                                dest='fixversion',
-                               metavar='fixVersion',
+                               metavar='VERSION',
                                action='append',
                                help='Restrict search to fixVersion(s)')
 
@@ -147,12 +147,14 @@ def create_parser():
     parser_jql.add_argument('jql',
                             help='JQL statement')
 
-    parser_jql.add_argument('--field', '-f',
+    parser_jql.add_argument('--add-field', '-f',
                             action='append',
+                            metavar='NAME',
                             help='Add field(s) to Jira request')
 
-    parser_jql.add_argument('--column', '-c',
+    parser_jql.add_argument('--add-column', '-c',
                             action='append',
+                            metavar='NAME',
                             help='Add column(s) to CSV output')
     
     parser_jql.set_defaults(func=JQLCommand)
@@ -196,8 +198,9 @@ def main(args=None):
         with _open(my_args.outfile, encoding) as f:
             unicode_csv_writer.write(f, command, encoding)
     except HTTPError as err:
-        creds.clear_credentials(username)
-        raise err
+        if err.response.status_code == 401:
+            creds.clear_credentials(username)
+        Log.error(err)
 
 if __name__ == "__main__":
     locale.setlocale(locale.LC_TIME, 'en_US')

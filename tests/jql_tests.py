@@ -46,7 +46,7 @@ class TestJQLCommandWithAdditionalFieldsColumns(test_util.MockJira, unittest.Tes
 
     def setUp(self):
         self.setup_mock_jira()
-        self.command = JQLCommand(base_url='localhost:3000', jql=TestJQLCommand._jql_param, field=['customer'], column=['customer_0_value'])
+        self.command = JQLCommand(base_url='localhost:3000', jql=TestJQLCommand._jql_param, add_field=['customer'], add_column=['customer_0_value'])
 
     def tearDown(self):
         self.teardown_mock_jira()

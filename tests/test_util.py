@@ -20,7 +20,7 @@ class SPTestCase(object):
         if PY3:
             self.assertRegex(a, re)
         else:
-            self.assertRegex_ = self.assertRegexpMatches
+            self.assertRegexpMatches(a, re)
 
     def assertNotRegex_(self, a, re):
         if PY3:
@@ -54,10 +54,11 @@ class MockJira(object):
         json_response = (r for r in [{...}, {...}])
         '''
         self._actual_url = url
-        if self.raise401:
+        if self._raise401:
             response = Response()
             response.status_code = 401
-            raise HTTPError(response=response)
+            response.reason = 'Unauthorized'
+            raise HTTPError(response.status_code, response.reason, response=response)
 
         if isgenerator(self.json_response):
             return next(self.json_response)

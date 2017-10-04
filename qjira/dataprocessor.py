@@ -12,7 +12,7 @@ def _generate_name(*args):
 
 def create_history(hst):
     '''Create a tuple of important info from a changelog history.'''
-    if hst['fieldId'] == 'status':
+    if hst['fieldId'] == 'status' and hst['toString']:
         field_name = hst['field'].replace(' ', '')
         normalized_string = hst['toString'].replace(' ', '')
     else:

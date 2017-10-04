@@ -8,7 +8,7 @@ from qjira.summary import SummaryCommand
 from . import test_data
 from . import test_util
 
-class TestSummary(test_util.MockJira, unittest.TestCase):
+class TestSummary(test_util.SPTestCase, test_util.MockJira, unittest.TestCase):
 
     def setUp(self):
         self.setup_mock_jira()
@@ -56,8 +56,8 @@ class TestSummary(test_util.MockJira, unittest.TestCase):
         self.assertEqual(len(data), 2) # summary adds a sprint header
         
         # original data will not be marked newline
-        self.assertNotRegexpMatches(data[1].get('design_doc_link'), '\[New\]')
-        self.assertNotRegexpMatches(data[1].get('testplan_doc_link'), '\[New\]')
+        self.assertNotRegex_(data[1].get('design_doc_link'), '\[New\]')
+        self.assertNotRegex_(data[1].get('testplan_doc_link'), '\[New\]')
 
     def test_doc_links_marked_new(self):
         # modify the dates to mark these as News
@@ -73,5 +73,5 @@ class TestSummary(test_util.MockJira, unittest.TestCase):
 
         self.assertEqual(len(data), 2) # summary adds a sprint header
         
-        self.assertRegexpMatches(data[1].get('design_doc_link'), '\[New\]')
-        self.assertRegexpMatches(data[1].get('testplan_doc_link'), '\[New\]')
+        self.assertRegex_(data[1].get('design_doc_link'), '\[New\]')
+        self.assertRegex_(data[1].get('testplan_doc_link'), '\[New\]')
