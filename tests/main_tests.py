@@ -125,3 +125,21 @@ class TestMainCLI(test_util.SPTestCase, test_util.MockJira, unittest.TestCase):
             os.unlink(path)
         self.assertEqual(2, len(lines))
 
+
+    def test_command_options_require_project(self):
+
+        with self.assertRaises(SystemExit) as ctx:
+            with redirect_stderr(self.std_err):
+                prog.main(['cycletime', '-w', 'blah', '--no-progress'])
+        exc = ctx.exception
+        self.assertEqual(exc.code, 2)
+        self.assertRegex_(self.std_err.getvalue(), r'cycletime: error: too few arguments')
+
+    
+    def test_command_jql_require_jql(self):
+        with self.assertRaises(SystemExit) as ctx:
+            with redirect_stderr(self.std_err):
+                prog.main(['jql', '-w', 'blah', '--no-progress'])
+        exc = ctx.exception
+        self.assertEqual(exc.code, 2)
+        self.assertRegex_(self.std_err.getvalue(), r'jql: error: too few arguments')
