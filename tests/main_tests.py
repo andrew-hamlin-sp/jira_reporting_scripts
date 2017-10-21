@@ -66,7 +66,7 @@ class TestMainCLI(test_util.SPTestCase, test_util.MockJira, unittest.TestCase):
     def test_stores_credentials(self):
         with redirect_stdout(self.std_out):
             with redirect_stderr(self.std_err):
-                prog.main(['cycletime','-w','blah','-u','usera', 'IIQCB'])
+                prog.main(['-w','blah','-u','usera', 'cycletime', 'IIQCB'])
             
         self.assertEqual('blah', keyring.get_keyring().entries['qjira-sp_usera'])
         
@@ -76,7 +76,7 @@ class TestMainCLI(test_util.SPTestCase, test_util.MockJira, unittest.TestCase):
         
         with redirect_stdout(self.std_out):
             with redirect_stderr(self.std_err):
-                prog.main(['cycletime','-w','xyzzy','-u','userb', 'IIQCB'])
+                prog.main(['-w','xyzzy','-u','userb', 'cycletime', 'IIQCB'])
 
         error_msg = self.std_err.getvalue()
         self.assertRegex_(error_msg, r'[ERROR].*Unauthorized')
@@ -92,7 +92,7 @@ class TestMainCLI(test_util.SPTestCase, test_util.MockJira, unittest.TestCase):
         }
         with redirect_stdout(self.std_out):
             with redirect_stderr(self.std_err):
-                prog.main(['cycletime', '-w', 'blah', 'TEST'])
+                prog.main([ '-w', 'blah','cycletime', 'TEST'])
 
         self.assertRegex_(self.std_err.getvalue(), re_1of1)
 
@@ -104,7 +104,7 @@ class TestMainCLI(test_util.SPTestCase, test_util.MockJira, unittest.TestCase):
         }
         with redirect_stderr(self.std_err):
             with redirect_stdout(self.std_out):
-                prog.main(['cycletime', '-w', 'blah', '--no-progress', 'TEST'])
+                prog.main(['-w', 'blah', '--no-progress', 'cycletime', 'TEST'])
 
         self.assertNotRegex_(self.std_err.getvalue(), re_1of1)
 
@@ -118,7 +118,7 @@ class TestMainCLI(test_util.SPTestCase, test_util.MockJira, unittest.TestCase):
         try:
             with redirect_stderr(self.std_err):
                 with redirect_stdout(self.std_out):
-                    prog.main(['cycletime', '-w', 'blah', '--no-progress', '-o', path, 'TEST'])
+                    prog.main(['-w', 'blah', '--no-progress', '-o', path, 'cycletime', 'TEST'])
             with open(path, 'r') as o:
                 lines = o.readlines()
         finally:
@@ -130,7 +130,7 @@ class TestMainCLI(test_util.SPTestCase, test_util.MockJira, unittest.TestCase):
 
         with self.assertRaises(SystemExit) as ctx:
             with redirect_stderr(self.std_err):
-                prog.main(['cycletime', '-w', 'blah', '--no-progress'])
+                prog.main([ '-w', 'blah', '--no-progress', 'cycletime'])
         exc = ctx.exception
         self.assertEqual(exc.code, 2)
         self.assertRegex_(self.std_err.getvalue(), r'cycletime: error: too few arguments')
@@ -139,7 +139,7 @@ class TestMainCLI(test_util.SPTestCase, test_util.MockJira, unittest.TestCase):
     def test_command_jql_require_jql(self):
         with self.assertRaises(SystemExit) as ctx:
             with redirect_stderr(self.std_err):
-                prog.main(['jql', '-w', 'blah', '--no-progress'])
+                prog.main([ '-w', 'blah', '--no-progress', 'jql'])
         exc = ctx.exception
         self.assertEqual(exc.code, 2)
         self.assertRegex_(self.std_err.getvalue(), r'jql: error: too few arguments')

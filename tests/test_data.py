@@ -41,3 +41,5 @@ def simpleBug():
 def nested_data():
     return _load_json('nested_data.json')
 
+def in_progress_story():
+    return _load_json('in_progress_story.json')

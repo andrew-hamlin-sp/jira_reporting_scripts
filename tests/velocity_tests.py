@@ -69,6 +69,15 @@ class TestVelocity(test_util.MockJira, unittest.TestCase):
         with self.assertRaises(KeyError):
             data[0]['story_points']
 
+    def test_process_sprint_not_completed(self):
+        '''A sprint not completed will not count toward velocity.'''
+        self.json_response = {
+            'total': 1,
+            'issues': [test_data.in_progress_story()]
+        }
+        data = list(self.command_under_test.execute())
+        self.assertEqual(len(data), 0)
+
 class TestVelocityWithBugs(test_util.MockJira, unittest.TestCase):
 
     def setUp(self):
@@ -95,4 +104,27 @@ class TestVelocityWithBugs(test_util.MockJira, unittest.TestCase):
                                        'completed_points': 3.0},
                                       data[0])
 
+class TestVelocityWithForecast(test_util.MockJira, unittest.TestCase):
 
+    def setUp(self):
+        self.setup_mock_jira()
+        self.command_under_test = VelocityCommand(base_url='localhost:3000', project=['TEST'], forecast=True)
+
+    def tearDown(self):
+        self.teardown_mock_jira()
+
+    def test_process_includes_future_sprint(self):
+        '''Forecasting will include sprints that have not completed.
+
+        Sprints should be sorted by date.
+        '''
+        self.json_response = {
+            'total': 1,
+            'issues': [test_data.in_progress_story()]
+        }
+        data = list(self.command_under_test.execute())
+        self.assertEqual(len(data), 1)
+        self.assertDictContainsSubset({'planned_points': 5.0,
+                                       'carried_points': 0.0,
+                                       'completed_points': 0.0},
+                                      data[0])

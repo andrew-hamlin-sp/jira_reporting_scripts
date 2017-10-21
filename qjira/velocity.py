@@ -17,9 +17,10 @@ DEFAULT_POINTS = 0.0
 class VelocityCommand(PivotCommand):
     '''Analyze data for velocity metrics'''
 
-    def __init__(self, include_bugs=False, *args, **kwargs):
+    def __init__(self, include_bugs=False, forecast=False, *args, **kwargs):
         super(VelocityCommand, self).__init__(*args, **kwargs)
         self._include_bugs = include_bugs
+        self._forecast = forecast
 
     @property
     def pivot_field(self):
@@ -43,7 +44,7 @@ class VelocityCommand(PivotCommand):
         last_issue_seen = None
         counter = 0
         for idx,row in enumerate(rows):
-            if not row.get('sprint_completeDate'):
+            if not self._forecast and not row.get('sprint_completeDate'):
                 #print ('> skip incomplete sprint')
                 continue
 
@@ -75,4 +76,6 @@ class VelocityCommand(PivotCommand):
         sprintStartDate = row.get('sprint_startDate')
         sprintCompletionDate = row.get('sprint_completeDate')
         #print('> isComplete start: {0}, completion: {1}, done: {2}'.format(sprintStartDate, sprintCompletionDate, completedDate))
-        return completedDate >= sprintStartDate and completedDate <= sprintCompletionDate
+        return sprintCompletionDate and \
+            completedDate >= sprintStartDate and \
+            completedDate <= sprintCompletionDate

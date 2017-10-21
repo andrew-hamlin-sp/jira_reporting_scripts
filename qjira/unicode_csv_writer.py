@@ -10,7 +10,7 @@ def _encode(encoding, s):
     return six.text_type(s).encode(encoding, errors='ignore').decode(encoding)
 
 
-def write(f, command, encoding):
+def write(f, command, encoding, delimiter=','):
     '''Write command output to csv file.
 
     Required arguments:
@@ -27,6 +27,7 @@ def write(f, command, encoding):
         if not writer:
             writer = csv.DictWriter(f, fieldnames=fieldnames(row),
                                     dialect='excel',
+                                    delimiter=delimiter,
                                     extrasaction='ignore')
             writer.writeheader()
 
