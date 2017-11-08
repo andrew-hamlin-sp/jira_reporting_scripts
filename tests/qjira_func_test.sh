@@ -34,5 +34,5 @@ run_cmd jql 'project in projectsLeadByUser() AND fixVersion in unreleasedVersion
 echo "--end jql test--"
 
 echo "--begin velocity forecast test--"
-run_cmd velocity -f 7.2 -F IIQCB IIQMAG
+run_cmd velocity -f 7.3 -F IIQCB IIQMAG
 echo "--end velocity forecast test--"

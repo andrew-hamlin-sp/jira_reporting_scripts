@@ -90,7 +90,7 @@ def create_parser():
     parser.add_argument('--delimiter',
                                metavar='CHAR',
                                default=',',
-                               help='Specify a CSV delimiter [default: comma].\nFor bash support escape the character with $, such as $"\\t"')
+                               help='Specify a CSV delimiter [default: comma].\nFor bash support escape the character with $, such as $\'\\t\'')
 
     parser.add_argument('-d',
                         dest='debugLevel',
