@@ -1,4 +1,4 @@
-# Jira Reporting Scripts (0.99.11)
+# Jira Reporting Scripts (0.99.12)
 
 To address some of the deficiencies in Jira reporting, here is a small command line tool to 
 exercise the [Jira REST API](https://docs.atlassian.com/jira/REST/cloud/) to retrieve information about Stories,
@@ -237,7 +237,9 @@ Clean build tree, `$ make clean`
 
 Package distribution, `$ make dist` or `$ make dist-all`
 
-Run all tests, `$ make test`
+Run all unit tests, `$ make test`
+
+Run set of functional tests, `$ ./tests/qjira_func_test.sh`
 
 Run from development virtualenv, `$ python -mqjira -h`
 

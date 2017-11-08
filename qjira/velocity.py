@@ -66,7 +66,7 @@ class VelocityCommand(PivotCommand):
         return sorted_sprints
 
     def _reduce_process(self, rows):
-        '''reduce the rows to a singular dict structure where each sprint_id is a row'''
+        '''reduce the rows to an array of dict structures where each sprint velocity is summarized in a single row.'''
         results = {}
 
         for s in self._raw_process(rows):
@@ -97,9 +97,20 @@ class VelocityCommand(PivotCommand):
                 r['completed_points'])
             
     def _raw_process(self, rows):
+        '''Do bulk processing of individual stories, suitable for excel.
+
+        Stories with no defined sprint (no start or end date) are skipped. They do not count against velocity.
+
+        Unless forecasting is turned on, sprints that are in progress (no complete date) are skipped.
+
+        The result is a generator of dict objects.
+        '''
         last_issue_seen = None
         counter = 0
         for idx,row in enumerate(rows):
+            if not row.get('sprint_startDate') and not row.get('sprint_endDate'):
+                continue
+            
             if not self._forecast and not row.get('sprint_completeDate'):
                 #print ('> skip incomplete sprint')
                 continue

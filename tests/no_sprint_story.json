@@ -1,1 +1,1 @@
-{"key": 123, "fields": {"customfield_10109": 3.0, "customfield_10016": null, "project": {"key": "Test", "name": "Test"}, "status": {"name": "Done"}}}
+{"key": 126, "fields": {"customfield_10109": 3.0, "customfield_10016": null, "project": {"key": "Test", "name": "Test"}, "issuetype": {"name": "Story"}, "status": {"name": "Done"}}}

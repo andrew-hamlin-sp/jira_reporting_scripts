@@ -227,7 +227,7 @@ def main(args=None):
     except HTTPError as err:
         if err.response.status_code == 401:
             creds.clear_credentials(username)
-        Log.error(err)
+        raise err
 
 if __name__ == "__main__":
     locale.setlocale(locale.LC_TIME, 'en_US')
