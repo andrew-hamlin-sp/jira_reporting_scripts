@@ -133,7 +133,7 @@ class TestMainCLI(test_util.SPTestCase, test_util.MockJira, unittest.TestCase):
                 prog.main([ '-w', 'blah', '--no-progress', 'cycletime'])
         exc = ctx.exception
         self.assertEqual(exc.code, 2)
-        self.assertRegex_(self.std_err.getvalue(), r'cycletime: error: too few arguments')
+        self.assertRegex_(self.std_err.getvalue(), r'cycletime: error:')
 
     
     def test_command_jql_require_jql(self):
@@ -142,4 +142,4 @@ class TestMainCLI(test_util.SPTestCase, test_util.MockJira, unittest.TestCase):
                 prog.main([ '-w', 'blah', '--no-progress', 'jql'])
         exc = ctx.exception
         self.assertEqual(exc.code, 2)
-        self.assertRegex_(self.std_err.getvalue(), r'jql: error: too few arguments')
+        self.assertRegex_(self.std_err.getvalue(), r'jql: error:')

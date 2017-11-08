@@ -28,9 +28,65 @@ class TestVelocity(test_util.MockJira, unittest.TestCase):
         
     def test_process(self):
         '''The velocity command will calculate the planned points when a story 
-        enters a sprint,
-        the carried points when a story is not complete and enters a new sprint,
-        the completed points when a story is finished in a sprint
+        enters a sprint, the carried points when a story is not complete and
+        enters a new sprint, the completed points when a story is finished in 
+        a sprint.
+
+        The default command will reduce the data to a set of rows per sprint.
+        For original behavior use raw=True kwarg.
+
+        sprint_name | planned | carried | total | completed
+        My sprint     3.0       0.0       3.0     3.0
+
+        '''
+        self.json_response = {
+            'total': 2,
+            'issues': [
+                test_data.multiSprintStory(),
+                test_data.singleSprintStory()
+            ]
+        }
+        data = list(self.command_under_test.execute())
+        self.assertEqual(len(data), 2)
+        self.assertDictContainsSubset({
+            'sprint_name':'Chambers Sprint 9',
+            'planned_points': 6.0,
+            'carried_points': 0.0,
+            'story_points': 6.0,
+            'completed_points': 3.0
+        }, data[0])
+        self.assertDictContainsSubset({
+            'sprint_name': 'Chambers Sprint 10',
+            'planned_points': 0.0,
+            'carried_points': 3.0,
+            'story_points': 3.0,
+            'completed_points': 3.0
+        }, data[1])
+
+class TestVelocityRaw(test_util.MockJira, unittest.TestCase):
+
+    def setUp(self):
+        self.setup_mock_jira()
+        self.command_under_test = VelocityCommand(base_url='localhost:3000', project=['TEST'], raw=True)
+        
+    def tearDown(self):
+        self.teardown_mock_jira()
+        
+    def test_header(self):
+        self.assertIsInstance(self.command_under_test.header, list)
+        
+    def test_query(self):
+        self.assertEqual('issuetype = Story', self.command_under_test.query)
+
+    def test_process_0(self):
+        data = list(self.command_under_test.execute())
+        self.assertEqual(len(data), 0)
+        
+    def test_process(self):
+        '''The velocity command will calculate the planned points when a story 
+        enters a sprint, the carried points when a story is not complete and
+        enters a new sprint, the completed points when a story is finished in 
+        a sprint.
         '''
         self.json_response = {
             'total': 1,
@@ -82,7 +138,7 @@ class TestVelocityWithBugs(test_util.MockJira, unittest.TestCase):
 
     def setUp(self):
         self.setup_mock_jira()
-        self.command_under_test = VelocityCommand(base_url='localhost:3000', project=['TEST'], include_bugs=True)
+        self.command_under_test = VelocityCommand(base_url='localhost:3000', project=['TEST'], include_bugs=True, raw=True)
 
     def tearDown(self):
         self.teardown_mock_jira()
@@ -108,7 +164,7 @@ class TestVelocityWithForecast(test_util.MockJira, unittest.TestCase):
 
     def setUp(self):
         self.setup_mock_jira()
-        self.command_under_test = VelocityCommand(base_url='localhost:3000', project=['TEST'], forecast=True)
+        self.command_under_test = VelocityCommand(base_url='localhost:3000', project=['TEST'], forecast=True, raw=True)
 
     def tearDown(self):
         self.teardown_mock_jira()

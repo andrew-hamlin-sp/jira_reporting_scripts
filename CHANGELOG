@@ -1,3 +1,13 @@
+2017-11-08  Andrew Hamlin  <andrew.hamlin@sailpoint.com>
+
+	* Version 0.99.12
+
+	* Changed `velocity` command to summarize points by sprint
+
+	* Moved old behaviors to command options (--mark-if-new, --raw)
+
+	* Added --delimiter argument for CSV output
+
 2017-09-29  Andrew Hamlin  <andrew.hamlin@sailpoint.com>
 
 	* Version 0.99.10

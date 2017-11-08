@@ -90,7 +90,7 @@ def create_parser():
     parser.add_argument('--delimiter',
                                metavar='CHAR',
                                default=',',
-                               help='Specify a CSV delimiter [default: comma]')
+                               help='Specify a CSV delimiter [default: comma].\nFor bash support escape the character with $, such as $"\\t"')
 
     parser.add_argument('-d',
                         dest='debugLevel',
@@ -133,17 +133,24 @@ def create_parser():
     parser_velocity = subparsers.add_parser('velocity',
                                             parents=[parser_command_options],
                                             help='Produce velocity data')
-    parser_velocity.set_defaults(func=VelocityCommand)
     parser_velocity.add_argument('--include-bugs', '-B',
                                  action='store_true',
                                  help='Include bugs in velocity calculation')
     parser_velocity.add_argument('--forecast', '-F',
                                 action='store_true',
                                 help='Include future sprints in velocity calculation')
+    parser_velocity.add_argument('--raw', '-R',
+                                 action='store_true',
+                                 help='Output all rows instead of summary by sprint name.')
+    parser_velocity.set_defaults(func=VelocityCommand)
 
     parser_summary = subparsers.add_parser('summary',
                                            parents=[parser_command_options],
                                            help='Produce summary report')
+    parser_summary.add_argument('--mark-new', '-N',
+                                action='store_true',
+                                dest='mark_if_new',
+                                help='Mark docs linked within past 2 weeks')
     parser_summary.set_defaults(func=SummaryCommand)
 
     parser_techdebt = subparsers.add_parser('debt',

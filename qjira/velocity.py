@@ -1,37 +1,56 @@
 '''Class encapsulating Velocity processing. This will
-   calculate the story points planned, completed, and 
-   carried over for every sprint associated with an issue.
-
-   Issues (story or bug) that have not been assigned at 
-   least one sprint will not be reported on (because velocity
-   only makes sense in the context of a sprint(s).
-
-   Sprints without defined start and end dates  will not be reported.
-
+calculate the story points planned, completed, and 
+carried over for every sprint associated with an issue.
 '''
+from operator import itemgetter
+from functools import reduce as reduce_
+
 from .command import PivotCommand
 from .log import Log
 
 DEFAULT_POINTS = 0.0
 
 class VelocityCommand(PivotCommand):
-    '''Analyze data for velocity metrics'''
+    '''Analyze data for velocity metrics.
 
-    def __init__(self, include_bugs=False, forecast=False, *args, **kwargs):
+    Issues (story or bug) that have not been assigned at 
+    least one sprint will not be reported on (because velocity
+    only makes sense in the context of a sprint(s).
+
+    Sprints without defined start and end dates  will not be
+    reported unless forecasting is enabled.
+
+    Results are accumulated by sprint_name.
+
+    Point estimates are:
+    planned points   - first seen in this sprint
+    carried points   - continued from previous sprint (e.g. not planned but carried over)
+    story points     - total points included in this sprint, whether planned or carried
+    completed points - finished in this sprint (status = Closed, Done)
+    '''
+
+    def __init__(self, include_bugs=False, forecast=False, raw=False, *args, **kwargs):
         super(VelocityCommand, self).__init__(*args, **kwargs)
         self._include_bugs = include_bugs
         self._forecast = forecast
+        self._raw = raw
 
+        if raw:
+            self._header = ['project_key','fixVersions_0_name','issuetype_name','issue_key',
+                            'sprint_name','sprint_startDate','sprint_endDate','story_points',
+                            'planned_points','carried_points','completed_points']
+        else:
+            self._header = ['project_key', 'sprint_name', 'sprint_startDate','sprint_endDate',
+                            'planned_points','carried_points','story_points','completed_points']
+            
     @property
     def pivot_field(self):
         return 'sprint'
         
     @property
     def header(self):
-        return  ['project_key','fixVersions_0_name','issuetype_name','issue_key',
-                 'sprint_name','sprint_startDate','sprint_endDate','story_points',
-                 'planned_points','carried_points','completed_points']
-
+        return self._header
+    
     @property
     def query(self):
         if self._include_bugs:
@@ -41,6 +60,43 @@ class VelocityCommand(PivotCommand):
 
     def post_process(self, rows):
         '''data processor wrapper to calculate points as planned, carried, completed'''
+        results = self._raw_process(rows) if self._raw else self._reduce_process(rows)
+        sorted_sprints = sorted(results, key=itemgetter('project_key'))
+        sorted_sprints = sorted(sorted_sprints, key=itemgetter('sprint_startDate'))
+        return sorted_sprints
+
+    def _reduce_process(self, rows):
+        '''reduce the rows to a singular dict structure where each sprint_id is a row'''
+        results = {}
+
+        for s in self._raw_process(rows):
+            sprint_id = s['sprint_id']
+            if not sprint_id in results:
+                results[sprint_id] = {k:v for k, v in s.items() if k in self._header}
+                current_points = (0, 0, 0, 0)
+            else:
+                current_points = self._get_points(results[sprint_id])
+            story_points = self._get_points(s)
+            total_points = tuple(map(sum, zip(current_points, story_points)))
+                
+            results[sprint_id].update({
+                'planned_points': total_points[0],
+                'carried_points': total_points[1],
+                'story_points': total_points[2],
+                'completed_points': total_points[3]
+            })
+
+        return results.values()
+
+    def _get_points(self, r):
+        '''return point fields from row `r`'''
+        #return tuple([v or 0 for k,v in r.items() if k in ['planned_points','carried_points','story_points','completed_points']])
+        return (r['planned_points'],
+                r['carried_points'],
+                r.get('story_points', 0),
+                r['completed_points'])
+            
+    def _raw_process(self, rows):
         last_issue_seen = None
         counter = 0
         for idx,row in enumerate(rows):

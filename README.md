@@ -31,12 +31,25 @@ Added the bug `backlog` command, prints all bugs by fix version.
 # Commands
 
 ```
-usage: qjira [-h] [-d] {cycletime,velocity,summary,debt,backlog,jql} ...
+usage: qjira [-h] [-o [FILENAME]] [--no-progress] [-b URL] [-u USER] [-w PWD]
+             [--encoding ENC] [--delimiter CHAR] [-d]
+             {cycletime,velocity,summary,debt,backlog,jql} ...
 
 Export data from Jira to CSV format
 
 optional arguments:
   -h, --help            show this help message and exit
+  -o [FILENAME], --outfile [FILENAME]
+                        Output file (.csv) [default: stdout]
+  --no-progress         Hide data download progress
+  -b URL, --base URL    Jira Cloud base URL [default: sailpoint.atlassian.net]
+  -u USER, --user USER  Username, if blank will use logged on user
+  -w PWD, --password PWD
+                        Password (insecure), if blank will prommpt
+  --encoding ENC        Specify an output encoding. In Python 2.x, only
+                        default ASCII is supported.
+  --delimiter CHAR      Specify a CSV delimiter [default: comma]. For bash
+                        support escape the character with $, such as $"\t"
   -d                    Debug level
 
 Available commands:
@@ -56,6 +69,21 @@ Prints backlog summary and documentation links for stories in a project using Ex
 format correctly in a Harbor document import the CSV file into Excel using comma delimiters, then copy-paste the
 table into your Harbor document.
 
+```
+usage: qjira summary [-h] [-A] [-f VERSION] [--mark-new] project [project ...]
+
+positional arguments:
+  project               Project name
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -A, --all-fields      Extract all "navigable" fields in Jira,
+                        [fields=*navigable]
+  -f VERSION, --fix-version VERSION
+                        Restrict search to fixVersion(s)
+  --mark-new, -N        Mark docs linked within past 2 weeks
+```
+
 ## Velocity
 
 Calculate the story points planned, completed, and carried over for every sprint associated with an issue.
@@ -63,6 +91,25 @@ Calculate the story points planned, completed, and carried over for every sprint
 Issues (story or bug) that have not been assigned at least one sprint will not be reported on (because velocity only makes sense in the context of a sprint(s).
 
 Sprints without defined start and end dates will not be reported.
+
+```
+usage: qjira velocity [-h] [-A] [-f VERSION] [--include-bugs] [--forecast]
+                      [--raw]
+                      project [project ...]
+
+positional arguments:
+  project               Project name
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -A, --all-fields      Extract all "navigable" fields in Jira,
+                        [fields=*navigable]
+  -f VERSION, --fix-version VERSION
+                        Restrict search to fixVersion(s)
+  --include-bugs, -B    Include bugs in velocity calculation
+  --forecast, -F        Include future sprints in velocity calculation
+  --raw, -R             Output all rows instead of summary by sprint name.
+```
 
 ## Cycle Time
 
@@ -74,13 +121,56 @@ Limitations:
 
   * This does not record separate values for bugs being dev complete 'Resolved' and being test complete 'Closed'.
 
+
+```
+usage: qjira cycletime [-h] [-A] [-f VERSION] project [project ...]
+
+positional arguments:
+  project               Project name
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -A, --all-fields      Extract all "navigable" fields in Jira,
+                        [fields=*navigable]
+  -f VERSION, --fix-version VERSION
+                        Restrict search to fixVersion(s)
+```
+
 ## Tech Debt
 
 Generate table of project_name, bug_points, story_points, & tech_debt percentage.
 
+```
+usage: qjira debt [-h] [-A] [-f VERSION] project [project ...]
+
+positional arguments:
+  project               Project name
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -A, --all-fields      Extract all "navigable" fields in Jira,
+                        [fields=*navigable]
+  -f VERSION, --fix-version VERSION
+                        Restrict search to fixVersion(s)
+```
+
 ## Bug Backlog
 
 Prints backlog summary of bugs by fix version. This adds a row per fix version for filtering in Excel.
+
+```
+usage: qjira backlog [-h] [-A] [-f VERSION] project [project ...]
+
+positional arguments:
+  project               Project name
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -A, --all-fields      Extract all "navigable" fields in Jira,
+                        [fields=*navigable]
+  -f VERSION, --fix-version VERSION
+                        Restrict search to fixVersion(s)
+```
 
 # Future enhancements
 

@@ -38,16 +38,21 @@ def hyperlink(url, name):
         name = url
     return '=HYPERLINK("{}","{}")'.format(url, name)
 
-def doc_link_marked_new(row, link_col, date_col):
+def doc_link_marked_new(row, link_col, date_col, mark_if_new=False):
     name = row[link_col].rpartition('/')[2]
-    if date_col in row and \
+    
+    if mark_if_new and date_col in row and \
        row[date_col] >= datetime.date.today()+datetime.timedelta(days=-14):
-        name = "[New] " + name
+        name = name + " [New]"
         
     return hyperlink(row[link_col], name)
 
 class SummaryCommand(BaseCommand):
 
+    def __init__(self, mark_if_new=False, *args, **kwargs):
+        super(SummaryCommand, self).__init__(*args, **kwargs)
+        self._mark_if_new = mark_if_new
+    
     def _configure_http_request(self):
         return partial(
             super(SummaryCommand, self)._configure_http_request(),
@@ -113,10 +118,16 @@ class SummaryCommand(BaseCommand):
                 row['issue_link'] = hyperlink(jira.get_browse_url(self._base_url, issue_key), issue_key)
 
             if 'design_doc_link' in row:
-                row['design_doc_link'] = doc_link_marked_new(row, 'design_doc_link', 'eng_design_changed')
+                row['design_doc_link'] = doc_link_marked_new(row,
+                                                             'design_doc_link',
+                                                             'eng_design_changed',
+                                                             mark_if_new=self._mark_if_new)
 
             if 'testplan_doc_link' in row:
-                row['testplan_doc_link'] = doc_link_marked_new(row, 'testplan_doc_link', 'eng_test_plan_changed')
+                row['testplan_doc_link'] = doc_link_marked_new(row,
+                                                               'testplan_doc_link',
+                                                               'eng_test_plan_changed',
+                                                               mark_if_new=self._mark_if_new)
             
             res.update(row)
             yield res

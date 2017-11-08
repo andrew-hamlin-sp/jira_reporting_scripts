@@ -44,7 +44,33 @@ class TestSummary(test_util.SPTestCase, test_util.MockJira, unittest.TestCase):
         # make sure resolve epic link is called properly
         self.assertDictContainsSubset({'epic_link': '=HYPERLINK("https://localhost:3000/browse/test-1234","epic name")'}, data[1])
 
-    def test_doc_links_not_marked_new(self):
+    def test_doc_links_not_marked_new_without_new_opt(self):
+        # modify the dates to mark these as News
+        update_json = test_data.singleSprintStory()
+        days_ago = datetime.datetime.utcnow()+datetime.timedelta(days=-14)
+        for history in update_json['changelog']['histories']:
+            history['created'] = days_ago.strftime('%Y-%m-%dT%H:%M:%S.000-0500')
+        self.json_response = {
+            'total': 1,
+            'issues': [update_json]
+        }
+        data = list(self.command_under_test.execute())
+
+        self.assertEqual(len(data), 2) # summary adds a sprint header
+        
+        self.assertNotRegex_(data[1].get('design_doc_link'), '\[New\]')
+        self.assertNotRegex_(data[1].get('testplan_doc_link'), '\[New\]')
+
+class TestSummaryNewOpt(test_util.SPTestCase, test_util.MockJira, unittest.TestCase):
+
+    def setUp(self):
+        self.setup_mock_jira()
+        self.command_under_test = SummaryCommand(base_url='localhost:3000', project=['TEST'], mark_if_new=True)
+
+    def tearDown(self):
+        self.teardown_mock_jira()
+        
+    def test_doc_links_not_marked_new_when_old(self):
         """Test that design doc and test plan links are annotated with *NEW* text"""
 
         self.json_response = {
@@ -59,7 +85,7 @@ class TestSummary(test_util.SPTestCase, test_util.MockJira, unittest.TestCase):
         self.assertNotRegex_(data[1].get('design_doc_link'), '\[New\]')
         self.assertNotRegex_(data[1].get('testplan_doc_link'), '\[New\]')
 
-    def test_doc_links_marked_new(self):
+    def test_doc_links_marked_new_when_new(self):
         # modify the dates to mark these as News
         update_json = test_data.singleSprintStory()
         days_ago = datetime.datetime.utcnow()+datetime.timedelta(days=-14)
@@ -75,3 +101,4 @@ class TestSummary(test_util.SPTestCase, test_util.MockJira, unittest.TestCase):
         
         self.assertRegex_(data[1].get('design_doc_link'), '\[New\]')
         self.assertRegex_(data[1].get('testplan_doc_link'), '\[New\]')
+

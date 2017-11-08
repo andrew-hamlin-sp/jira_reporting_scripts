@@ -54,15 +54,15 @@ class TestJiraFunc(test_util.MockJira, unittest.TestCase):
         data = next(j.all_issues(TEST_BASE_URL, 'issuetype = Story'))
         self.assertDictContainsSubset(
             {
-                'issue_key':123,
+                'issue_key':124,
                 'story_points': 3.0,
                 'testplan_doc_link': 'https://harbor.sailpoint.com/docs/DOC-20236',
                 'design_doc_link': 'https://harbor.sailpoint.com/docs/DOC-19296',
                 'severity': 'severity-field',
                 'epic_issue_key': 'epic-key',
                 'customer': ['foo'],
-                'status_InProgress': datetime.date(2017, 1, 30),
-                'status_Done': datetime.date(2017, 1, 31),
+                'status_InProgress': datetime.date(2017, 1, 25),
+                'status_Done': datetime.date(2017, 1, 26),
                 'eng_test_plan_changed': datetime.date(2017, 6, 21),
                 'eng_design_changed': datetime.date(2017, 6, 21)
             },
