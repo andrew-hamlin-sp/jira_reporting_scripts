@@ -7,8 +7,21 @@ including story points and iterations and export into CSV format. This enables b
 MacOS:   Python 2.7 & 3.6 (tested)
 Windows: Python 3.6 (tested), 2.7 (not tested)
 
-IMPORTANT NOTE 
+**IMPORTANT NOTES**
+
 Installation requires setuptools >= 20.5.
+
+> Mac installation of latest setuptools will require installing to the user library.
+>
+> `$ pip install --user setuptools`
+
+The usage interface has changed. Command names are now full words. Global options, such as `-o outfile`, precede
+the command names.
+
+> For example, the summary command `s` is now `summary` as shown here:
+>
+> `$ qjira -o summary-iiqcb.csv summary -f 7.3 IIQCB`
+
 
 ## New Features
 
@@ -215,7 +228,11 @@ optional arguments:
 
   * Multiple projects and output CSV file
   
-`$ qjira velocity IIQCB IIQHH -o velocity.csv`
+`$ qjira -o velocity.csv velocity IIQCB IIQHH`
+
+  * Print to console with a tab delimiter
+  
+`$ qjira --delimiter=$'\t' velocity -f 7.3 IIQCB`
 
 # Dependencies
 
