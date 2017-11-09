@@ -1,4 +1,4 @@
-# Jira Reporting Scripts (0.99.12)
+# Jira Reporting Scripts (0.99.13)
 
 To address some of the deficiencies in Jira reporting, here is a small command line tool to 
 exercise the [Jira REST API](https://docs.atlassian.com/jira/REST/cloud/) to retrieve information about Stories,
@@ -209,6 +209,10 @@ optional arguments:
   * Produce velocity data
   
 `$ qjira velocity -f 7.2 IIQHH`
+  
+  * Produce velocity forecast including bug points
+  
+`$qjira velocity -f 7.3 -F -B IIQCB`
   
   * Produce cycletime data
   

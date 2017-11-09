@@ -36,3 +36,7 @@ echo "--end jql test--"
 echo "--begin velocity forecast test--"
 run_cmd velocity -f 7.3 -F IIQCB IIQMAG
 echo "--end velocity forecast test--"
+
+echo "--begin velocity forecast with bugs test--"
+run_cmd velocity -f 7.3 -F -B IIQCB
+echo "--end velocity forecast with bugs test--"
