@@ -1,6 +1,7 @@
 '''Executes simple queries of Jira Cloud REST API'''
 from __future__ import unicode_literals
 import requests
+import datetime
 
 try:
     from urllib import urlencode
@@ -68,7 +69,8 @@ def _as_data(issue, reverse_sprints=False):
             data['sprint'] = [
                 sprint for sprint in sorted(
                     map(extract_sprint, sprints_encoded),
-                    key=lambda x: x['startDate'], reverse=reverse_sprints)
+                    key=lambda x: x['startDate'] or datetime.date.max,
+                    reverse=reverse_sprints)
             ]
             #print('> as_data sprints sorted: {0}'.format(data['sprint']))
         

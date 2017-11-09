@@ -4,6 +4,7 @@ carried over for every sprint associated with an issue.
 '''
 from operator import itemgetter
 from functools import reduce as reduce_
+import datetime
 
 from .command import PivotCommand
 from .log import Log
@@ -62,7 +63,8 @@ class VelocityCommand(PivotCommand):
         '''data processor wrapper to calculate points as planned, carried, completed'''
         results = self._raw_process(rows) if self._raw else self._reduce_process(rows)
         sorted_sprints = sorted(results, key=itemgetter('project_key'))
-        sorted_sprints = sorted(sorted_sprints, key=itemgetter('sprint_startDate'))
+        sorted_sprints = sorted(sorted_sprints, key=itemgetter('sprint_name'))
+        sorted_sprints = sorted(sorted_sprints, key=lambda x: x.get('sprint_startDate') or datetime.date.max)
         return sorted_sprints
 
     def _reduce_process(self, rows):
@@ -108,7 +110,7 @@ class VelocityCommand(PivotCommand):
         last_issue_seen = None
         counter = 0
         for idx,row in enumerate(rows):
-            if not row.get('sprint_startDate') and not row.get('sprint_endDate'):
+            if not row.get('sprint_name'):
                 continue
             
             if not self._forecast and not row.get('sprint_completeDate'):
@@ -130,6 +132,8 @@ class VelocityCommand(PivotCommand):
                 'completed_points': completed_points
             }
             row.update(update)
+            if Log.isDebugEnabled():
+                Log.debug('Issue {0} of {1} points in sprint {2}'.format(row['issue_key'], point_value, row['sprint_name']))
             yield row
 
     def _isComplete(self, row):
