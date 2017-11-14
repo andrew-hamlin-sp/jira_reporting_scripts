@@ -1,6 +1,7 @@
 from . import test_context
 
 import unittest
+import datetime
 
 from qjira.velocity import VelocityCommand
 
@@ -62,6 +63,75 @@ class TestVelocity(test_util.MockJira, unittest.TestCase):
             'story_points': 3.0,
             'completed_points': 3.0
         }, data[1])
+
+    def test_process_bugs_in_stories_only(self):
+        '''Test that bug points calculations are constrained to story-related sprints.
+
+        In this test, a bug is retrieved from a different sprint than the story. It's 
+        points will not be included, result set includes only 1 story.'''
+
+        self.command_under_test._include_bugs = True
+        self.json_response = {
+            'total': 2,
+            'issues': [
+                test_data.singleSprintStory(),
+                test_data.simpleBug()
+            ]
+        }
+        data = list(self.command_under_test.execute())
+        self.assertEqual(len(data), 1)
+        self.assertDictContainsSubset({
+            'sprint_name':'Chambers Sprint 9',
+            'planned_points': 3.0,
+            'carried_points': 0.0,
+            'story_points': 3.0,
+            'completed_points': 3.0
+        }, data[0])
+
+    def test_process_bugs_in_filtered_range_min(self):
+        '''Test that bug points calculations respect a date filter (min).'''
+        self.command_under_test._include_bugs = True
+        self.json_response = {
+            'total': 2,
+            'issues': [
+                test_data.singleSprintStory(),
+                test_data.simpleBug()
+            ]
+        }
+        
+        self.command_under_test._filter_by_date = datetime.date.min
+        data = list(self.command_under_test.execute())
+        self.assertEqual(len(data), 2)
+
+        
+    def test_process_bugs_in_filtered_range_max(self):
+        '''Test that bug points calculations respect a date filter (max).'''
+        self.command_under_test._include_bugs = True
+        self.json_response = {
+            'total': 2,
+            'issues': [
+                test_data.singleSprintStory(),
+                test_data.simpleBug()
+            ]
+        }
+
+        self.command_under_test._filter_by_date = datetime.date.max
+        data = list(self.command_under_test.execute())
+        self.assertEqual(len(data), 1)
+
+    def test_process_without_sprint_startDate_in_filtered_range(self):
+        '''Test that a future item will be included with a filter by date.'''
+        self.command_under_test._filter_by_date = datetime.date.today()
+        self.command_under_test._forecast = True
+        self.json_response = {
+            'total': 1,
+            'issues': [
+                test_data.future_sprint_story()
+            ]
+        }
+        data = list(self.command_under_test.execute())
+        self.assertEqual(len(data), 1)
+
 
 class TestVelocityRaw(test_util.MockJira, unittest.TestCase):
 

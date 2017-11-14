@@ -105,7 +105,7 @@ class TestMainCLI(test_util.SPTestCase, test_util.MockJira, unittest.TestCase):
         }
         with redirect_stderr(self.std_err):
             with redirect_stdout(self.std_out):
-                prog.main(['-w', 'blah', '--no-progress', 'cycletime', 'TEST'])
+                prog.main(['-w', 'blah', 'cycletime', '--no-progress', 'TEST'])
 
         self.assertNotRegex_(self.std_err.getvalue(), re_1of1)
 
@@ -119,7 +119,7 @@ class TestMainCLI(test_util.SPTestCase, test_util.MockJira, unittest.TestCase):
         try:
             with redirect_stderr(self.std_err):
                 with redirect_stdout(self.std_out):
-                    prog.main(['-w', 'blah', '--no-progress', '-o', path, 'cycletime', 'TEST'])
+                    prog.main(['-w', 'blah', 'cycletime', '--no-progress', '-o', path, 'TEST'])
             with open(path, 'r') as o:
                 lines = o.readlines()
         finally:
@@ -131,7 +131,7 @@ class TestMainCLI(test_util.SPTestCase, test_util.MockJira, unittest.TestCase):
 
         with self.assertRaises(SystemExit) as ctx:
             with redirect_stderr(self.std_err):
-                prog.main([ '-w', 'blah', '--no-progress', 'cycletime'])
+                prog.main([ '-w', 'blah', 'cycletime', '--no-progress'])
         exc = ctx.exception
         self.assertEqual(exc.code, 2)
         self.assertRegex_(self.std_err.getvalue(), r'cycletime: error:')
@@ -140,7 +140,26 @@ class TestMainCLI(test_util.SPTestCase, test_util.MockJira, unittest.TestCase):
     def test_command_jql_require_jql(self):
         with self.assertRaises(SystemExit) as ctx:
             with redirect_stderr(self.std_err):
-                prog.main([ '-w', 'blah', '--no-progress', 'jql'])
+                prog.main([ '-w', 'blah', 'jql', '--no-progress'])
         exc = ctx.exception
         self.assertEqual(exc.code, 2)
         self.assertRegex_(self.std_err.getvalue(), r'jql: error:')
+
+    def test_filter_by_date_argparse(self):
+        '''The velocity commands date filter validates input argument.'''
+        self.json_response = {
+            'total': 1,
+            'issues': [test_data.singleSprintStory()]
+        }
+        with redirect_stderr(self.std_err):
+            with redirect_stdout(self.std_out):
+                prog.main(['-w', 'blah', 'velocity', '--no-progress', '--filter-by-date', '11/01/2017', 'TEST'])
+
+        with self.assertRaises(SystemExit) as ctx:
+            with redirect_stderr(self.std_err):
+                with redirect_stdout(self.std_out):
+                    prog.main(['-w', 'blah', 'velocity', '--no-progress', '--filter-by-date', 'not a date', 'TEST'])
+
+        exc = ctx.exception
+        self.assertEqual(exc.code, 2)
+        self.assertRegex_(self.std_err.getvalue(), r'velocity: error:')

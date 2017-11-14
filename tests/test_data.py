@@ -43,3 +43,6 @@ def nested_data():
 
 def in_progress_story():
     return _load_json('in_progress_story.json')
+
+def future_sprint_story():
+    return _load_json('future_sprint_story.json')

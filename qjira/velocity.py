@@ -30,11 +30,13 @@ class VelocityCommand(PivotCommand):
     completed points - finished in this sprint (status = Closed, Done)
     '''
 
-    def __init__(self, include_bugs=False, forecast=False, raw=False, *args, **kwargs):
+    def __init__(self, include_bugs=False, forecast=False, raw=False, filter_by_date=None, *args, **kwargs):
         super(VelocityCommand, self).__init__(*args, **kwargs)
         self._include_bugs = include_bugs
         self._forecast = forecast
         self._raw = raw
+        self._filter_by_date = filter_by_date
+        self._target_sprint_ids = set()
 
         if raw:
             self._header = ['project_key','fixVersions_0_name','issuetype_name','issue_key',
@@ -73,6 +75,12 @@ class VelocityCommand(PivotCommand):
 
         for s in self._raw_process(rows):
             sprint_id = s['sprint_id']
+            
+            if sprint_id not in self._target_sprint_ids:
+                Log.debug('Skipping filtered sprint %d'.format(sprint_id))
+                continue
+
+            Log.debug('Updating velocity in sprint %d'.format(sprint_id))
             if not sprint_id in results:
                 results[sprint_id] = {k:v for k, v in s.items() if k in self._header}
                 current_points = (0, 0, 0, 0)
@@ -110,13 +118,20 @@ class VelocityCommand(PivotCommand):
         last_issue_seen = None
         counter = 0
         for idx,row in enumerate(rows):
-            if not row.get('sprint_name'):
+            if not row.get('sprint_id'):
                 continue
             
             if not self._forecast and not row.get('sprint_completeDate'):
                 #print ('> skip incomplete sprint')
                 continue
 
+            # including bugs causes inclusion of old sprints, track sprint_ids of the stories for filtering
+            sprint_id = row['sprint_id']
+            if self._filter_by_date and self._filter_by_date <= row.get('sprint_startDate', datetime.date.max):
+                self._target_sprint_ids.add(sprint_id)
+            elif row['issuetype_name'] == 'Story':
+                self._target_sprint_ids.add(sprint_id)
+            
             if row['issue_key'] is not last_issue_seen:
                 last_issue_seen = row['issue_key']
                 counter = 0
