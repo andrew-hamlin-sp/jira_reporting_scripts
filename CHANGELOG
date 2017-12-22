@@ -1,3 +1,9 @@
+2017-12-22  Andrew Hamlin  <andrew.hamlin@sailpoint.com>
+
+	* Version 0.99.14
+
+	* Changed CLI argument order
+	
 2017-11-08  Andrew Hamlin  <andrew.hamlin@sailpoint.com>
 
 	* Version 0.99.12

@@ -61,9 +61,8 @@ def date_string(string):
     
 def create_parser():
 
-
     parser = argparse.ArgumentParser(prog='qjira',
-                                     description='Export data from Jira to CSV format')
+                                     description='Exports data from Jira to CSV format')
 
     parser.add_argument('-b', '--base',
                                dest='base_url',

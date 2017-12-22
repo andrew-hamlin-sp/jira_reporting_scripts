@@ -1,4 +1,4 @@
-# Jira Reporting Scripts (0.99.13)
+# Jira Reporting Scripts (0.99.14)
 
 To address some of the deficiencies in Jira reporting, here is a small command line tool to 
 exercise the [Jira REST API](https://docs.atlassian.com/jira/REST/cloud/) to retrieve information about Stories,
@@ -15,12 +15,11 @@ Installation requires setuptools >= 20.5.
 >
 > `$ pip install --user setuptools`
 
-The usage interface has changed. Command names are now full words. Global options, such as `-o outfile`, precede
-the command names.
+The usage interface has changed. Command names are now full words. Global output options, such as `-o outfile`, follow the command names.
 
 > For example, the summary command `s` is now `summary` as shown here:
 >
-> `$ qjira -o summary-iiqcb.csv summary -f 7.3 IIQCB`
+> `$ qjira summary -o summary-iiqcb.csv -f 7.3 IIQCB`
 
 
 ## New Features
@@ -44,25 +43,17 @@ Added the bug `backlog` command, prints all bugs by fix version.
 # Commands
 
 ```
-usage: qjira [-h] [-o [FILENAME]] [--no-progress] [-b URL] [-u USER] [-w PWD]
-             [--encoding ENC] [--delimiter CHAR] [-d]
+usage: qjira [-h] [-b URL] [-u USER] [-w PWD] [-d]
              {cycletime,velocity,summary,debt,backlog,jql} ...
 
-Export data from Jira to CSV format
+Exports data from Jira to CSV format
 
 optional arguments:
   -h, --help            show this help message and exit
-  -o [FILENAME], --outfile [FILENAME]
-                        Output file (.csv) [default: stdout]
-  --no-progress         Hide data download progress
   -b URL, --base URL    Jira Cloud base URL [default: sailpoint.atlassian.net]
   -u USER, --user USER  Username, if blank will use logged on user
   -w PWD, --password PWD
                         Password (insecure), if blank will prommpt
-  --encoding ENC        Specify an output encoding. In Python 2.x, only
-                        default ASCII is supported.
-  --delimiter CHAR      Specify a CSV delimiter [default: comma]. For bash
-                        support escape the character with $, such as $'\t'
   -d                    Debug level
 
 Available commands:
@@ -83,13 +74,22 @@ format correctly in a Harbor document import the CSV file into Excel using comma
 table into your Harbor document.
 
 ```
-usage: qjira summary [-h] [-A] [-f VERSION] [--mark-new] project [project ...]
+usage: qjira summary [-h] [-o [FILENAME]] [--no-progress] [--encoding ENC]
+                     [--delimiter CHAR] [-A] [-f VERSION] [--mark-new]
+                     project [project ...]
 
 positional arguments:
   project               Project name
 
 optional arguments:
   -h, --help            show this help message and exit
+  -o [FILENAME], --outfile [FILENAME]
+                        Output file (.csv) [default: stdout]
+  --no-progress         Hide data download progress
+  --encoding ENC        Specify an output encoding. In Python 2.x, only
+                        default ASCII is supported.
+  --delimiter CHAR      Specify a CSV delimiter [default: comma]. For bash
+                        support escape the character with $, such as $'\t'
   -A, --all-fields      Extract all "navigable" fields in Jira,
                         [fields=*navigable]
   -f VERSION, --fix-version VERSION
@@ -106,8 +106,9 @@ Issues (story or bug) that have not been assigned at least one sprint will not b
 Sprints without defined start and end dates will not be reported.
 
 ```
-usage: qjira velocity [-h] [-A] [-f VERSION] [--include-bugs] [--forecast]
-                      [--raw]
+usage: qjira velocity [-h] [-o [FILENAME]] [--no-progress] [--encoding ENC]
+                      [--delimiter CHAR] [-A] [-f VERSION] [--include-bugs]
+                      [--forecast] [--raw] [--filter-by-date START]
                       project [project ...]
 
 positional arguments:
@@ -115,6 +116,13 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
+  -o [FILENAME], --outfile [FILENAME]
+                        Output file (.csv) [default: stdout]
+  --no-progress         Hide data download progress
+  --encoding ENC        Specify an output encoding. In Python 2.x, only
+                        default ASCII is supported.
+  --delimiter CHAR      Specify a CSV delimiter [default: comma]. For bash
+                        support escape the character with $, such as $'\t'
   -A, --all-fields      Extract all "navigable" fields in Jira,
                         [fields=*navigable]
   -f VERSION, --fix-version VERSION
@@ -122,6 +130,8 @@ optional arguments:
   --include-bugs, -B    Include bugs in velocity calculation
   --forecast, -F        Include future sprints in velocity calculation
   --raw, -R             Output all rows instead of summary by sprint name.
+  --filter-by-date START
+                        Filter sprints starting earlier than START date.
 ```
 
 ## Cycle Time
@@ -136,13 +146,22 @@ Limitations:
 
 
 ```
-usage: qjira cycletime [-h] [-A] [-f VERSION] project [project ...]
+usage: qjira cycletime [-h] [-o [FILENAME]] [--no-progress] [--encoding ENC]
+                       [--delimiter CHAR] [-A] [-f VERSION]
+                       project [project ...]
 
 positional arguments:
   project               Project name
 
 optional arguments:
   -h, --help            show this help message and exit
+  -o [FILENAME], --outfile [FILENAME]
+                        Output file (.csv) [default: stdout]
+  --no-progress         Hide data download progress
+  --encoding ENC        Specify an output encoding. In Python 2.x, only
+                        default ASCII is supported.
+  --delimiter CHAR      Specify a CSV delimiter [default: comma]. For bash
+                        support escape the character with $, such as $'\t'
   -A, --all-fields      Extract all "navigable" fields in Jira,
                         [fields=*navigable]
   -f VERSION, --fix-version VERSION
@@ -154,13 +173,22 @@ optional arguments:
 Generate table of project_name, bug_points, story_points, & tech_debt percentage.
 
 ```
-usage: qjira debt [-h] [-A] [-f VERSION] project [project ...]
+usage: qjira debt [-h] [-o [FILENAME]] [--no-progress] [--encoding ENC]
+                  [--delimiter CHAR] [-A] [-f VERSION]
+                  project [project ...]
 
 positional arguments:
   project               Project name
 
 optional arguments:
   -h, --help            show this help message and exit
+  -o [FILENAME], --outfile [FILENAME]
+                        Output file (.csv) [default: stdout]
+  --no-progress         Hide data download progress
+  --encoding ENC        Specify an output encoding. In Python 2.x, only
+                        default ASCII is supported.
+  --delimiter CHAR      Specify a CSV delimiter [default: comma]. For bash
+                        support escape the character with $, such as $'\t'
   -A, --all-fields      Extract all "navigable" fields in Jira,
                         [fields=*navigable]
   -f VERSION, --fix-version VERSION
@@ -172,22 +200,59 @@ optional arguments:
 Prints backlog summary of bugs by fix version. This adds a row per fix version for filtering in Excel.
 
 ```
-usage: qjira backlog [-h] [-A] [-f VERSION] project [project ...]
+usage: qjira backlog [-h] [-o [FILENAME]] [--no-progress] [--encoding ENC]
+                     [--delimiter CHAR] [-A] [-f VERSION]
+                     project [project ...]
 
 positional arguments:
   project               Project name
 
 optional arguments:
   -h, --help            show this help message and exit
+  -o [FILENAME], --outfile [FILENAME]
+                        Output file (.csv) [default: stdout]
+  --no-progress         Hide data download progress
+  --encoding ENC        Specify an output encoding. In Python 2.x, only
+                        default ASCII is supported.
+  --delimiter CHAR      Specify a CSV delimiter [default: comma]. For bash
+                        support escape the character with $, such as $'\t'
   -A, --all-fields      Extract all "navigable" fields in Jira,
                         [fields=*navigable]
   -f VERSION, --fix-version VERSION
                         Restrict search to fixVersion(s)
 ```
 
-# Future enhancements
+## JQL Query
 
-  *  Add field and count_field arguments to JQL command
+Converts any freeform jql queries to CSV.
+
+```
+usage: qjira jql [-h] [-o [FILENAME]] [--no-progress] [--encoding ENC]
+                 [--delimiter CHAR] [-A] [--add-field NAME]
+                 [--add-column NAME]
+                 jql
+
+positional arguments:
+  jql                   JQL statement
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -o [FILENAME], --outfile [FILENAME]
+                        Output file (.csv) [default: stdout]
+  --no-progress         Hide data download progress
+  --encoding ENC        Specify an output encoding. In Python 2.x, only
+                        default ASCII is supported.
+  --delimiter CHAR      Specify a CSV delimiter [default: comma]. For bash
+                        support escape the character with $, such as $'\t'
+  -A, --all-fields      Extract all "navigable" fields in Jira,
+                        [fields=*navigable]
+  --add-field NAME, -f NAME
+                        Add field(s) to Jira request
+  --add-column NAME, -c NAME
+                        Add column(s) to CSV output
+```
+
+# Future enhancements
 
   *  Add argument including set of default IIQ project names 
 
@@ -232,11 +297,11 @@ optional arguments:
 
   * Multiple projects and output CSV file
   
-`$ qjira -o velocity.csv velocity IIQCB IIQHH`
+`$ qjira velocity -o velocity.csv IIQCB IIQHH`
 
   * Print to console with a tab delimiter
   
-`$ qjira --delimiter=$'\t' velocity -f 7.3 IIQCB`
+`$ qjira velocity --delimiter=$'\t' -f 7.3 IIQCB`
 
 # Dependencies
 
