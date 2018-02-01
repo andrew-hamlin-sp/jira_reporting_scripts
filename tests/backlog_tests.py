@@ -17,7 +17,7 @@ class TestBacklog(test_util.MockJira, unittest.TestCase):
         self.teardown_mock_jira()
         
     def test_header(self):
-        self.assertIsInstance(self.processor.header, list)
+        self.assertIsInstance(self.processor.header_keys, list)
 
     def test_query(self):
         self.assertEqual('issuetype = Bug AND resolution = Unresolved ORDER BY priority DESC', self.processor.query)

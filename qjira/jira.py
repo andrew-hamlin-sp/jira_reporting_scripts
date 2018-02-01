@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 import requests
 import datetime
+import json
 
 try:
     from urllib import urlencode
@@ -43,6 +44,7 @@ DEFAULT_FIELDS = [
 ]
 
 DEFAULT_EXPANDS = [
+    #'versionedRepresentations',
     'changelog'
 ]
 
@@ -55,7 +57,7 @@ def _get_json(url, username=None, password=None, headers=HEADERS):
 def _as_data(issue, reverse_sprints=False):
     if Log.isVerboseEnabled():
         Log.verbose('enter jira._as_data: issue, reverse_sprints={0}'.format(reverse_sprints))
-        Log.verbose('issue={0}'.format(issue))
+        Log.verbose('issue={0}'.format(json.dumps(issue, sort_keys=True, indent=4, separators=(',', ': '))))
         
     data = {
         'issue_key':issue['key']
@@ -66,6 +68,7 @@ def _as_data(issue, reverse_sprints=False):
     if issue['fields'].get('customfield_10016'):
         sprints_encoded = issue['fields']['customfield_10016']
         if sprints_encoded:
+            #print('> as_data sprints_encoded: {0}'.format(sprints_encoded))
             data['sprint'] = [
                 sprint for sprint in sorted(
                     map(extract_sprint, sprints_encoded),

@@ -2,9 +2,11 @@
 Analyze tech debt ratios Story vs Bug points.
 '''
 from functools import partial, cmp_to_key, reduce as reduce_
+from collections import OrderedDict
 
 from .command import BaseCommand
 from .log import Log
+from . import headers
 
 DEFAULT_POINTS = 0.0
 TOTAL_COL = 'Grand Total'
@@ -13,7 +15,10 @@ class TechDebtCommand(BaseCommand):
 
     @property
     def header(self):
-        return [ 'project_name', 'bug_points', 'story_points', 'tech_debt' ]
+        return OrderedDict([headers.get_column('project_name'),
+                            headers.get_column('bug_points'),
+                            headers.get_column('story_points'),
+                            headers.get_column('tech_debt')])
 
     @property
     def query(self):

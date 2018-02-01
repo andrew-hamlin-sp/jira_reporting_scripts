@@ -1,6 +1,8 @@
-from .command import BaseCommand
+from collections import OrderedDict
 
+from .command import BaseCommand
 from . import jira
+from . import headers
 
 class JQLCommand(BaseCommand):
     '''JQL command runs any valid JQL query string.
@@ -30,10 +32,11 @@ class JQLCommand(BaseCommand):
     def header(self):
         '''JQL command returns all fields.
         '''
+        columns =  JQLCommand.DEFAULT_COLUMN_NAMES
         if self._add_columns and len(self._add_columns)>0:
-            return JQLCommand.DEFAULT_COLUMN_NAMES + self._add_columns
-        else:
-            return JQLCommand.DEFAULT_COLUMN_NAMES
+            columns += self._add_columns
+            
+        return OrderedDict([headers.get_column(n) for n in columns])
     
     @property
     def query(self):

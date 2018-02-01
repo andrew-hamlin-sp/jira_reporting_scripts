@@ -7,6 +7,7 @@ from functools import partial
 from . import jira
 from . import dataprocessor as dp
 from .log import Log
+from . import unicode_csv_writer
 
 def query_builder(name, items):
     return '{0} in ({1})'.format(name, ','.join(items))
@@ -49,20 +50,35 @@ class BaseCommand:
     @property
     def show_all_fields(self):
         return self._all_fields
-    
+
     @abc.abstractproperty
     def header(self):
-        '''Return the list of CSV column headers to print.
+        '''Return dict of CSV column keys and user-friendly names.
+
+        an OrderedDict.
+        '''
+        raise NotImplementedError()
+    
+    @property
+    def header_keys(self):
+        '''Return the list of CSV column keys to print.
 
         See also, expand_header.
         '''
-        raise NotImplementedError()
+        return list(self.header.keys())
 
     @abc.abstractproperty
     def query(self):
         '''Return the JQL query for this command.'''
         raise NotImplementedError()
 
+    @property
+    def writer(self):
+        '''Return the writer interface for this command.
+
+        Defines a single function matching: unicode_csv_writer.write'''
+        return unicode_csv_writer
+    
     def retrieve_fields(self, default_fields):
         '''Command may provide a set of Jira Fields. The provided list is
         a copy of the default that can be modified, appended or replaced.
@@ -101,12 +117,14 @@ class BaseCommand:
         If the command was launched with the show_all_fields option or does not supply a header list, 
         then use all keys of the provided row.
 
+        Note: When using show_all_fields, only keys in the FIRST row will be returned!
+ 
         Otherwise, return the defined set of fields from the header property.
         '''
         if self.show_all_fields or not self.header:
             return d.keys()
         else:
-            return self.header
+            return self.header_keys
         
     def http_request(self):
         query_string = self._create_query_string()

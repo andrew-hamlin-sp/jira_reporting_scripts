@@ -4,6 +4,7 @@ import sys
 import io
 import unittest
 import re
+from collections import OrderedDict
 
 try:
     from contextlib import redirect_stdout
@@ -22,7 +23,7 @@ class TestCommand(BaseCommand):
 
     @property
     def header(self):
-        return ['summary']
+        return OrderedDict([('summary', 'Summary')])
 
     @property
     def query(self):

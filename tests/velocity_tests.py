@@ -18,7 +18,7 @@ class TestVelocity(test_util.MockJira, unittest.TestCase):
         self.teardown_mock_jira()
         
     def test_header(self):
-        self.assertIsInstance(self.command_under_test.header, list)
+        self.assertIsInstance(self.command_under_test.header_keys, list)
         
     def test_query(self):
         self.assertEqual('issuetype = Story', self.command_under_test.query)
@@ -143,7 +143,7 @@ class TestVelocityRaw(test_util.MockJira, unittest.TestCase):
         self.teardown_mock_jira()
         
     def test_header(self):
-        self.assertIsInstance(self.command_under_test.header, list)
+        self.assertIsInstance(self.command_under_test.header_keys, list)
         
     def test_query(self):
         self.assertEqual('issuetype = Story', self.command_under_test.query)

@@ -11,6 +11,7 @@ from . import log_tests
 from . import main_tests    
 from . import unicode_csv_writer_tests
 from . import jql_tests
+from . import headers_tests
 
 def suite():
     suite = unittest.TestSuite()
@@ -24,6 +25,8 @@ def suite():
     suite.addTest(unittest.defaultTestLoader.loadTestsFromModule(log_tests))
     suite.addTest(unittest.defaultTestLoader.loadTestsFromModule(main_tests))
     suite.addTest(unittest.defaultTestLoader.loadTestsFromModule(jql_tests))
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromModule(headers_tests))
+    
     return suite
     
 if __name__ == '__main__':

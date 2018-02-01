@@ -9,6 +9,10 @@ all:
 	@echo "$$ make test"
 	@echo "$$ deactivate"
 
+test-all:
+	source bin/activate && $(MAKE) test && deactivate
+	pushd .py3 && source bin/activate && $(MAKE) test && deactivate && popd
+
 init: 
 	python setup.py develop
 

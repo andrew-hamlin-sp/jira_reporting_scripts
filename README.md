@@ -1,4 +1,4 @@
-# Jira Reporting Scripts (0.99.14)
+# Jira Reporting Scripts (0.99.15)
 
 To address some of the deficiencies in Jira reporting, here is a small command line tool to 
 exercise the [Jira REST API](https://docs.atlassian.com/jira/REST/cloud/) to retrieve information about Stories,
@@ -23,6 +23,11 @@ The usage interface has changed. Command names are now full words. Global output
 
 
 ## New Features
+
+### Summary defaults to HTML output
+
+The `summary` command will not produce an HTML fragment document by default. This can be copy-pasted into a Harbor document, using Harbor's
+ &lt;html&gt; editor. You can access the old CSV behavior using the `--csv` parameter.
 
 ### OS credential storage
 
@@ -95,6 +100,7 @@ optional arguments:
   -f VERSION, --fix-version VERSION
                         Restrict search to fixVersion(s)
   --mark-new, -N        Mark docs linked within past 2 weeks
+  --csv                 Output CSV rather than HTML Fragments
 ```
 
 ## Velocity

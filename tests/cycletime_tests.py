@@ -18,7 +18,7 @@ class TestCycleTime(test_util.MockJira, unittest.TestCase):
         self.teardown_mock_jira()
         
     def test_header(self):
-        self.assertIsInstance(self.command_under_test.header,
+        self.assertIsInstance(self.command_under_test.header_keys,
                               list)
 
     def test_query(self):

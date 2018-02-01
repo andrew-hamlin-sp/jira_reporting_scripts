@@ -20,7 +20,6 @@ from .techdebt import TechDebtCommand
 from .backlog import BacklogCommand
 from .jql import JQLCommand
 from .log import Log
-from . import unicode_csv_writer
 from . import credential_store as creds
 
 PY3 = sys.version_info > (3,)
@@ -167,6 +166,12 @@ def create_parser():
                                 action='store_true',
                                 dest='mark_if_new',
                                 help='Mark docs linked within past 2 weeks')
+
+    parser_summary.add_argument('--csv',
+                                action='store_true',
+                                dest='use_csv_formatter',
+                                help='Output CSV rather than HTML Fragments')
+    
     parser_summary.set_defaults(func=SummaryCommand)
 
     parser_techdebt = subparsers.add_parser('debt',
@@ -236,9 +241,10 @@ def main(args=None):
 
     Log.debug('Args: {0}'.format(func_args))
     command = my_args.func(**func_args)
+    output_writer = command.writer
     try:
         with _open(my_args.outfile, my_args.encoding) as f:
-            unicode_csv_writer.write(f, command, my_args.encoding,
+            output_writer.write(f, command, my_args.encoding,
                                      delimiter=my_args.delimiter)
     except HTTPError as err:
         if err.response.status_code == 401:

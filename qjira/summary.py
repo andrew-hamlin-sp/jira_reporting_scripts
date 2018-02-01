@@ -3,12 +3,15 @@ Summarize the backlog
 '''
 from operator import itemgetter
 from functools import partial
+from collections import OrderedDict
 
 import datetime
 
 from .log import Log
 from .command import BaseCommand
 from . import jira
+from . import summary_html_writer
+from . import headers
 
 # Sprints w/o dates and Issues without sprints
 SORT_DEFAULT_YEAR = datetime.date(datetime.MINYEAR, 1, 1)
@@ -31,47 +34,52 @@ def sprint_header(sprint_name, sprint_startDate, sprint_endDate):
         return '{}'.format(sprint_name.upper())
     else:
         return 'GROOMING'
-
     
-def hyperlink(url, name):
-    if not name:
-        name = url
-    return '=HYPERLINK("{}","{}")'.format(url, name)
-
-def doc_link_marked_new(row, link_col, date_col, mark_if_new=False):
-    name = row[link_col].rpartition('/')[2]
-    
-    if mark_if_new and date_col in row and \
-       row[date_col] >= datetime.date.today()+datetime.timedelta(days=-14):
-        name = name + " [New]"
-        
-    return hyperlink(row[link_col], name)
-
 class SummaryCommand(BaseCommand):
 
-    def __init__(self, mark_if_new=False, *args, **kwargs):
+    def __init__(self, mark_if_new=False, use_csv_formatter=False, *args, **kwargs):
         super(SummaryCommand, self).__init__(*args, **kwargs)
         self._mark_if_new = mark_if_new
+        self._use_csv_formatter = use_csv_formatter
+
+        self.BLANK_CELL = '=T("")' if use_csv_formatter else '&nbsp;'
+        self._hyperlink = self._hyperlink_excel if use_csv_formatter else self._hyperlink_html
+
+        self.COLUMNS = OrderedDict([headers.get_column('issue_link'),
+                                    headers.get_column('summary'),
+                                    headers.get_column('assignee_displayName'),
+                                    headers.get_column('design_doc_link'),
+                                    headers.get_column('testplan_doc_link'),
+                                    headers.get_column('story_points'),
+                                    headers.get_column('status_name'),
+                                    headers.get_column('epic_link')])
+        
     
     def _configure_http_request(self):
         return partial(
             super(SummaryCommand, self)._configure_http_request(),
             reverse_sprints=True)
-        
+
     @property
     def header(self):
-        return ['issue_link','summary','assignee_displayName','design_doc_link',
-                'testplan_doc_link','story_points','status_name','epic_link']
-
+        return self.COLUMNS
+        
     @property
     def query(self):
         return 'issuetype = Story'
 
+    @property
+    def writer(self):
+        if self._use_csv_formatter:
+            return super(SummaryCommand, self).writer
+        else:
+            return summary_html_writer
+    
     def retrieve_fields(self, fields):
         return fields + ['customfield_11101', 'customfield_14300']
     
     def _new_row(self):
-        return {k:'=T(" ")' for k in self.header}
+        return {k:self.BLANK_CELL for k in self.header}
 
     # build table of epic links
     def _resolve_epic(self, epic_key):
@@ -81,6 +89,26 @@ class SummaryCommand(BaseCommand):
                               username=username, password=password)
         #print('> resolve_epic: {0}'.format(epic))
         return jira.get_browse_url(self._base_url, epic_key), epic['customfield_10019']
+
+    def _hyperlink_excel(self, url, name):
+        if not name:
+            name = url
+
+        return '=HYPERLINK("{}","{}")'.format(url, name)
+
+    def _hyperlink_html(self, url, name):
+        if not name:
+            name = url
+        return '<a href="{}" target="_blank">{}</a>'.format(url, name)
+
+    def _doc_link_marked_new(self, row, link_col, date_col):
+        name = row[link_col].rpartition('/')[2]
+    
+        if self._mark_if_new and date_col in row and \
+           row[date_col] >= datetime.date.today()+datetime.timedelta(days=-14):
+            name = name + " [New]"
+        
+        return self._hyperlink(row[link_col], name)
     
     def post_process(self, rows):
         # Secondary sort by issuekey
@@ -104,7 +132,8 @@ class SummaryCommand(BaseCommand):
                 sprint_placeholder = row.get('sprint_0_name')
                 res = self._new_row()
                 res.update({
-                    'summary': sprint_header(sprint_placeholder, row.get('sprint_0_startDate'), row.get('sprint_0_endDate')),
+                    '_row_header': True,
+                    'issue_link': sprint_header(sprint_placeholder, row.get('sprint_0_startDate'), row.get('sprint_0_endDate')),
                 })
                 yield res
             res = self._new_row()
@@ -112,22 +141,20 @@ class SummaryCommand(BaseCommand):
             issue_key = row.get('issue_key')
             if epic_key:
                 url, name = epic_link_table[epic_key]
-                row['epic_link'] = hyperlink(url, name)
+                row['epic_link'] = self._hyperlink(url, name)
 
             if issue_key:
-                row['issue_link'] = hyperlink(jira.get_browse_url(self._base_url, issue_key), issue_key)
+                row['issue_link'] = self._hyperlink(jira.get_browse_url(self._base_url, issue_key), issue_key)
 
             if 'design_doc_link' in row:
-                row['design_doc_link'] = doc_link_marked_new(row,
+                row['design_doc_link'] = self._doc_link_marked_new(row,
                                                              'design_doc_link',
-                                                             'eng_design_changed',
-                                                             mark_if_new=self._mark_if_new)
+                                                             'eng_design_changed')
 
             if 'testplan_doc_link' in row:
-                row['testplan_doc_link'] = doc_link_marked_new(row,
+                row['testplan_doc_link'] = self._doc_link_marked_new(row,
                                                                'testplan_doc_link',
-                                                               'eng_test_plan_changed',
-                                                               mark_if_new=self._mark_if_new)
+                                                               'eng_test_plan_changed')
             
             res.update(row)
             yield res

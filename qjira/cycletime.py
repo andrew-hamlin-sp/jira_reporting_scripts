@@ -1,7 +1,10 @@
 from operator import itemgetter
+from collections import OrderedDict
 
 from .log import Log
 from .command import BaseCommand
+
+from . import headers
 
 def networkdays(start, end):
     return '=NETWORKDAYS("{}","{}")'.format(start, end)
@@ -22,8 +25,14 @@ class CycleTimeCommand(BaseCommand):
     '''
     @property
     def header(self):
-         return ['project_key','fixVersions_0_name','issuetype_name','issue_key',
-                 'story_points','status_InProgress','status_Done', 'count_days']
+         return OrderedDict([headers.get_column('project_key'),
+                             headers.get_column('fixVersions_0_name'),
+                             headers.get_column('issuetype_name'),
+                             headers.get_column('issue_key'),
+                             headers.get_column('story_points'),
+                             headers.get_column('status_InProgress'),
+                             headers.get_column('status_Done'),
+                             headers.get_column('count_days')])
 
     @property
     def query(self):

@@ -4,8 +4,12 @@ pivot the issues on fixVersion fields for sorting
 between future unreleased versions and dev_backlog,
 for example.
 """
+
+from collections import OrderedDict
+
 from .command import PivotCommand
 from .log import Log
+from . import headers
 
 class BacklogCommand(PivotCommand):
 
@@ -15,10 +19,19 @@ class BacklogCommand(PivotCommand):
 
     @property
     def header(self):
-        return ['project_key', 'fixVersions_name', 'issuetype_name', 'issue_key',
-                'summary', 'priority_name', 'status_name', 'assignee_displayName',
-                'created', 'updated', 'severity_value', 'customer']
-
+        return OrderedDict([headers.get_column('project_key'),
+                            headers.get_column('fixVersions_name'),
+                            headers.get_column('issuetype_name'),
+                            headers.get_column('issue_key'),
+                            headers.get_column('summary'),
+                            headers.get_column('priority_name'),
+                            headers.get_column('status_name'),
+                            headers.get_column('assignee_displayName'),
+                            headers.get_column('created'),
+                            headers.get_column('updated'),
+                            headers.get_column('severity_value'),
+                            headers.get_column('customer')])
+    
     @property
     def query(self):
         return 'issuetype = Bug AND resolution = Unresolved ORDER BY priority DESC'
