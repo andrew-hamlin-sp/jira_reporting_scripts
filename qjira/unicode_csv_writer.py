@@ -1,13 +1,6 @@
-import io
-import sys
 import csv
-import locale
-import six
-import codecs
-from functools import partial
 
-def _encode(encoding, s):
-    return six.text_type(s).encode(encoding, errors='ignore').decode(encoding)
+from .encoder import _encode
 
 
 def write(f, command, encoding, delimiter=','):
@@ -20,7 +13,6 @@ def write(f, command, encoding, delimiter=','):
     '''
     writer = None
 
-    # XXX Bug: only expands known keys from the FIRST row
     fieldnames = lambda row: [_encode(encoding, s) for s in command.expand_header(row)]
 
     for row in command.execute():
