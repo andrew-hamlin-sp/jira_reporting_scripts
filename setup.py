@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='qjira',
-      version='0.99.15',
+      version='0.99.16',
       description='Query JIRA Cloud REST API',
       author='Andrew Hamlin',
       author_email='andrew.hamlin@sailpoint.com',
