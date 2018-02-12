@@ -52,8 +52,7 @@ class SummaryCommand(BaseCommand):
                                     headers.get_column('testplan_doc_link'),
                                     headers.get_column('story_points'),
                                     headers.get_column('status_name'),
-                                    headers.get_column('epic_link')])
-        
+                                    headers.get_column('epic_link')])        
     
     def _configure_http_request(self):
         return partial(
