@@ -5,7 +5,10 @@ exercise the [Jira REST API](https://docs.atlassian.com/jira/REST/cloud/) to ret
 including story points and iterations and export into CSV format. This enables building better reports in Excel.
 
 MacOS:   Python 2.7 & 3.6 (tested)
+
 Windows: Python 3.6 (tested), 2.7 (not tested)
+
+You may want to view/download the [Quickstart Guide](doc/Quickstart.docx).
 
 **IMPORTANT NOTES**
 
