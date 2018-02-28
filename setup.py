@@ -1,11 +1,11 @@
 from setuptools import setup, find_packages
 
 setup(name='qjira',
-      version='0.99.16',
+      version='0.99.17',
       description='Query JIRA Cloud REST API',
       author='Andrew Hamlin',
       author_email='andrew.hamlin@sailpoint.com',
-      packages=find_packages(exclude=['tests']),
+      packages=find_packages(include=['qjira'], exclude=['tests']),
       include_package_data=True,
       classifiers=[
           'Programming Language :: Python :: 2',
