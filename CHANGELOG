@@ -1,3 +1,9 @@
+2018-02-28  Andrew Hamlin  <andrew.hamlin@sailpoint.com>
+
+	* Version 0.99.17
+
+	* Add user rc file support, ~/.qjira
+
 2018-02-12  Andrew Hamlin  <andrew.hamlin@sailpoint.com>
 
 	* Version 0.99.16

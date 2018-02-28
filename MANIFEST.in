@@ -1,4 +1,2 @@
-include Changelog README.md MANIFEST
-
-recursive-include qjira *.py
-recursive-include tests *.py *.json
+include Changelog README.md Makefile
+include qjira/defaults.ini

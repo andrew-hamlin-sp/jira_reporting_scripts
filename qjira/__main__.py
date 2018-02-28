@@ -7,8 +7,14 @@ Description: script to execute commands against jira
 '''
 import sys
 import io
+import os
 import argparse
 import locale
+
+try:
+    import configparser
+except ImportError:
+    import ConfigParser as configparser
 
 from requests.exceptions import HTTPError
 from dateutil import parser as date_parser
@@ -23,6 +29,9 @@ from .log import Log
 from . import credential_store as creds
 
 PY3 = sys.version_info > (3,)
+
+INSTALLPATH = os.path.dirname(os.path.abspath(__file__))
+    
 
 def _print(msg):
     sys.stderr.write(msg)
@@ -57,17 +66,26 @@ def date_string(string):
     except ValueError as ve:
         raise argparse.ArgumentTypeError(ve)
     return value.date()
-    
-def create_parser():
 
+def read_config():
+    '''Create basic configuration'''
+    config = configparser.ConfigParser()
+    config.readfp(open(os.path.join(INSTALLPATH, 'defaults.ini')))
+    config.read([os.path.expanduser('~/.qjira')])
+    return config
+
+def create_parser(config):
+
+    base_url = config.get('jira', 'base_url')
+    
     parser = argparse.ArgumentParser(prog='qjira',
                                      description='Exports data from Jira to CSV format')
 
     parser.add_argument('-b', '--base',
                                dest='base_url',
                                metavar='URL',
-                               help='Jira Cloud base URL [default: sailpoint.atlassian.net]',
-                               default='sailpoint.atlassian.net')
+                               help='Jira Cloud base URL [default: %s]'%base_url,
+                               default=base_url)
 
     parser.add_argument('-u', '--user',
                                metavar='USER',
@@ -211,7 +229,7 @@ def create_parser():
 
 def main(args=None):
     
-    parser = create_parser()
+    parser = create_parser(read_config())
     my_args = parser.parse_args(args)
 
     if not my_args.func:
